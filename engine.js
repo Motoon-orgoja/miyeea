@@ -82,6 +82,7 @@ function applyMode(key){
   if(key===active)updateBar();
 }
 function updateBar(){
+  if(!LISTS[active]){$('stepbar').hidden=true;$('voicebar').hidden=true;return}
   const m=mode[active], list=$(LISTS[active]); const total=list.querySelectorAll('.v').length;
   $('stepbar').hidden=m!=='step'||!total;
   $('voicebar').hidden=m!=='voice'||!total;
@@ -351,7 +352,7 @@ $('friSave').addEventListener('click',()=>{
 });
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',String(x===b)));
-  ['today','fri','all'].forEach(v=>$('v-'+v).hidden=v!==b.dataset.v);
+  ['today','fri','all','expl'].forEach(v=>$('v-'+v).hidden=v!==b.dataset.v);
   if(VS.on)vStop(true); active=b.dataset.v; vReset(); updateBar();
 }));
 render();
@@ -361,7 +362,7 @@ function showScreen(sc,canCancel){
   $('setup').hidden=sc!=='setup'; $('welcome').hidden=sc!=='welcome';
   ['mainProg','mainTabs','foot'].forEach(id=>$(id).hidden=!main); $('poemBar').hidden=!main||!MULTI; if(!main)$('poemsCard').hidden=true;
   if(main){document.querySelector('.tabs button[aria-selected="true"]').click()}
-  else{['v-today','v-fri','v-all','backup','stepbar','voicebar'].forEach(id=>$(id).hidden=true);if(VS.on)vStop(true);scrollTo(0,0)}
+  else{['v-today','v-fri','v-all','v-expl','backup','stepbar','voicebar'].forEach(id=>$(id).hidden=true);if(VS.on)vStop(true);scrollTo(0,0)}
   $('cancelSetup').hidden=!canCancel;
 }
 const showSetup=(on,canCancel)=>showScreen(on?'setup':'main',canCancel);
@@ -441,4 +442,22 @@ if(MULTI){
   $('poemsBtn').addEventListener('click',()=>{$('poemsCard').hidden=!$('poemsCard').hidden;renderPoems()});
   $('closePoems').addEventListener('click',()=>$('poemsCard').hidden=true);
 }
-renderPoemInfo(); renderPoems();
+/* ---------- explanation tab: data/*-expl.js may set window.EXPL[poemId] = one entry per verse ---------- */
+function renderExpl(){
+  const E=window.EXPL&&window.EXPL[CUR]; if(!E)return;
+  $('t-expl').hidden=false;
+  $('explNote').textContent='شرح اجتهادي من إعداد الموقع لتقريب المعنى، وليس نقلًا عن كتاب معيّن؛ راجعه مع أهل العلم.'+(P.sharh?' وشرح زكريا الأنصاري المنقول بلفظه موجود تحت كل بيت في تبويب «القصيدة».':'');
+  const list=$('explList'); list.replaceChildren();
+  E.forEach((e,k)=>{if(!V[k])return;
+    const c=document.createElement('article'); c.className='ecard';
+    const head=document.createElement('div'); head.className='ehead';
+    const n=document.createElement('span'); n.className='n'; n.textContent=ar(k+1);
+    const b=document.createElement('div'); b.className='bayt'; V[k].forEach((h,j)=>{const sh=document.createElement('span');sh.className='sh '+(j?'b2':'b1');sh.textContent=h;b.append(sh)});
+    head.append(n,b); c.append(head);
+    const add=(t,txt)=>{const h=document.createElement('h4');h.textContent=t;const p=document.createElement('p');p.textContent=txt;c.append(h,p)};
+    if(e.g&&e.g.length){const h=document.createElement('h4');h.textContent='غريب الكلمات';const ul=document.createElement('ul');
+      e.g.forEach(([w,m])=>{const li=document.createElement('li');const x=document.createElement('b');x.textContent=w+': ';li.append(x,m);ul.append(li)});c.append(h,ul)}
+    add('المعنى العام',e.a); add('وقفات وفوائد',e.d);
+    list.append(c)});
+}
+renderPoemInfo(); renderPoems(); renderExpl();

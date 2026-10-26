@@ -78,6 +78,9 @@ input,textarea{font:14px var(--ui);color:var(--ink);background:var(--bg);border:
 .seg-aya{color:var(--accent)}
 .gloss{font-size:13px;color:var(--muted);border-top:1px dashed var(--line);padding-top:6px}
 .gloss b{color:var(--ink)}
+.block{display:flex;flex-direction:column;gap:12px}
+.block .unit+.unit{border-top:1px dashed var(--line);padding-top:10px}
+.chapstat{font-size:13px;font-weight:600;color:var(--accent);background:var(--accent-soft);border-radius:10px;padding:8px 12px}
 .ward{border-top:1px dashed var(--line);padding-top:10px;display:flex;flex-direction:column;gap:6px}
 .ward .btn,.unit .row .btn{font-size:13px;padding:7px 11px}
 .sharh{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:0 12px;font-size:14px;line-height:1.85}
@@ -150,15 +153,16 @@ input,textarea{font:14px var(--ui);color:var(--ink);background:var(--bg);border:
   <section id="welcome" class="card guide" hidden>
     <div class="eyebrow">أهلًا وسهلًا</div>
     <div class="range">كيف بتحفظ الأحاديث هون؟</div>
-    <p class="note" style="margin:0">بنحفظ بطريقة «المراجعة المتباعدة»: كل حديث بتحفظه بيرجعلك للمراجعة بعد يوم، وبعدين بعد يومين، و٤، وأسبوع، وأسبوعين، وشهر، وشهرين. كل ما ثبت أكثر، بتتباعد مراجعته. وإذا نسيته، بيرجع يقرب.</p>
+    <p class="note" style="margin:0">بتحفظ الباب حديث حديث بالترتيب، وكل يوم بتربط اللي حفظته ببعض. ولما تختم الباب، بيصير كتلة وحدة بتراجعها كاملة على مواعيد متباعدة: بعد يوم، ويومين، و٤، وأسبوع، وأسبوعين، وشهر، وشهرين. وإذا نسيت، بترجع المراجعة تقرب.</p>
     <ol>
       <li><b>المحفوظ كامل:</b> الآيات، واسم الراوي، ونص الحديث، والتخريج (متفق عليه، رواه مسلم…).</li>
       <li><b>جديد اليوم:</b> كل يوم بيطلعلك حديث جديد (أو مقطع من حديث طويل). اقرأه، واضغط الدائرة بعد كل قراءة، ولما توصل للعدد اضغط «حفظته».</li>
-      <li><b>مراجعة اليوم:</b> الأحاديث اللي إجا دورها بتطلع مخفية. سمّعها من حفظك (بصوتك أو بقلبك)، وبعدين اكشفها وقيّم حالك: «نسيت» أو «صعب» أو «تمام».</li>
+      <li><b>الربط:</b> بعد الجديد، بتسمّع كل اللي حفظته من الباب لحد هلأ مرة وحدة متصلة، وبتضغط «سمّعته».</li>
+      <li><b>مراجعة الباب:</b> بعد ما تختم الباب، بيطلعلك الباب كامل مخفي بمواعيده. سمّعه من حفظك، اكشفه، وقيّم حالك: «نسيت» أو «صعب» أو «تمام».</li>
       <li><b>طرق القراءة:</b> «كامل»، و«أول حرف»، و«مخفي» (اضغط أي كلمة لتشوفها)، و«تسميع بالصوت».</li>
       <li><b>التسميع بالصوت:</b> اضغط 🎤 واقرأ. الكلمة الصح بتظهر، والغلط بيطلع بالأحمر، وبتنعلّم الكلمات اللي بتغلط فيها بخط أحمر منقّط. على الآيفون افتح الصفحة بسفاري.</li>
       <li><b>تبويب «الباب»:</b> فيه كل الأحاديث، ووين وصلت بكل واحد، وموعد مراجعته الجاي. وتحت كل حديث سهم «شرح الحديث»: كلام العلماء منقول بلفظه من شروح رياض الصالحين وصحيح مسلم والبخاري وكتب التفسير، مع اسم الكتاب والجزء والصفحة.</li>
-      <li><b>إنت بتتحكّم بالورد:</b> «زيد محفوظ جديد» إذا عندك وقت، و«راجع اللي بعده» لتراجع شي قبل موعده، و«أجّل لبكرة». ومن تبويب «الباب» بتقدر تختار حديث معيّن تحفظه أو تراجعه اليوم.</li>
+      <li><b>إنت بتتحكّم بالورد:</b> «زيد محفوظ جديد» إذا عندك وقت، و«راجع الباب كامل اليوم» لتراجع قبل الموعد، و«أجّل لبكرة». ومن تبويب «الباب» بتقدر تختار حديث معيّن تحفظه اليوم.</li>
     </ol>
     <p class="note" style="margin:0">تقدمك بينحفظ على جهازك بس. النص المشكول من موقع «رياض الصالحين مع فوائد وهدايات» (IslamHouse)، مع تصحيحات بسيطة. وإذا لقيت خطأ بالتشكيل، بلّغ عنه.</p>
     <button class="btn primary" id="welcomeGo">يلّا نبلّش</button>
@@ -284,35 +288,38 @@ const dayDiff=(a,b)=>Math.round((new Date(a+'T12:00:00Z')-new Date(b+'T12:00:00Z
 const dayName=d=>{try{return new Intl.DateTimeFormat('ar-JO',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'}).format(new Date(d+'T12:00:00Z'))}catch(e){return d}};
 const when=d=>{const n=dayDiff(d,today());return n<=0?'اليوم':n===1?'بكرة':n===2?'بعد بكرة':`بعد ${ar(n)} أيام`};
 
-/* ---------- spaced repetition ----------
-   card: {st: stage 1..7, due: date, lap: lapses}. Stage n waits STEPS[n-1] days. */
+/* ---------- learning, linking, block review ----------
+   Units are learned in order (or as picked). Each day after the new unit, everything learned so far is recited once
+   together ("ربط"). When the whole chapter is learned it becomes one block, reviewed on spaced steps:
+   block: {st: stage 1..7, due: date, lap: lapses}. Stage n waits STEPS[n-1] days. */
 const STEPS=[1,2,4,7,15,30,60];
 const LSK='mutoon_'+BOOK.key+'_v1';
-// extra: today's added allowance of new units; pick: units the user chose to learn next; ahead: units pulled forward for review today
-let S={per:1,goal:10,cards:{},newDay:'',newCount:0,reps:{},log:{},mistW:{},extra:{d:'',n:0},pick:[],ahead:{d:'',ids:[]}};
+// extra: today's added allowance of new units; pick: units the user chose to learn next; blockAhead: day the block review was pulled forward; link: last day of the linking recitation
+let S={per:1,goal:10,cards:{},newDay:'',newCount:0,reps:{},log:{},mistW:{},extra:{d:'',n:0},pick:[],block:null,blockAhead:'',link:''};
 function save(){try{localStorage.setItem(LSK,JSON.stringify(S))}catch(e){}}
 function load(){try{const v=localStorage.getItem(LSK);return v?JSON.parse(v):null}catch(e){return null}}
 function rollNew(){if(S.newDay!==today()){S.newDay=today();S.newCount=0}}
 function logToday(k){const t=today();S.log[t]=S.log[t]||{n:0,r:0};S.log[t][k]++}
-function grade(id,g){
-  const c=S.cards[id]; if(!c)return; S.ahead.ids=S.ahead.ids.filter(x=>x!==id);
+const learnedIds=()=>U.filter(u=>S.cards[u.id]).map(u=>u.id);
+const allLearned=()=>U.every(u=>S.cards[u.id]);
+function ensureBlock(){if(allLearned()&&!S.block)S.block={st:1,due:addDays(today(),1),lap:0}}
+function gradeBlock(g){
+  const c=S.block; if(!c)return; S.blockAhead='';
   if(g==='again'){c.st=1;c.lap=(c.lap||0)+1;c.due=addDays(today(),1)}
   else if(g==='hard'){c.due=addDays(today(),Math.max(1,Math.ceil(STEPS[c.st-1]/2)))}
   else{c.st=Math.min(STEPS.length,c.st+1);c.due=addDays(today(),STEPS[c.st-1])}
   logToday('r'); save();
 }
-function learn(id){S.cards[id]={st:1,due:addDays(today(),1),lap:0};delete S.reps[id];rollNew();S.newCount++;logToday('n');save()}
-const aheadIds=()=>S.ahead.d===today()?S.ahead.ids:[];
+function learn(id){S.cards[id]={d:today()};delete S.reps[id];rollNew();S.newCount++;logToday('n');ensureBlock();save()}
 const extraToday=()=>S.extra.d===today()?S.extra.n:0;
-const dueList=()=>U.filter(u=>S.cards[u.id]&&(S.cards[u.id].due<=today()||aheadIds().includes(u.id)));
+const blockDue=()=>!!S.block&&(S.block.due<=today()||S.blockAhead===today());
+const linkDue=()=>!allLearned()&&learnedIds().length>=2&&S.link!==today();
 const unstarted=()=>{const rest=U.filter(u=>!S.cards[u.id]);return [...S.pick.map(id=>UI[id]).filter(u=>u&&!S.cards[u.id]),...rest.filter(u=>!S.pick.includes(u.id))]};
 function newList(){rollNew();const left=Math.max(0,S.per+extraToday()-S.newCount);return unstarted().slice(0,left)}
-// flexible ward: learn one more today, pull a review forward, or put the current card off until tomorrow
+// flexible ward: learn one more today, review the chapter early, or put the current card off until tomorrow
 function addNew(id){if(S.extra.d!==today())S.extra={d:today(),n:0};S.extra.n++;if(id){S.pick=[id,...S.pick.filter(x=>x!==id)]}save()}
-function reviewNow(id){if(S.ahead.d!==today())S.ahead={d:today(),ids:[]};if(!S.ahead.ids.includes(id))S.ahead.ids.push(id);save()}
-function nextUpcoming(){const due=new Set(dueList().map(u=>u.id));return U.filter(u=>S.cards[u.id]&&!due.has(u.id)).sort((a,b)=>S.cards[a.id].due<S.cards[b.id].due?-1:1)[0]}
-function postpone(u){if(S.cards[u.id]){S.cards[u.id].due=addDays(today(),1);S.ahead.ids=S.ahead.ids.filter(x=>x!==u.id)}else{rollNew();S.newCount++}save()}
-const stageTxt=c=>!c?'لسا ما بلّشته':c.st>=STEPS.length?'ثابت':`مرحلة ${ar(c.st)} من ${ar(STEPS.length)}`;
+function postpone(kind){if(kind==='block'){S.block.due=addDays(today(),1);S.blockAhead=''}else if(kind==='link'){S.link=today()}else{rollNew();S.newCount++}save()}
+const stageTxt=c=>c.st>=STEPS.length?'ثابت':`مرحلة ${ar(c.st)} من ${ar(STEPS.length)}`;
 
 /* ---------- rendering a unit ---------- */
 function words(text,cls){
@@ -330,7 +337,7 @@ function unitEl(u,opts={}){
   const d=document.createElement('div'); d.className='unit'; d.dataset.id=u.id;
   const h=document.createElement('div'); h.className='uhead';
   const l=document.createElement('span'); l.textContent=u.label; h.append(l);
-  if(opts.status){const c=S.cards[u.id]; const p=document.createElement('span'); p.className='pill'+(c?'':' new'); p.textContent=c?`${stageTxt(c)} · المراجعة ${when(c.due)}`:'لسا ما بلّشته'; h.append(p)}
+  if(opts.status){const c=S.cards[u.id]; const p=document.createElement('span'); p.className='pill'+(c?'':' new'); p.textContent=c?'محفوظ ✓':'لسا ما بلّشته'; h.append(p)}
   const t=document.createElement('div'); t.className='utext';
   u.segs.forEach(([k,txt],i)=>{t.append(words(txt,'seg-'+k)); if(i<u.segs.length-1)t.append(document.createTextNode(' '))});
   const ws=t.querySelectorAll('.w'); Object.keys(S.mistW).forEach(x=>{const [id,wi]=x.split(':'); if(id===u.id&&ws[+wi])ws[+wi].classList.add('wk')});
@@ -356,30 +363,32 @@ document.addEventListener('click',e=>{
 
 /* ---------- today: one card at a time ---------- */
 let voiceHost=null;
+// several units shown together, for the linking recitation and the block review
+function blockEl(ids){const w=document.createElement('div');w.className='block';ids.forEach(id=>w.append(unitEl(UI[id],{gloss:false})));return w}
 function renderToday(){
-  const due=dueList(), fresh=newList();
-  $('stNew').textContent=ar(fresh.length); $('stDue').textContent=ar(due.length);
-  $('stMem').textContent=ar(Object.keys(S.cards).length); $('stTotal').textContent=ar(U.length);
+  const fresh=newList(), bd=blockDue(), ld=linkDue();
+  $('stNew').textContent=ar(fresh.length); $('stDue').textContent=ar(bd||ld?1:0);
+  $('stMem').textContent=ar(learnedIds().length); $('stTotal').textContent=ar(U.length);
   const box=$('cardBox'); box.replaceChildren(); voiceHost=null;
-  // reviews first: they protect what is already memorised
-  const u=due[0]||fresh[0];
-  if(!u){
+  // the chapter review comes first, then today's new unit, then linking what is learned so far
+  const kind=bd?'block':fresh.length?'new':ld?'link':null;
+  if(!kind){
     const e=document.createElement('div'); e.className='empty';
-    const next=Object.values(S.cards).map(c=>c.due).sort()[0];
-    e.textContent=Object.keys(S.cards).length>=U.length&&!next?'ما شاء الله، حفظت الباب كامل 🤍':
-      `خلصت ورد اليوم 🤍`+(next?` · أقرب مراجعة ${when(next)}`:'')+(U.some(x=>!S.cards[x.id])?' · والجديد الجاي بكرة':'');
+    e.textContent=S.block?`ما شاء الله، الباب محفوظ 🤍 · مراجعته الجاية ${when(S.block.due)} (${stageTxt(S.block)})`:'خلصت ورد اليوم 🤍 · والجديد الجاي بكرة';
     box.append(e,wardActions(null)); updateVoicebar(); return;
   }
-  const isNew=!S.cards[u.id];
+  const u=kind==='new'?fresh[0]:null, ids=kind==='block'?U.map(x=>x.id):learnedIds();
   const tag=document.createElement('div'); tag.className='row';
-  const p=document.createElement('span'); p.className='pill'+(isNew?' new':''); p.textContent=isNew?'جديد · احفظه':`مراجعة · ${stageTxt(S.cards[u.id])}`; tag.append(p);
+  const p=document.createElement('span'); p.className='pill'+(kind==='new'?' new':'');
+  p.textContent=kind==='new'?'جديد · احفظه':kind==='block'?`مراجعة الباب كامل · ${stageTxt(S.block)}`:`ربط · سمّع كل اللي حفظته من الباب (${ar(ids.length)})`; tag.append(p);
   const modes=document.createElement('div'); modes.className='modes';
-  // a new card opens in full text, a review opens hidden; the user can switch after that
-  if(mode._seen!==u.id){mode.today=isNew?'full':'hide';mode._seen=u.id}
-  const el=unitEl(u,{gloss:isNew}); applyMode(el,mode.today); voiceHost=el;
+  // a new unit opens in full text, recitations open hidden; the user can switch after that
+  const key=kind+(u?u.id:'');
+  if(mode._seen!==key){mode.today=kind==='new'?'full':'hide';mode._seen=key}
+  const el=kind==='new'?unitEl(u,{gloss:true}):blockEl(ids); applyMode(el,mode.today); voiceHost=el;
   modeBar('today',modes,renderToday);
   box.append(tag,modes,el);
-  if(isNew){
+  if(kind==='new'){
     const n=S.reps[u.id]||0;
     const c=document.createElement('div'); c.className='counter';
     const t=document.createElement('button'); t.className='tap'+(n>=S.goal?' full':''); t.innerHTML=`${ar(n)}<small>من ${ar(S.goal)}</small>`;
@@ -392,35 +401,46 @@ function renderToday(){
   }else{
     const show=document.createElement('button'); show.className='btn'; show.textContent='اكشف النص';
     show.addEventListener('click',()=>{if(VS.on)vStop(true);el.classList.add('open');applyMode(el,'full')});
-    const g=document.createElement('div'); g.className='grades';
-    [['again','نسيت','بكرة','bad'],['hard','صعب',`بعد ${ar(Math.max(1,Math.ceil(STEPS[S.cards[u.id].st-1]/2)))} يوم`,'gold'],['good','تمام',`بعد ${ar(STEPS[Math.min(STEPS.length,S.cards[u.id].st+1)-1])} يوم`,'primary']].forEach(([k,l,s,c])=>{
-      const b=document.createElement('button'); b.className='btn '+c; b.innerHTML=`${l}<small>${s}</small>`;
-      b.addEventListener('click',()=>{if(VS.on)vStop(true);mode._seen='';grade(u.id,k);renderAll()}); g.append(b)});
-    const hint=document.createElement('p'); hint.className='note'; hint.style.margin='0'; hint.textContent='سمّعه من حفظك (بصوتك أو بقلبك)، اكشفه، وبعدين قيّم حالك بصدق.';
-    box.append(show,hint,g);
+    const hint=document.createElement('p'); hint.className='note'; hint.style.margin='0';
+    if(kind==='link'){
+      hint.textContent='سمّع كل اللي حفظته من أول الباب لآخر حديث حفظته، مرة وحدة متصلة، بصوتك أو بقلبك. هاد بيربط الأحاديث ببعض.';
+      const ok=document.createElement('button'); ok.className='btn primary'; ok.textContent='سمّعته ✓';
+      ok.addEventListener('click',()=>{if(VS.on)vStop(true);mode._seen='';doneLink();renderAll()});
+      box.append(show,hint,ok);
+    }else{
+      hint.textContent='سمّع الباب كامل من حفظك، الآية والأحاديث بالترتيب، اكشفه، وبعدين قيّم حالك بصدق.';
+      const g=document.createElement('div'); g.className='grades';
+      [['again','نسيت','بكرة','bad'],['hard','صعب',`بعد ${ar(Math.max(1,Math.ceil(STEPS[S.block.st-1]/2)))} يوم`,'gold'],['good','تمام',`بعد ${ar(STEPS[Math.min(STEPS.length,S.block.st+1)-1])} يوم`,'primary']].forEach(([k,l,sub,c])=>{
+        const b=document.createElement('button'); b.className='btn '+c; b.innerHTML=`${l}<small>${sub}</small>`;
+        b.addEventListener('click',()=>{if(VS.on)vStop(true);mode._seen='';gradeBlock(k);renderAll()}); g.append(b)});
+      box.append(show,hint,g);
+    }
   }
-  box.append(wardActions(u));
+  box.append(wardActions(kind));
   updateVoicebar();
 }
+function doneLink(){S.link=today();logToday('r');save()}
 const goToday=()=>document.querySelector('.tabs button[data-v="today"]').click();
 function actBtn(txt,fn){const b=document.createElement('button');b.className='btn';b.textContent=txt;b.addEventListener('click',()=>{if(VS.on)vStop(true);mode._seen='';fn();renderAll()});return b}
-function wardActions(u){
+function wardActions(kind){
   const box=document.createElement('div'); box.className='ward';
   const h=document.createElement('div'); h.className='eyebrow'; h.textContent='تحكّم بورد اليوم'; box.append(h);
   const row=document.createElement('div'); row.className='row';
   if(unstarted().length>newList().length)row.append(actBtn('➕ زيد محفوظ جديد',()=>addNew()));
-  const nx=nextUpcoming(); if(nx)row.append(actBtn('🔁 راجع اللي بعده ('+nx.label.replace(/ · .*/,'')+')',()=>reviewNow(nx.id)));
-  if(u)row.append(actBtn('⏭ أجّل هاد لبكرة',()=>postpone(u)));
+  if(S.block&&!blockDue())row.append(actBtn('🔁 راجع الباب كامل اليوم',()=>{S.blockAhead=today();save()}));
+  if(kind)row.append(actBtn('⏭ أجّل هاد لبكرة',()=>postpone(kind)));
   if(!row.childElementCount)return document.createTextNode('');
   box.append(row); return box;
 }
 function renderAll(){
   renderToday();
   const list=$('allList'); list.replaceChildren();
+  const st=document.createElement('div'); st.className='chapstat';
+  st.textContent=S.block?`الباب محفوظ كامل ✓ · مراجعة الباب: ${stageTxt(S.block)} · موعدها ${when(S.block.due)}`:`محفوظ ${ar(learnedIds().length)} من ${ar(U.length)} · لما تختم الباب بيصير مراجعة كاملة له ككتلة وحدة`;
+  list.append(st);
   U.forEach(u=>{const el=unitEl(u,{status:true});applyMode(el,mode.all);
     const c=S.cards[u.id], acts=document.createElement('div'); acts.className='row';
     if(!c)acts.append(actBtn('➕ احفظه اليوم',()=>{addNew(u.id);goToday()}));
-    else if(!dueList().some(x=>x.id===u.id))acts.append(actBtn('🔁 راجعه اليوم',()=>{reviewNow(u.id);goToday()}));
     if(acts.childElementCount)el.append(acts);
     const sh=sharhEl(u.id); if(sh)el.append(sh);
     list.append(el)});
@@ -561,7 +581,7 @@ $('importBtn').addEventListener('click',()=>{
 });
 
 const saved=load();
-if(saved){S={...S,...saved};renderAll();showScreen('main')}
+if(saved){S={...S,...saved};ensureBlock();renderAll();showScreen('main')}
 else{renderAll();$('welcomeGo').textContent='يلّا نبلّش';showScreen('welcome')}
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>

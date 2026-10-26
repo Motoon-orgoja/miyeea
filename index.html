@@ -86,6 +86,7 @@
     <button id="t-today" role="tab" aria-selected="true" data-v="today">ورد اليوم</button>
     <button id="t-fri" role="tab" aria-selected="false" data-v="fri">تسميع أسبوعي</button>
     <button id="t-all" role="tab" aria-selected="false" data-v="all">المنظومة</button>
+    <button id="t-expl" role="tab" aria-selected="false" data-v="expl" hidden>الشرح</button>
   </div>
 
   <section id="v-today" class="card">
@@ -149,6 +150,11 @@
       <div class="eyebrow">سجل الأيام</div>
       <div class="log" id="dayLog"><div class="empty">سيظهر هنا كل يوم تختمه.</div></div>
     </div>
+  </section>
+  <section id="v-expl" class="card" hidden>
+    <div class="eyebrow">شرح القصيدة بيتًا بيتًا</div>
+    <p class="note" id="explNote" style="margin:0"></p>
+    <div id="explList" class="expl"></div>
   </section>
   <div class="foot" id="foot">
     <button class="btn" id="resetBtn">⚙️ الإعدادات</button>

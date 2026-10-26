@@ -165,3 +165,12 @@ textarea,input{font:14px var(--ui);color:var(--ink);background:var(--bg);border:
 .vsharh{margin:2px 0 6px 0;margin-inline-start:40px;border-radius:10px}
 .vsharh summary{padding:6px 0;font-size:12.5px}
 .vsharh p{margin:0 0 10px;font-family:var(--verse);font-size:17px;line-height:1.9;text-align:justify}
+
+/* explanation tab */
+.expl{display:flex;flex-direction:column;gap:12px}
+.ecard{border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--bg)}
+.ehead{display:grid;grid-template-columns:30px 1fr;gap:8px;align-items:start;border-bottom:1px dashed var(--line);padding-bottom:8px;margin-bottom:4px}
+.ecard h4{margin:10px 0 2px;font-size:12.5px;color:var(--gold)}
+.ecard p,.ecard ul{margin:0;font-size:14.5px;line-height:1.9}
+.ecard ul{padding-inline-start:18px}
+.ecard li b{color:var(--accent)}
