@@ -83,11 +83,12 @@ input,textarea{font:14px var(--ui);color:var(--ink);background:var(--bg);border:
 .sharh summary::-webkit-details-marker{display:none}
 .sharh summary::before{content:"▾";display:inline-block;transition:transform .2s;transform:rotate(90deg)}
 .sharh[open] summary::before{transform:none}
-.sharh h4{margin:10px 0 2px;font-size:13px;color:var(--gold)}
-.sharh p,.sharh ul,.sharh ol{margin:0}
-.sharh ul,.sharh ol{padding-inline-start:20px}
-.sharh ol{list-style:arabic-indic}
-.sharh .full{font-family:var(--verse);font-size:18px}
+.sharh h4{margin:14px 0 0;font-size:13px;color:var(--gold);border-top:1px solid var(--line);padding-top:10px}
+.sharh h4:first-of-type{border-top:0;padding-top:0}
+.sharh .ref{font-size:11.5px;color:var(--muted);text-decoration:none;display:inline-block;margin-bottom:4px}
+.sharh p{margin:0 0 8px;font-family:var(--verse);font-size:18px;line-height:1.9;text-align:justify}
+.sharh p b{color:var(--accent);font-weight:700}
+.sharh p.src{font-family:var(--ui)}
 .sharh .src{font-size:12px;color:var(--muted);margin:10px 0 12px}
 .sharh a{color:var(--accent)}
 .modes{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:4px}
@@ -154,7 +155,7 @@ input,textarea{font:14px var(--ui);color:var(--ink);background:var(--bg);border:
       <li><b>مراجعة اليوم:</b> الأحاديث اللي إجا دورها بتطلع مخفية. سمّعها من حفظك (بصوتك أو بقلبك)، وبعدين اكشفها وقيّم حالك: «نسيت» أو «صعب» أو «تمام».</li>
       <li><b>طرق القراءة:</b> «كامل»، و«أول حرف»، و«مخفي» (اضغط أي كلمة لتشوفها)، و«تسميع بالصوت».</li>
       <li><b>التسميع بالصوت:</b> اضغط 🎤 واقرأ. الكلمة الصح بتظهر، والغلط بيطلع بالأحمر، وبتنعلّم الكلمات اللي بتغلط فيها بخط أحمر منقّط. على الآيفون افتح الصفحة بسفاري.</li>
-      <li><b>تبويب «الباب»:</b> فيه كل الأحاديث، ووين وصلت بكل واحد، وموعد مراجعته الجاي. وتحت كل حديث سهم «شرح الحديث»: المعنى، ومعاني الكلمات، والفوائد، ومصادرها.</li>
+      <li><b>تبويب «الباب»:</b> فيه كل الأحاديث، ووين وصلت بكل واحد، وموعد مراجعته الجاي. وتحت كل حديث سهم «شرح الحديث»: كلام العلماء منقول بلفظه من شروح رياض الصالحين وصحيح مسلم والبخاري وكتب التفسير، مع اسم الكتاب والجزء والصفحة.</li>
       <li><b>إنت بتتحكّم بالورد:</b> «زيد محفوظ جديد» إذا عندك وقت، و«راجع اللي بعده» لتراجع شي قبل موعده، و«أجّل لبكرة». ومن تبويب «الباب» بتقدر تختار حديث معيّن تحفظه أو تراجعه اليوم.</li>
     </ol>
     <p class="note" style="margin:0">تقدمك بينحفظ على جهازك بس. النص المشكول من موقع «رياض الصالحين مع فوائد وهدايات» (IslamHouse)، مع تصحيحات بسيطة. وإذا لقيت خطأ بالتشكيل، بلّغ عنه.</p>
@@ -226,6 +227,7 @@ input,textarea{font:14px var(--ui);color:var(--ink);background:var(--bg);border:
   </div>
 </div>
 
+<script src="riyad91-sharh.js"></script>
 <script>
 /* ---------- content: Riyad as-Salihin, chapter 91 ----------
    Each unit is one thing to memorise. Hadith 701 is long, so it is split into three parts.
@@ -247,48 +249,25 @@ const BOOK={key:'riyad91',title:'باب الوعظ والاقتصاد فيه',un
 const U=BOOK.units, UI=Object.fromEntries(U.map(u=>[u.id,u]));
 
 /* ---------- explanations ----------
-   Written as a short summary, gathered from: Tatriz Riyad as-Salihin (Faisal Al Mubarak), Sheikh Khalid al-Sabt's lessons on the chapter,
-   and "Riyad as-Salihin with benefits" (IslamHouse). Shown under each hadith in the chapter tab; 701's three parts share one entry on the last part */
-const SRC={tatriz:['تطريز رياض الصالحين','https://kalemtayeb.com/ahadeeth/sub/403'],islamenc:['رياض الصالحين مع فوائد وهدايات','https://riyadh.islamenc.com/ar/page/95']};
-const sabt=n=>['شرح الشيخ خالد السبت','https://khaledalsabt.com/explanations/'+n];
-const SHARH={
-  a1:{title:'شرح الآية ومقدمة الباب',
-    mana:'أمر الله نبيّه ﷺ، وأمّته من بعده، أن يدعو الناس إلى سبيله، أي إلى دينه وشرعه، بالحكمة وبالموعظة الحسنة. والوعظ هو الأمر والنهي مقرونًا بالترغيب في ثواب الله والترهيب من عقابه. والاقتصاد فيه هو التوسط: لا يُكثر منه حتى يملّ الناس، ولا يقلّل حتى يحتاجوا إليه.',
-    words:[['الحكمة','الفقه في الدين والعقل الذي يضع الكلام في موضعه، ويناسب كل مخاطَب ووقته'],['الموعظة الحسنة','التذكير بالترغيب والترهيب بلين ورفق، بلا تعنيف ولا تنفير']],
-    fawaid:['الدعوة تكون إلى سبيل الله، لا إلى النفس ولا إلى جماعة أو رأي.','تتمة الآية: ﴿وَجَادِلْهُم بِالَّتِي هِيَ أَحْسَنُ﴾، فالجدال لا يكون إلا بالتي هي أحسن.','الموعظة الحسنة تقتضي الاقتصاد فيها، وهذا وجه دخول الآية في الباب.'],
-    src:[SRC.tatriz,sabt(1945),SRC.islamenc]},
-  '699':{title:'شرح الحديث ٦٩٩',
-    mana:'كان عبد الله بن مسعود رضي الله عنه يعظ أصحابه مرة في الأسبوع، يوم الخميس. فلما تمنّى رجل لو كان ذلك كل يوم، اعتذر بأنه يكره أن يوقعهم في الملل، وأنه يقتدي في ذلك بالنبي ﷺ، الذي كان يتعهّدهم بالموعظة حينًا بعد حين.',
-    words:[['أُمِلَّكُم','أوقعكم في الملل'],['أتخوّلكم / يتخوّلنا','أتعهّدكم وأراعي أحوالكم، فأعظكم وقتًا بعد وقت'],['السآمة','الملل']],
-    fawaid:['مراعاة الأوقات في التذكير؛ لأن النفوس تملّ ما يُداوَم عليه ولو كان محبوبًا لها.','الواعظ الحكيم يقدّر الموعظة بما ينفع الناس، لا بما يطلبونه في ساعة إقبالهم.','جواز تخصيص يوم معلوم للموعظة، ليعرفه الناس فيحضروا.','هذا الاقتصاد في الوعظ خاصة، أما تعليم العلم فيحتاج إلى مواصلة وكثرة.','حرص السلف على مجالس الذكر وشوقهم إليها.'],
-    src:[SRC.tatriz,sabt(1946),SRC.islamenc]},
-  '700':{title:'شرح الحديث ٧٠٠',
-    mana:'من علامات فقه الرجل وفهمه للدين أن يطيل صلاة الجمعة ويقصّر خطبتها. وفي صحيح مسلم أن عمارًا رضي الله عنه خطب فأوجز، فقالوا له: لو كنت تنفّست (أي أطلت)، فذكر هذا الحديث.',
-    words:[['مَئِنَّةٌ','علامة دالّة، بفتح الميم وكسر الهمزة وتشديد النون'],['فقهه','فهمه للدين ومقاصده']],
-    fawaid:['الفقيه يعرف جوامع الكلم، فيعبّر بالكلام القليل عن المعاني الكثيرة. وكثرة الكلام كثيرًا ما تنشأ من ضعف البيان والتكرار.','الصلاة هي المقصود الأعظم، والخطبة تذكير بين يديها، فالعناية بالصلاة أولى.','مراعاة أحوال السامعين: الكبير والمريض ومن بكّر وطال انتظاره.','يحسن بالخطيب أن يركّز على موضوع واحد نافع بكلام مباشر.','قال العلماء: المراد أن تكون الصلاة طويلة بالنسبة إلى الخطبة، لا تطويلًا يشقّ على المصلّين.'],
-    src:[SRC.tatriz,sabt(1947),SRC.islamenc]},
-  '701c':{title:'شرح الحديث ٧٠١ (المقاطع الثلاثة)',
-    mana:'معاوية بن الحكم السلمي رضي الله عنه كان حديث عهد بالإسلام. شمّت عاطسًا وهو في الصلاة جهلًا بالحكم، فأنكر عليه الصحابة بالنظر والإشارة حتى سكت. فلما انتهت الصلاة علّمه النبي ﷺ برفق، بلا زجر ولا ضرب ولا شتم: أن الصلاة لا يصلح فيها كلام الناس. ثم سأله معاوية عن أمور كانت في الجاهلية: إتيان الكهان، والتطيّر.',
-    words:[['وَاثُكْلَ أُمِّيَاهْ','كلمة تفجّع وتعجّب، والثُّكل: المصيبة الفجيعة وفقد الولد'],['يُصَمِّتُونَنِي','يُسكتونني'],['مَا كَهَرَنِي','ما نهرني ولا زجرني ولا استقبلني بوجه عابس'],['الكُهّان','الذين يدّعون معرفة الغيب'],['يَتَطَيَّرُونَ','يتشاءمون'],['فَلَا يَصُدَّنَّهُمْ','فلا يمنعهم ذلك عن حاجتهم وما عزموا عليه']],
-    fawaid:['رفق النبي ﷺ في التعليم، وأنه أحسن معلّم. وهذا وجه دخول الحديث في باب الوعظ: التعليم والموعظة بالرفق والإيجاز.','الصلاة محلّ التسبيح والتكبير وقراءة القرآن والذكر، ولا يصلح فيها كلام الناس.','من تكلّم في صلاته جاهلًا بالحكم لا تبطل صلاته؛ فالنبي ﷺ لم يأمره بالإعادة.','تحريم إتيان الكهان والعرّافين.','التطيّر يجده الإنسان في نفسه فلا يؤاخَذ على الخاطر إذا دفعه، والممنوع أن يمضي أو يرجع عن حاجته بسببه.','قول الراوي «أو كما قال» من تحرّي الدقة في نقل لفظ النبي ﷺ.','من جهل شيئًا فليسأل عنه قبل أن يفعله.'],
-    src:[SRC.tatriz,sabt(1948),sabt(1949),SRC.islamenc]},
-  '702':{title:'شرح الحديث ٧٠٢',
-    mana:'ذكر الإمام النووي هنا أول الحديث فقط، لأنه أورده كاملًا في «باب الأمر بالمحافظة على السنة» (برقم ١٥٧). والمقصود به هنا أن موعظة النبي ﷺ كانت بليغة مؤثرة مع قصرها.',
-    full:'وَعَظَنَا رَسُولُ اللهِ صلى الله عليه وسلم مَوْعِظَةً بَلِيغَةً وَجِلَتْ مِنْهَا الْقُلُوبُ، وَذَرَفَتْ مِنْهَا الْعُيُونُ، فَقُلْنَا: يَا رَسُولَ اللهِ، كَأَنَّهَا مَوْعِظَةُ مُوَدِّعٍ فَأَوْصِنَا. قَالَ: «أُوصِيكُمْ بِتَقْوَى اللهِ، وَالسَّمْعِ وَالطَّاعَةِ وَإِنْ تَأَمَّرَ عَلَيْكُمْ عَبْدٌ، وَإِنَّهُ مَنْ يَعِشْ مِنْكُمْ فَسَيَرَى اخْتِلَافًا كَثِيرًا، فَعَلَيْكُمْ بِسُنَّتِي وَسُنَّةِ الْخُلَفَاءِ الرَّاشِدِينَ الْمَهْدِيِّينَ، عَضُّوا عَلَيْهَا بِالنَّوَاجِذِ، وَإِيَّاكُمْ وَمُحْدَثَاتِ الْأُمُورِ؛ فَإِنَّ كُلَّ بِدْعَةٍ ضَلَالَةٌ». رَوَاهُ أَبُو دَاوُدَ، وَالتِّرْمِذِيُّ وَقَالَ: حَدِيثٌ حَسَنٌ صَحِيحٌ.',
-    words:[['وَجِلَتْ','خافت'],['ذَرَفَتْ','سال دمعها']],
-    fawaid:['الأثر الأكمل للموعظة أن يجتمع وجل القلب مع دمع العين.','يُستحب أن تكون الموعظة بالكلام الجزل البليغ الجامع الذي يحرّك القلوب.','كان كلام النبي ﷺ مقتصدًا بيّنًا، لو عدّه العادّ لأحصاه.','يحسن بالواعظ أن يعظ نفسه أولًا.'],
-    src:[SRC.tatriz,sabt(1950),['رياض الصالحين مع فوائد وهدايات (الحديث كاملًا)','https://riyadh.islamenc.com/ar/page/20']]}
-};
+   Verbatim passages from classical commentaries (Dalil al-Falihin, Sharh Muslim, Fath al-Bari, tafsir), loaded from riyad91-sharh.js
+   which tools/assemble-sharh.js builds. Shown under each hadith in the chapter tab; 701's three parts share one entry on the last part */
+const SHARH=window.SHARH||{};
+// the commentaries put the text being explained in (…); show it bold so it stands out from the explanation
+function richText(p,txt){
+  txt.split(/(\([^()]{1,400}\))/).forEach(part=>{
+    if(/^\(.*\)$/.test(part)){const b=document.createElement('b');b.textContent=part;p.append(b)}else p.append(part)});
+}
 function sharhEl(id){
   const s=SHARH[id]; if(!s)return null;
   const d=document.createElement('details'); d.className='sharh';
   const sm=document.createElement('summary'); sm.textContent=s.title; d.append(sm);
-  const add=(tag,txt,cls)=>{const e=document.createElement(tag);if(cls)e.className=cls;e.textContent=txt;d.append(e);return e};
-  add('h4','المعنى الإجمالي'); add('p',s.mana);
-  if(s.full){add('h4','الحديث كاملًا'); add('p',s.full,'full')}
-  add('h4','معاني الكلمات'); const ul=document.createElement('ul'); s.words.forEach(([w,m])=>{const li=document.createElement('li');const b=document.createElement('b');b.textContent=w+': ';li.append(b,m);ul.append(li)}); d.append(ul);
-  add('h4','الفوائد'); const ol=document.createElement('ol'); s.fawaid.forEach(f=>{const li=document.createElement('li');li.textContent=f;ol.append(li)}); d.append(ol);
-  const src=add('p','المصادر: ','src'); s.src.forEach(([t,u],i)=>{const a=document.createElement('a');a.href=u;a.target='_blank';a.rel='noopener';a.textContent=t;src.append(a);if(i<s.src.length-1)src.append(' · ')});
+  s.secs.forEach(sec=>{
+    const h=document.createElement('h4'); h.textContent=sec.src; d.append(h);
+    const r=document.createElement('a'); r.className='ref'; r.href=sec.url; r.target='_blank'; r.rel='noopener'; r.textContent=sec.ref+' ↗'; d.append(r);
+    sec.text.split(/\n\n+/).forEach(par=>{const p=document.createElement('p');richText(p,par);d.append(p)});
+  });
+  if(s.note){const n=document.createElement('p');n.className='src';n.textContent=s.note;d.append(n)}
+  const f=document.createElement('p'); f.className='src'; f.textContent='النصوص منقولة بلفظها من المكتبة الشاملة وموقع quran.com، مع تصحيح أخطاء طباعية ظاهرة، وإعادة «ﷺ» حيث سقطت.'; d.append(f);
   return d;
 }
 
