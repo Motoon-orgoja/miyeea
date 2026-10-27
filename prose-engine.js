@@ -143,6 +143,7 @@ function renderToday(){
     e.textContent=b?`ما شاء الله، «${CHI[CUR].title}» محفوظ 🤍 · مراجعته الجاية ${when(b.due)} (${stageTxt(b)})`:'خلصت ورد اليوم 🤍 · والجديد الجاي بكرة';
     box.append(e);
     if(nx){const go=document.createElement('button');go.className='btn primary';go.textContent='ابدأ الباب الجاي: «'+nx.title+'»';go.addEventListener('click',()=>{setCur(nx.id);save();renderAll()});box.append(go)}
+    if(MULTI&&allLearned()){const pick=document.createElement('button');pick.className='btn';pick.textContent='اختر باب ثاني';pick.addEventListener('click',()=>{renderChapters();$('chapCard').hidden=false;$('chapCard').scrollIntoView({block:'start',behavior:'smooth'})});box.append(pick)}
     box.append(wardActions(null)); updateVoicebar(); return;
   }
   const u=kind==='new'?fresh[0]:null, ids=kind==='block'?unitsOf(bd.id).map(x=>x.id):learnedIds();
@@ -230,15 +231,26 @@ function renderChapters(){
   if(!MULTI)return;
   if($('setup').hidden&&$('welcome').hidden)$('chapBar').hidden=false;
   const c=CHI[CUR]; $('cTitle').textContent=c.title; $('cBy').textContent=(c.group?c.group+' · ':'')+ar(c.units.length)+' '+(BOOK.unitWord==='فقرة'?'فقرة':'وحدة')+' · '+chapterStatus(c);
-  const list=$('chapList'); list.replaceChildren(); let group=null;
+  // chapters grouped under their book («كتاب»), each group folds; the current one starts open
+  const list=$('chapList'); list.replaceChildren(); let box=list, gname=null;
   CH.forEach(ch=>{
-    if(ch.group&&ch.group!==group){group=ch.group;const g=document.createElement('div');g.className='sec';g.textContent=group;list.append(g)}
+    if(ch.group&&ch.group!==gname){gname=ch.group; const d=document.createElement('details'); d.className='cgroup';
+      const mine=CH.filter(x=>x.group===gname), done=mine.filter(x=>allLearned(x.id)).length;
+      d.open=mine.some(x=>x.id===CUR); const sm=document.createElement('summary'); sm.textContent=gname+' ('+ar(mine.length)+(done?' · ختمت '+ar(done):'')+')';
+      d.append(sm); list.append(d); box=d}
     const row=document.createElement('div'); row.className='prow'+(ch.id===CUR?' cur':'');
     const info=document.createElement('div'); info.className='pmeta'; const t=document.createElement('b'); t.textContent=ch.title; const by=document.createElement('small'); by.textContent=ar(ch.units.length)+' · '+chapterStatus(ch); info.append(t,by);
     const acts=document.createElement('div'); acts.className='pacts';
     if(ch.id!==CUR){const go=document.createElement('button');go.className='btn';go.textContent='احفظه هلأ';go.addEventListener('click',()=>{setCur(ch.id);save();$('chapCard').hidden=true;renderAll();scrollTo(0,0)});acts.append(go)}
     else{const x=document.createElement('span');x.className='pill new';x.textContent='الحالي';acts.append(x)}
-    row.append(info,acts); list.append(row)});
+    row.append(info,acts); box.append(row)});
+}
+// the setup screen's chapter picker, grouped like the list
+function fillChapPick(){
+  if(!MULTI)return; $('chapPick').hidden=false; const sel=$('chapIn'); sel.replaceChildren(); let og=null, gname=null;
+  CH.forEach(ch=>{if(ch.group!==gname){gname=ch.group;og=document.createElement('optgroup');og.label=gname||'';sel.append(og)}
+    const o=document.createElement('option');o.value=ch.id;o.textContent=ch.title+(allLearned(ch.id)?' ✓':'');og.append(o)});
+  sel.value=CUR;
 }
 if(MULTI){
   $('chapBtn').addEventListener('click',()=>{$('chapCard').hidden=!$('chapCard').hidden;renderChapters()});
@@ -353,14 +365,15 @@ function showScreen(sc,canCancel){
   $('backup').hidden=true; $('cancelSetup').hidden=!canCancel;
   if(VS.on)vStop(true); updateVoicebar(); if(!main)scrollTo(0,0);
 }
-$('setupBtn').addEventListener('click',()=>{$('perIn').value=S.per;$('goalIn').value=S.goal;showScreen('setup',true)});
+$('setupBtn').addEventListener('click',()=>{$('perIn').value=S.per;$('goalIn').value=S.goal;fillChapPick();showScreen('setup',true)});
 $('cancelSetup').addEventListener('click',()=>showScreen('main'));
 $('saveSetup').addEventListener('click',()=>{
+  if(MULTI&&$('chapIn').value&&$('chapIn').value!==CUR)setCur($('chapIn').value);
   S.per=Math.max(1,Math.min(10,numIn($('perIn').value)||1)); S.goal=Math.max(1,Math.min(100,numIn($('goalIn').value)||10));
   save(); renderAll(); showScreen('main');
 });
 $('helpBtn').addEventListener('click',()=>{$('welcomeGo').textContent='رجوع';showScreen('welcome')});
-$('welcomeGo').addEventListener('click',()=>{if(load())showScreen('main');else{$('perIn').value=S.per;$('goalIn').value=S.goal;showScreen('setup')}});
+$('welcomeGo').addEventListener('click',()=>{if(load())showScreen('main');else{$('perIn').value=S.per;$('goalIn').value=S.goal;fillChapPick();showScreen('setup')}});
 const toCode=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
 const fromCode=c=>JSON.parse(decodeURIComponent(escape(atob(c.replace(/\s+/g,'')))));
 $('exportBtn').addEventListener('click',()=>{$('exportOut').value=toCode({app:'mutoon',book:BOOK.key,v:2,S});$('backup').hidden=false;$('backup').scrollIntoView({block:'center',behavior:'smooth'})});

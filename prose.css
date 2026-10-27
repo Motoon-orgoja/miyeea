@@ -141,3 +141,10 @@ input,textarea{font:14px var(--ui);color:var(--ink);background:var(--bg);border:
 .pacts{flex:none}
 .pacts .btn{padding:6px 12px;font-size:13px}
 .plist .sec{font:700 13px var(--ui);color:var(--gold);padding:12px 0 2px}
+
+select{font:15px var(--ui);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;width:100%}
+.plan1{display:flex;flex-direction:column;gap:4px}
+.cgroup{border-top:1px solid var(--line)}
+.cgroup>summary{cursor:pointer;font:700 14px var(--ui);color:var(--gold);padding:11px 0}
+.cgroup .prow{padding-inline-start:10px}
+.cgroup .prow:first-of-type{border-top:0}

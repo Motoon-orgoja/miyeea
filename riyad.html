@@ -59,7 +59,8 @@
       <label><span class="eyebrow">محفوظ جديد كل يوم</span><input id="perIn" type="text" inputmode="numeric" value="1"></label>
       <label><span class="eyebrow">مرات تكرار الجديد</span><input id="goalIn" type="text" inputmode="numeric" value="10"></label>
     </div>
-    <p class="note" style="margin:0">الحديث الطويل مقسوم لمقاطع، وكل مقطع بينحسب محفوظ لحاله.</p>
+    <label class="plan1" id="chapPick" hidden><span class="eyebrow">أي باب بدك تحفظ؟</span><select id="chapIn"></select></label>
+    <p class="note" id="setupUnitNote" style="margin:0">الحديث الطويل مقسوم لمقاطع، وكل مقطع بينحسب محفوظ لحاله.</p>
     <details class="note"><summary style="cursor:pointer;color:var(--accent);font-weight:600">عندك نسخة احتياطية؟</summary>
       <textarea id="importIn" rows="3" placeholder="الصق الكود هون" style="margin-top:6px"></textarea>
       <button class="btn" id="importBtn" style="margin-top:6px">استرجع التقدم</button>
