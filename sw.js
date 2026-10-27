@@ -1,6 +1,6 @@
 // Bump VERSION whenever any cached file changes so phones pick up the new copy
-const VERSION = 'miyeea-v7';
-const FILES = ['./', 'index.html', 'munajat.html', 'app.css', 'engine.js', 'data/miyeea.js', 'data/munajat.js', 'data/munajat-expl.js', 'riyad.html', 'riyad91-sharh.js', 'fonts.css', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
+const VERSION = 'miyeea-v8';
+const FILES = ['./', 'index.html', 'munajat.html', 'shatibiyya.html', 'qudouri.html', 'prose.css', 'prose-engine.js', 'data/riyad.js', 'data/shatibiyya.js', 'data/qudouri.js', 'app.css', 'engine.js', 'data/miyeea.js', 'data/munajat.js', 'data/munajat-expl.js', 'riyad.html', 'riyad91-sharh.js', 'fonts.css', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
