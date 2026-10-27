@@ -549,7 +549,7 @@ function renderPoemInfo(){
   const add=(tag,txt,cls)=>{const e=document.createElement(tag);if(cls)e.className=cls;e.textContent=txt;box.append(e);return e};
   const link=(p,txt,url)=>{const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';a.textContent=txt+' ↗';p.append(a)};
   add('p','الناظم: '+P.nazim+(P.death?' ('+P.death+')':'')+(P.meter?' · البحر: '+P.meter:''));
-  link(add('p','مصدر النص: '),P.source,P.srcUrl);
+  if(P.srcUrl)link(add('p','مصدر النص: '),P.source,P.srcUrl); else add('p','مصدر النص: '+P.source);
   if(P.note)add('p',P.note,'note');
   if(P.gharib&&P.gharib.length){add('h4','غريب الكلمات');
     const ul=document.createElement('ul');P.gharib.forEach(g=>{const li=document.createElement('li');const b=document.createElement('b');b.textContent=g.w+': ';li.append(b,g.t);ul.append(li)});box.append(ul);
