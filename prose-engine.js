@@ -68,7 +68,7 @@ function setCur(id){if(!CHI[id])id=CH[0].id;CUR=id;U=unitsOf(id);S.cur=id}
 // the next chapter after the current one that is not finished yet
 const nextChapter=()=>{const i=CH.findIndex(c=>c.id===CUR);return [...CH.slice(i+1),...CH.slice(0,i)].find(c=>!allLearned(c.id))};
 function gradeBlock(ch,g){
-  const c=S.blocks[ch]; if(!c)return; delete S.blockAhead[ch];
+  const c=S.blocks[ch]; if(!c)return; delete S.blockAhead[ch]; delete c.old;
   if(g==='again'){c.st=1;c.lap=(c.lap||0)+1;c.due=addDays(today(),1)}
   else if(g==='hard'){c.due=addDays(today(),Math.max(1,Math.ceil(STEPS[c.st-1]/2)))}
   else{c.st=Math.min(STEPS.length,c.st+1);c.due=addDays(today(),STEPS[c.st-1])}
@@ -84,6 +84,55 @@ function newList(){rollNew();const left=Math.max(0,S.per+extraToday()-S.newCount
 function addNew(id){if(S.extra.d!==today())S.extra={d:today(),n:0};S.extra.n++;if(id){S.pick=[id,...S.pick.filter(x=>x!==id)]}save()}
 function postpone(kind,ch){if(kind==='block'){S.blocks[ch].due=addDays(today(),1);delete S.blockAhead[ch]}else if(kind==='link'){S.link[CUR]=today()}else{rollNew();S.newCount++}save()}
 const stageTxt=c=>c.st>=STEPS.length?'ثابت':`مرحلة ${ar(c.st)} من ${ar(STEPS.length)}`;
+// a chapter that turned out forgotten goes back to learning, unit by unit
+function relearn(ch){unitsOf(ch).forEach(u=>{delete S.cards[u.id];delete S.reps[u.id]});delete S.blocks[ch];delete S.blockAhead[ch];delete S.link[ch];setCur(ch);save()}
+
+/* ---------- old memorisation: chapters known before using the site ----------
+   Fully known chapters become blocks right away. Their first reviews are spread over the coming days, at most `cap` reviews a day
+   counting the ones already due, so a long list never lands on one day. Strength sets the starting stage. Partly known chapters
+   get their first units marked as learned and continue from there. */
+const OLD_ST={strong:4,mid:3,weak:1};
+function spread(dues,n,cap){
+  const cnt={}; dues.forEach(d=>{const k=d<today()?today():d;cnt[k]=(cnt[k]||0)+1});
+  const out=[]; let d=today();
+  for(let i=0;i<n;i++){while((cnt[d]||0)>=cap)d=addDays(d,1);out.push(d);cnt[d]=(cnt[d]||0)+1}
+  return out;
+}
+function oldRow(ch){
+  const row=document.createElement('div'); row.className='prow';
+  const info=document.createElement('div'); info.className='pmeta'; const t=document.createElement('b'); t.textContent=ch.title;
+  const by=document.createElement('small'); by.textContent=ar(ch.units.length)+' · '+chapterStatus(ch); info.append(t,by); row.append(info);
+  if(allLearned(ch.id)){const x=document.createElement('span');x.className='pill new';x.textContent='محفوظ ✓';row.append(x);return row}
+  const sel=document.createElement('select'); sel.className='oldsel'; sel.dataset.ch=ch.id; const n=learnedIds(ch.id).length;
+  const opt=(v,l)=>{const o=document.createElement('option');o.value=v;o.textContent=l;sel.append(o)};
+  opt('',n?'زي ما هو':'مش حافظه'); opt('all','حافظه كامل');
+  ch.units.slice(n,-1).forEach((u,k)=>opt(String(n+k+1),'لحد: '+u.label));
+  row.append(sel); return row;
+}
+function openOld(first){
+  const list=$('oldList'); list.replaceChildren(); let box=list, gname=null;
+  CH.forEach(ch=>{
+    if(ch.group&&ch.group!==gname){gname=ch.group;const d=document.createElement('details');d.className='cgroup';const sm=document.createElement('summary');sm.textContent=gname;d.append(sm);list.append(d);box=d}
+    box.append(oldRow(ch))});
+  $('oldSkip').textContent=first?'ما عندي محفوظ قديم، ببلّش من جديد':'رجوع'; $('oldMsg').textContent='';
+  showScreen('old');
+}
+function applyOld(){
+  const st=OLD_ST[$('oldStr').value]||3, cap=Math.max(1,Math.min(20,numIn($('oldCap').value)||2));
+  const full=[], part=[];
+  document.querySelectorAll('#oldList select').forEach(s=>{const v=s.value,ch=s.dataset.ch; if(v==='all')full.push(ch); else if(v)part.push([ch,+v])});
+  if(!full.length&&!part.length){$('oldMsg').textContent='ما علّمت ولا باب. اختر «حافظه كامل» أو «لحد…» جنب الأبواب اللي حافظها.';return}
+  const dues=spread(Object.values(S.blocks).map(b=>b.due),full.length,cap);
+  full.forEach((ch,i)=>{unitsOf(ch).forEach(u=>{if(!S.cards[u.id])S.cards[u.id]={d:today(),old:1}}); S.blocks[ch]={st,due:dues[i],lap:0,old:1}});
+  part.forEach(([ch,k])=>unitsOf(ch).slice(0,k).forEach(u=>{if(!S.cards[u.id])S.cards[u.id]={d:today(),old:1}}));
+  // carry on learning in a partly known chapter, unless the current one is already under way
+  if(part.length&&(allLearned()||!learnedIds().length||full.includes(CUR)))setCur(part[0][0]);
+  else if(allLearned()){const nx=nextChapter();if(nx)setCur(nx.id)}
+  save(); renderAll(); showScreen('main');
+  const last=dues[dues.length-1];
+  $('cardBox').prepend(Object.assign(document.createElement('div'),{className:'chapstat',textContent:
+    (full.length?`انضاف ${full.length===1?"باب واحد":full.length===2?"بابين":ar(full.length)+(full.length<=10?" أبواب":" بابًا")} للمراجعة، أولها ${when(dues[0])}`+(last!==dues[0]?` وآخرها ${when(last)}.`:'.'):'')+(part.length?` وعلّمت المحفوظ من ${part.length===1?"باب":ar(part.length)+" أبواب"}، وبتكمل حفظه من وين وقفت.`:'')}));
+}
 const W=BOOK.unitWord||'حديث';
 
 /* ---------- rendering a unit ---------- */
@@ -149,7 +198,7 @@ function renderToday(){
   const u=kind==='new'?fresh[0]:null, ids=kind==='block'?unitsOf(bd.id).map(x=>x.id):learnedIds();
   const tag=document.createElement('div'); tag.className='row';
   const p=document.createElement('span'); p.className='pill'+(kind==='new'?' new':'');
-  p.textContent=kind==='new'?'جديد · احفظه':kind==='block'?`مراجعة «${bd.title}» كاملًا · ${stageTxt(S.blocks[bd.id])}`:`ربط · سمّع كل اللي حفظته من الباب (${ar(ids.length)})`; tag.append(p);
+  p.textContent=kind==='new'?'جديد · احفظه':kind==='block'?`مراجعة «${bd.title}» كاملًا · ${S.blocks[bd.id].old?'محفوظ قديم، أول مراجعة':stageTxt(S.blocks[bd.id])}`:`ربط · سمّع كل اللي حفظته من الباب (${ar(ids.length)})`; tag.append(p);
   const modes=document.createElement('div'); modes.className='modes';
   // a new unit opens in full text, recitations open hidden; the user can switch after that
   const key=kind+(u?u.id:bd?bd.id:CUR);
@@ -199,6 +248,7 @@ function wardActions(kind,ch){
   const due=dueBlocks().map(c=>c.id);
   if(S.blocks[CUR]&&!due.includes(CUR))row.append(actBtn('🔁 راجع الباب كامل اليوم',()=>{S.blockAhead[CUR]=today();save()}));
   if(kind)row.append(actBtn('⏭ أجّل هاد لبكرة',()=>postpone(kind,ch)));
+  if(kind==='block')row.append(actBtn('↩︎ نسيته، رجّعه للحفظ',()=>{if(confirm('بدك ترجع تحفظ «'+CHI[ch].title+'» فقرة فقرة من جديد؟'))relearn(ch)}));
   if(!row.childElementCount)return document.createTextNode('');
   box.append(row); return box;
 }
@@ -229,7 +279,7 @@ function renderAll(){
 function chapterStatus(c){const n=learnedIds(c.id).length,b=S.blocks[c.id];return b?'محفوظ ✓ · مراجعته '+when(b.due):n?`حافظ ${ar(n)} من ${ar(c.units.length)}`:'لسا ما بلّشته'}
 function renderChapters(){
   if(!MULTI)return;
-  if($('setup').hidden&&$('welcome').hidden)$('chapBar').hidden=false;
+  if($('setup').hidden&&$('welcome').hidden&&$('oldMem').hidden)$('chapBar').hidden=false;
   const c=CHI[CUR]; $('cTitle').textContent=c.title; $('cBy').textContent=(c.group?c.group+' · ':'')+ar(c.units.length)+' '+(BOOK.unitWord==='فقرة'?'فقرة':'وحدة')+' · '+chapterStatus(c);
   // chapters grouped under their book («كتاب»), each group folds; the current one starts open
   const list=$('chapList'); list.replaceChildren(); let box=list, gname=null;
@@ -302,7 +352,7 @@ const vMsg=s=>$('vMsg').textContent=s||'';
 function vReset(){VS.finals=[];VS.prev=[];VS.interim='';VS.hints.clear();vMsg('');lastRes={st:[],p:0};vUpdate()}
 function updateVoicebar(){
   const on=(active==='today'&&mode.today==='voice'&&voiceHost)||(active==='all'&&mode.all==='voice');
-  $('voicebar').hidden=!on||!$('setup').hidden||!$('welcome').hidden; if(on){vReset()}
+  $('voicebar').hidden=!on||!$('setup').hidden||!$('welcome').hidden||!$('oldMem').hidden; if(on){vReset()}
 }
 function vStart(){
   if(!SR){vMsg(IOS?'افتح الرابط بسفاري: كروم على الآيفون ما بيدعم التعرّف على الصوت.':'المتصفح هذا ما بيدعم التعرّف على الصوت. جرّب Chrome أو Safari.');return}
@@ -351,6 +401,26 @@ $('vReset').addEventListener('click',()=>{if(VS.on)vStop(true);vReset()});
 $('vHint').addEventListener('click',()=>{const ws=vWords();if(lastRes.p<ws.length){VS.hints.add(lastRes.p);vUpdate()}});
 
 /* ---------- screens, tabs, settings, backup ---------- */
+// the old-memorisation screen and its button are the same on every prose page, so they are built here
+$('setup').insertAdjacentHTML('afterend',`<section id="oldMem" class="card" hidden>
+    <div class="eyebrow">محفوظك القديم</div>
+    <div class="range">شو حافظ من قبل؟</div>
+    <p class="note" style="margin:0">علّم الأبواب اللي حافظها: «حافظه كامل» بينضاف للمراجعة على طول، موزّع على الأيام الجاية بحيث ما يجيك كله مرة وحدة. و«لحد…» إذا حافظ جزء من الباب، وبتكمل حفظه من وين وقفت.</p>
+    <div id="oldList" class="plist"></div>
+    <div class="plan">
+      <label><span class="eyebrow">كيف حفظك فيه؟</span><select id="oldStr"><option value="strong">قوي</option><option value="mid" selected>متوسط</option><option value="weak">ضعيف</option></select></label>
+      <label><span class="eyebrow">مراجعات الأبواب باليوم (أقصى حد)</span><input id="oldCap" type="text" inputmode="numeric" value="2"></label>
+    </div>
+    <p class="note" style="margin:0">القوي بتيجي مراجعته الثانية بعد أسبوعين، والمتوسط بعد أسبوع، والضعيف بعد يومين. وأول مراجعة إلك بتكون اختبار: إذا قيّمت «نسيت» بيرجع قريب، وفي زر يرجّع الباب للحفظ من جديد.</p>
+    <p class="note" id="oldMsg" style="margin:0;color:var(--bad)"></p>
+    <button class="btn primary" id="oldApply">أضفه للمراجعة</button>
+    <button class="btn" id="oldSkip">رجوع</button>
+  </section>`);
+$('setupBtn').insertAdjacentHTML('afterend','<button class="btn" id="oldBtn">📚 محفوظي القديم</button>');
+$('oldBtn').addEventListener('click',()=>openOld(false));
+document.querySelector('#welcome ol').insertAdjacentHTML('beforeend','<li><b>محفوظك القديم:</b> إذا حافظ أبواب من قبل، من زر «📚 محفوظي القديم» تحت بتعلّمها، وبتنضاف لمراجعة الأبواب على طول.</li>');
+$('oldApply').addEventListener('click',applyOld);
+$('oldSkip').addEventListener('click',()=>showScreen('main'));
 let active='today';
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',String(x===b)));
@@ -359,7 +429,7 @@ document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',
 }));
 function showScreen(sc,canCancel){
   const main=sc==='main';
-  $('setup').hidden=sc!=='setup'; $('welcome').hidden=sc!=='welcome';
+  $('setup').hidden=sc!=='setup'; $('welcome').hidden=sc!=='welcome'; $('oldMem').hidden=sc!=='old';
   ['mainTabs','foot'].forEach(id=>$(id).hidden=!main); if(MULTI){$('chapBar').hidden=!main;if(!main)$('chapCard').hidden=true}
   ['today','all','log'].forEach(v=>$('v-'+v).hidden=!main||v!==active);
   $('backup').hidden=true; $('cancelSetup').hidden=!canCancel;
@@ -370,7 +440,8 @@ $('cancelSetup').addEventListener('click',()=>showScreen('main'));
 $('saveSetup').addEventListener('click',()=>{
   if(MULTI&&$('chapIn').value&&$('chapIn').value!==CUR)setCur($('chapIn').value);
   S.per=Math.max(1,Math.min(10,numIn($('perIn').value)||1)); S.goal=Math.max(1,Math.min(100,numIn($('goalIn').value)||10));
-  save(); renderAll(); showScreen('main');
+  // the first time through, ask about old memorisation before the first ward
+  const first=!load(); save(); renderAll(); if(first)openOld(true); else showScreen('main');
 });
 $('helpBtn').addEventListener('click',()=>{$('welcomeGo').textContent='رجوع';showScreen('welcome')});
 $('welcomeGo').addEventListener('click',()=>{if(load())showScreen('main');else{$('perIn').value=S.per;$('goalIn').value=S.goal;fillChapPick();showScreen('setup')}});

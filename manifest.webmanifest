@@ -1,9 +1,9 @@
 {
-  "name": "حفظ الأرجوزة الميئية",
-  "short_name": "الميئية",
+  "name": "حفظ المتون",
+  "short_name": "المتون",
   "lang": "ar",
   "dir": "rtl",
-  "start_url": "./",
+  "start_url": "home.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#FFFFFF",

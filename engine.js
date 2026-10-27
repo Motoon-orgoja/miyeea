@@ -286,12 +286,14 @@ function render(){
   $('arc').setAttribute('stroke',S.reps>=GOAL()?'var(--accent)':'var(--gold)');
   $('done').disabled=S.done;
   fill('today',f,e,{markNew:true});
-  $('friEyebrow').textContent=WDAY()<0?'التسميع الأسبوعي':'التسميع الأسبوعي · يوم '+WDAYS[WDAY()];
+  const oc=friMode==='old'&&S.oldB&&S.oldB[oldK]; if(friMode==='old'&&!oc)friMode='all';
+  $('friEyebrow').textContent=oc?'مراجعة المحفوظ القديم'+(c=>c.old?' · أول مراجعة':' · مرحلة '+ar(c.st)+' من '+ar(STEPS.length))(oc):WDAY()<0?'التسميع الأسبوعي':'التسميع الأسبوعي · يوم '+WDAYS[WDAY()];
   const weak=weakVerses(); $('friWeak').hidden=!weak.length; if(friMode==='weak'&&!weak.length)friMode='all';
   const fe=S.mem, fs=friMode==='week'?Math.max(1,fe-11):1;
-  $('friRange').textContent=friMode==='weak'?`${ar(weak.length)} أبيات بتغلط فيها`:fe?`من ${ar(fs)} إلى ${ar(fe)}`:'لا يوجد محفوظ بعد';
+  $('friRange').textContent=oc?`الأبيات ${ar(oc.a)} – ${ar(oc.b)}`:friMode==='weak'?`${ar(weak.length)} أبيات بتغلط فيها`:fe?`من ${ar(fs)} إلى ${ar(fe)}`:'لا يوجد محفوظ بعد';
   [['friFrom1','all'],['friWeek','week'],['friWeak','weak']].forEach(([id,m])=>$(id).classList.toggle('primary',friMode===m));
-  if(friMode==='weak')fill('fri',0,0,{only:weak}); else fill('fri',fs,fe);
+  if(oc)fill('fri',oc.a,oc.b); else if(friMode==='weak')fill('fri',0,0,{only:weak}); else fill('fri',fs,fe);
+  renderOldDue(); renderOldGrade();
   fill('all',allRange[0],allRange[1],{status:true,cur:[f,e]});
   const wk=Object.entries(S.mist||{}).filter(([i])=>+i<=Math.max(S.mem,S.end)).sort((a,b)=>b[1]-a[1]).slice(0,8);
   $('weakList').hidden=!wk.length; $('weakList').innerHTML=wk.length?'أبيات بتغلط فيها بالتسميع الصوتي: '+wk.map(([i,c])=>`<b>${ar(i)}</b> (${ar(c)})`).join('، '):'';
@@ -321,6 +323,125 @@ $('friFrom1').addEventListener('click',()=>{friMode='all';render()});
 $('friWeek').addEventListener('click',()=>{friMode='week';render()});
 $('friWeak').addEventListener('click',()=>{if(VS.on)vStop(true);friMode='weak';vReset();render()});
 function weakVerses(){return Object.keys(S.mist||{}).map(Number).filter(i=>S.mist[i]>0&&i<=Math.max(S.mem,S.end)).sort((a,b)=>a-b)}
+
+/* ---------- old memorisation: verses known before using the site ----------
+   S.oldB holds review blocks [{a,b,st,due,lap,old}]: verse ranges cut at the poem's sections, about `size` verses each.
+   They are reviewed on spaced steps (stage n waits STEPS[n-1] days); first reviews are spread over the coming days so no day
+   gets more than `cap` of them. Strength sets the starting stage. Verses still inside the daily ward are left to the ward. */
+const STEPS=[1,2,4,7,15,30,60], OLD_ST={strong:4,mid:3,weak:1};
+const addDays=(d,n)=>{const x=new Date(d+'T12:00:00Z');x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10)};
+const dayDiff=(a,b)=>Math.round((new Date(a+'T12:00:00Z')-new Date(b+'T12:00:00Z'))/864e5);
+const when=d=>{const n=dayDiff(d,today());return n<=0?'اليوم':n===1?'بكرة':n===2?'بعد بكرة':`بعد ${ar(n)} أيام`};
+let oldK=-1, oldNote='';
+function spread(dues,n,cap){
+  const cnt={}; dues.forEach(d=>{const k=d<today()?today():d;cnt[k]=(cnt[k]||0)+1});
+  const out=[]; let d=today();
+  for(let i=0;i<n;i++){while((cnt[d]||0)>=cap)d=addDays(d,1);out.push(d);cnt[d]=(cnt[d]||0)+1}
+  return out;
+}
+// cut a..b into pieces of at most `size` verses, preferring to cut where a section starts
+function chunks(a,b,secs,size){
+  const out=[]; let s=a;
+  for(let i=a+1;i<=b+1;i++){const len=i-s; if(i>b||len>=size||(secs[i]&&len>=Math.ceil(size/2))){out.push([s,i-1]);s=i}}
+  return out;
+}
+const oldDue=st=>((st&&st.oldB)||[]).map((c,k)=>[c,k]).filter(([c])=>c.due<=today());
+const secOf=i=>{for(let j=i;j>0;j--)if(SECS[j])return SECS[j];return ''};
+function gradeOld(k,g){
+  const c=S.oldB[k]; if(!c)return; delete c.old;
+  if(g==='again'){c.st=1;c.lap=(c.lap||0)+1;c.due=addDays(today(),1)}
+  else if(g==='hard'){c.due=addDays(today(),Math.max(1,Math.ceil(STEPS[c.st-1]/2)))}
+  else{c.st=Math.min(STEPS.length,c.st+1);c.due=addDays(today(),STEPS[c.st-1])}
+  S.olog=S.olog||{}; S.olog[today()]=(S.olog[today()]||0)+1; save();
+}
+function reviewOld(k){oldK=k;friMode='old';if(VS.on)vStop(true);vReset();render();$('t-fri').click();scrollTo(0,0)}
+function renderOldDue(){
+  const box=$('oldDue'); box.replaceChildren();
+  const mine=oldDue(S), others=MULTI?ORDER.filter(id=>id!==CUR).map(id=>[id,oldDue(stateOf(id)).length]).filter(x=>x[1]):[];
+  if(oldNote){const n=document.createElement('div');n.className='oldnote';n.textContent=oldNote;box.append(n)}
+  if(mine.length||others.length){
+    const h=document.createElement('div'); h.className='eyebrow'; h.textContent='مراجعة المحفوظ القديم اليوم'; box.append(h);
+    mine.forEach(([c,k])=>{const r=document.createElement('div'); r.className='orow';
+      const t=document.createElement('div'); t.innerHTML=`<b>الأبيات ${ar(c.a)}–${ar(c.b)}</b><small>${secOf(c.a)}${c.old?' · أول مراجعة':''}</small>`;
+      const b=document.createElement('button'); b.className='btn primary'; b.textContent='سمّعها'; b.addEventListener('click',()=>reviewOld(k));
+      r.append(t,b); box.append(r)});
+    others.forEach(([id,n])=>{const r=document.createElement('div'); r.className='orow';
+      const t=document.createElement('div'); t.innerHTML=`<b>«${poemOf(id).title}»</b><small>${n===1?"مقطع":ar(n)+" مقاطع"} للمراجعة</small>`;
+      const b=document.createElement('button'); b.className='btn'; b.textContent='انتقل لها'; b.addEventListener('click',()=>switchPoem(id));
+      r.append(t,b); box.append(r)});
+  }
+  box.hidden=!box.childElementCount;
+}
+function renderOldGrade(){
+  const c=friMode==='old'&&S.oldB&&S.oldB[oldK], box=$('oldGrade');
+  box.hidden=!c; $('friNote').parentElement.hidden=!!c; if(!c)return;
+  const g=box.querySelector('.grades'); g.replaceChildren();
+  [['again','نسيت','بكرة','bad'],['hard','صعب',`بعد ${ar(Math.max(1,Math.ceil(STEPS[c.st-1]/2)))} يوم`,'gold'],['good','تمام',`بعد ${ar(STEPS[Math.min(STEPS.length,c.st+1)-1])} يوم`,'primary']].forEach(([k,l,sub,cl])=>{
+    const b=document.createElement('button'); b.className='btn '+cl; b.innerHTML=`${l}<small>${sub}</small>`;
+    b.addEventListener('click',()=>{if(VS.on)vStop(true);gradeOld(oldK,k);oldNote='';const nx=oldDue(S)[0];
+      if(nx)reviewOld(nx[1]);else{friMode='all';oldK=-1;render();$('t-today').click();scrollTo(0,0)}});
+    g.append(b)});
+}
+function openOld(first){
+  const list=$('oldList'); list.replaceChildren();
+  (MULTI?ORDER:[CUR]).forEach(id=>{const p=poemOf(id), st=id===CUR?S:stateOf(id);
+    const r=document.createElement('div'); r.className='orow'; r.dataset.id=id;
+    const t=document.createElement('div'); t.innerHTML=`<b></b><small>${ar(p.verses.length)} بيت${st&&st.mem?' · حافظ لحد '+ar(st.mem):''}</small>`; t.querySelector('b').textContent=MULTI?p.title:'الأبيات';
+    const f=document.createElement('div'); f.className='orange';
+    f.innerHTML='<label>من<input class="oa" type="text" inputmode="numeric" value="١"></label><label>لحد<input class="ob" type="text" inputmode="numeric" placeholder="—"></label>';
+    r.append(t,f); list.append(r)});
+  $('oldSize').value=ar(N<=150?10:20); $('oldSkip').textContent=first?'ما عندي محفوظ قديم، ببلّش من جديد':'رجوع'; $('oldMsg').textContent='';
+  showScreen('old');
+}
+function applyOld(){
+  const st0=OLD_ST[$('oldStr').value]||3, cap=Math.max(1,Math.min(20,numIn($('oldCap').value)||2)), size=Math.max(4,Math.min(60,numIn($('oldSize').value)||20));
+  const picks=[...document.querySelectorAll('#oldList .orow')].map(r=>({id:r.dataset.id,a:numIn(r.querySelector('.oa').value)||1,b:numIn(r.querySelector('.ob').value)||0})).filter(x=>x.b>0);
+  if(!picks.length){$('oldMsg').textContent='اكتب لحد أي بيت حافظ (بخانة «لحد»).';return}
+  const plan=store.get('plan',null)||{per:PER(),goal:GOAL(),win:WIN()};
+  const states=Object.fromEntries(B.poems.map(p=>[p.id,p.id===CUR?S:stateOf(p.id)]));
+  const dues0=Object.values(states).filter(Boolean).flatMap(s=>(s.oldB||[]).map(c=>c.due));
+  const jobs=[]; let inWard=0;
+  picks.forEach(({id,a,b})=>{
+    const p=poemOf(id), n=p.verses.length; b=Math.min(n,b); a=Math.max(1,Math.min(a,b));
+    const s=states[id]||{...plan,start:1,end:Math.min(n,plan.per||2),mem:0,reps:0,day:today(),done:false,log:[],tasmee:[]};
+    const per=s.per||2, win=Math.max(per,s.win||10);
+    // known from the start (or right after what is memorised): new learning carries on after it
+    if(a<=s.mem+1&&b>s.mem){s.mem=b; if(s.end<=b){s.start=Math.min(n,b+1);s.end=Math.min(n,b+per);s.reps=0;s.day=today();s.done=false}}
+    const top=Math.min(b,Math.max(s.old===false?s.start:1,s.end-win+1)-1);
+    s.oldB=(s.oldB||[]).filter(c=>!(c.a>=a&&c.b<=top));
+    if(top>=a)chunks(a,top,p.secs||{1:p.title},size).forEach(r=>jobs.push([s,r])); if(b>top)inWard++;
+    states[id]=s;
+  });
+  const dues=spread(dues0,jobs.length,cap);
+  jobs.forEach(([s,[a,b]],i)=>s.oldB.push({a,b,st:st0,due:dues[i],lap:0,old:1}));
+  Object.entries(states).forEach(([id,s])=>{if(!s)return; if(s.oldB)s.oldB.sort((x,y)=>x.a-y.a);
+    if(id===CUR)S=s; else try{localStorage.setItem(lskOf(id),JSON.stringify(s))}catch(e){}});
+  const last=dues[dues.length-1];
+  oldNote=(jobs.length?`انضاف ${jobs.length===1?"مقطع واحد":jobs.length===2?"مقطعين":ar(jobs.length)+(jobs.length<=10?" مقاطع":" مقطعًا")} للمراجعة، أولها ${when(dues[0])}`+(last!==dues[0]?` وآخرها ${when(last)}.`:'.'):'')+(inWard?' وآخر الأبيات اللي حافظها صارت بورد اليوم، والحفظ الجديد بيكمل بعدها.':'');
+  Object.keys(lastSig).forEach(k=>delete lastSig[k]); save(); render(); showScreen('main');
+}
+$('setup').insertAdjacentHTML('afterend',`<section id="oldMem" class="card setup" hidden>
+    <div class="eyebrow">محفوظك القديم</div>
+    <div class="range">شو حافظ من قبل؟</div>
+    <p class="note" style="margin:0">اكتب الأبيات اللي حافظها من قبل. بتنقسم مقاطع صغيرة على أبواب ${MULTI?'القصائد':'المنظومة'}، وبتراجعها على مواعيد متباعدة، موزّعة على الأيام الجاية بحيث ما تيجيك كلها مرة وحدة. ولو حافظ من الأول، الحفظ الجديد بيكمل من بعدها.</p>
+    <div id="oldList" class="plist"></div>
+    <div class="plan">
+      <label><span class="eyebrow">كيف حفظك فيها؟</span><select id="oldStr"><option value="strong">قوي</option><option value="mid" selected>متوسط</option><option value="weak">ضعيف</option></select></label>
+      <label><span class="eyebrow">أبيات المقطع</span><input id="oldSize" type="text" inputmode="numeric" value="٢٠"></label>
+      <label><span class="eyebrow">مقاطع باليوم (أقصى حد)</span><input id="oldCap" type="text" inputmode="numeric" value="٢"></label>
+    </div>
+    <p class="note" style="margin:0">القوي بتيجي مراجعته الثانية بعد أسبوعين، والمتوسط بعد أسبوع، والضعيف بعد يومين. وأول مراجعة بتكون اختبار: إذا قيّمت «نسيت» بيرجعلك المقطع بكرة.</p>
+    <p class="note" id="oldMsg" style="margin:0;color:var(--bad)"></p>
+    <button class="btn primary" id="oldApply">أضفه للمراجعة</button>
+    <button class="btn" id="oldSkip">رجوع</button>
+  </section>`);
+$('v-today').insertAdjacentHTML('afterbegin','<div id="oldDue" class="olddue" hidden></div>');
+$('friVerses').insertAdjacentHTML('afterend','<div id="oldGrade" class="oldgrade" hidden><p class="note" style="margin:0">سمّع المقطع من حفظك (بالصوت أو بقلبك)، اكشفه، وبعدين قيّم حالك بصدق.</p><div class="grades"></div></div>');
+$('resetBtn').insertAdjacentHTML('afterend','<button class="btn" id="oldBtn">📚 محفوظي القديم</button>');
+$('oldBtn').addEventListener('click',()=>openOld(false));
+$('oldApply').addEventListener('click',applyOld);
+$('oldSkip').addEventListener('click',()=>showScreen('main'));
+document.querySelector('#welcome ol').insertAdjacentHTML('beforeend','<li><b>محفوظك القديم:</b> إذا حافظ أبيات من قبل، من زر «📚 محفوظي القديم» تحت بتحددها، وبتنضاف لمراجعة متباعدة بتطلعلك أول «ورد اليوم».</li>');
 
 /* ---------- backup ---------- */
 // the code is the progress JSON in base64, so it survives copy/paste through Notes or WhatsApp
@@ -359,7 +480,7 @@ render();
 // screen: 'main' | 'setup' | 'welcome'; the two full-page cards replace the main view
 function showScreen(sc,canCancel){
   const main=sc==='main';
-  $('setup').hidden=sc!=='setup'; $('welcome').hidden=sc!=='welcome';
+  $('setup').hidden=sc!=='setup'; $('welcome').hidden=sc!=='welcome'; $('oldMem').hidden=sc!=='old';
   ['mainProg','mainTabs','foot'].forEach(id=>$(id).hidden=!main); $('poemBar').hidden=!main||!MULTI; if(!main)$('poemsCard').hidden=true;
   if(main){document.querySelector('.tabs button[aria-selected="true"]').click()}
   else{['v-today','v-fri','v-all','v-expl','backup','stepbar','voicebar'].forEach(id=>$(id).hidden=true);if(VS.on)vStop(true);scrollTo(0,0)}
@@ -382,13 +503,14 @@ $('helpBtn').addEventListener('click',()=>{$('welcomeGo').textContent='رجوع'
 $('welcomeGo').addEventListener('click',()=>{if(loadLocal())showScreen('main');else{setupPreview();showScreen('setup')}});
 $('cancelSetup').addEventListener('click',()=>showSetup(false));
 $('startBtn').addEventListener('click',()=>{
+  const first=!loadLocal();
   const per=Math.max(1,Math.min(10,numIn($('perIn').value)||2)), goal=Math.max(1,Math.min(100,numIn($('goalIn').value)||20)), win=Math.max(per,Math.min(50,numIn($('winIn').value)||10));
   const n=Math.max(0,Math.min(N,numIn($('memIn').value)||0)), e=n||Math.min(N,per);
   const plan={per,goal,win,old:$('oldIn').checked,wday:+$('wdayIn').value}; store.set('plan',plan);
   // a new position restarts today's count; changing only the plan keeps it. History (log, weekly sessions, mistakes) always stays
   if(!loadLocal()||e!==S.end){const m=Math.max(0,e-per); S={...S,...plan,start:m+1,end:e,mem:m,reps:0,day:today(),done:false,log:S.log||[],tasmee:S.tasmee||[]}}
   else S={...S,...plan};
-  Object.keys(lastSig).forEach(k=>delete lastSig[k]); save(); render(); showSetup(false);
+  Object.keys(lastSig).forEach(k=>delete lastSig[k]); save(); render(); if(first)openOld(true); else showSetup(false);
 });
 let saved=loadLocal();
 if(!saved&&MULTI&&store.get('plan',null)){const pl=store.get('plan',null); saved={...S,...pl,start:1,end:Math.min(N,pl.per||2),mem:0,reps:0,day:today(),done:false,log:[],tasmee:[]}; try{localStorage.setItem(LSK,JSON.stringify(saved))}catch(e){}}
@@ -401,7 +523,7 @@ function switchPoem(id){store.set('cur',id);location.reload()}
 function poemStatus(id){const st=id===CUR?S:stateOf(id),n=poemOf(id).verses.length;if(!st)return 'لسا ما بلّشتها';return st.mem>=n?'ختمتها ✓':`حافظ ${ar(st.mem)} من ${ar(n)}`}
 function renderPoems(){
   if(!MULTI)return;
-  if($('setup').hidden&&$('welcome').hidden)$('poemBar').hidden=false;
+  if($('setup').hidden&&$('welcome').hidden&&$('oldMem').hidden)$('poemBar').hidden=false;
   $('pTitle').textContent=P.title; $('pBy').textContent=P.nazim+(P.death?' ('+P.death+')':'')+' · '+ar(N)+' بيت';
   const finished=S.mem>=N, next=ORDER.find(id=>{if(id===CUR)return false;const st=stateOf(id);return !(st&&st.mem>=poemOf(id).verses.length)});
   $('pDone').hidden=!finished; $('pDone').replaceChildren();

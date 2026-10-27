@@ -148,3 +148,6 @@ select{font:15px var(--ui);color:var(--ink);background:var(--bg);border:1px soli
 .cgroup>summary{cursor:pointer;font:700 14px var(--ui);color:var(--gold);padding:11px 0}
 .cgroup .prow{padding-inline-start:10px}
 .cgroup .prow:first-of-type{border-top:0}
+/* old memorisation list: a chapter per row with its choice */
+.prow .oldsel{width:auto;max-width:48%;flex:none;font-size:13px;padding:6px 8px}
+.plan select{font-size:15px}
