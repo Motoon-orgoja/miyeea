@@ -341,6 +341,9 @@ function renderWardCtl(){
 $('friFrom1').addEventListener('click',()=>{friMode='all';render()});
 // «اختبرني»: random spot checks over everything memorised: finish a verse, or say the verse after a given one
 $('friWeak').insertAdjacentHTML('afterend','<button class="btn gold" id="quizBtn">🎯 اختبرني</button>');
+$('quizBtn').insertAdjacentHTML('afterend','<button class="btn" id="simBtn">🔀 المتشابهات</button>');
+$('simBtn').addEventListener('click',()=>{const top=Math.max(S.mem,S.end,Math.min(N,40));
+  UI.similar(V.slice(0,top).map((v,k)=>({label:'البيت '+ar(k+1),text:v[0]+'   '+v[1]})),'المتشابهات · '+P.title+(top<N?' (لحد البيت '+ar(top)+')':''))});
 $('quizBtn').addEventListener('click',()=>{
   const known=new Set(); for(let i=1;i<=Math.min(N,S.mem);i++)known.add(i); (S.oldB||[]).forEach(c=>{for(let i=c.a;i<=c.b;i++)known.add(i)});
   const q=[]; known.forEach(i=>{const v=V[i-1];

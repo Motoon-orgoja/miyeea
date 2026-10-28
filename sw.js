@@ -1,5 +1,5 @@
 // Bump VERSION whenever any cached file changes so phones pick up the new copy
-const VERSION = 'miyeea-v21';
+const VERSION = 'miyeea-v22';
 const FILES = ['./', 'data/media.js', 'whisper-worker.js', 'voice.js', 'fonts/Amiri-400.woff2', 'fonts/Amiri-700.woff2', 'fonts/NotoKufiArabic-400.woff2', 'fonts/NotoKufiArabic-500_800.woff2', 'srs.js', 'ui.js', 'ui.css', 'home.html', 'home.js', 'index.html', 'munajat.html', 'shatibiyya.html', 'jazariyya.html', 'data/jazariyya.js', 'qudouri.html', 'prose.css', 'prose-engine.js', 'data/riyad.js', 'data/shatibiyya.js', 'data/qudouri.js', 'app.css', 'engine.js', 'data/miyeea.js', 'data/munajat.js', 'data/munajat-expl.js', 'riyad.html', 'riyad91-sharh.js', 'fonts.css', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

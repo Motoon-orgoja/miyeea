@@ -312,6 +312,29 @@ function quiz(items,title){
   show();
 }
 
+/* ---------- «المتشابهات»: verses that share most of their words, side by side ----------
+   items: [{label, text}]. Two items are similar when they share at least three words and at least 40% of the shorter
+   one's words (spelling-normalised). Each pair shows both texts with the words that differ marked, which is where
+   reciters slip from one into the other. */
+function similar(items,title){
+  const N=w=>(window.VOICE?VOICE.norm(w):w).replace(/^و(?=...)/,'');
+  // particles every verse has (من، في، على…) say nothing about similarity
+  const STOP=new Set('من في على عن الي الى او ثم قد لا ما ان اذا لم لن كما مع هو هي كل بها به له لها ذا ذي تا يا'.split(' '));
+  const sets=items.map(it=>{const ws=it.text.split(/\s+/);return {ws,set:new Set(ws.map(N).filter(x=>x.length>=2&&!STOP.has(x)))}});
+  const pairs=[];
+  for(let i=0;i<sets.length;i++)for(let j=i+1;j<sets.length;j++){
+    const A=sets[i].set,B=sets[j].set; let c=0; A.forEach(x=>{if(B.has(x))c++});
+    const sc=c/Math.min(A.size,B.size); if(c>=3&&sc>=.4)pairs.push({i,j,sc});
+  }
+  pairs.sort((a,b)=>b.sc-a.sc);
+  const b=sheet(title||'المتشابهات');
+  if(!pairs.length){b.append(el('p','ui-hint','ما في أبيات متشابهة كثير بهالجزء. 🤍'));return}
+  b.append(el('p','ui-hint',(pairs.length===1?'زوج واحد متشابه.':pairs.length===2?'زوجين متشابهين.':`${ar(pairs.length)} ${pairs.length<=10?'أزواج متشابهة':'زوجًا متشابهًا'}.`)+` الكلمات الملوّنة هي اللي بيختلفوا فيها، وانتبه لها وإنت بتسمّع.`));
+  const show=(k,other)=>{const d=el('div','ui-sim');d.append(el('small','',items[k].label));const t=el('div','ui-simt');
+    sets[k].ws.forEach((w,x)=>{const s=el('span',other.has(N(w))?'':'diff',w);t.append(s,document.createTextNode(' '))});d.append(t);return d};
+  pairs.slice(0,60).forEach(p=>{const card=el('div','ui-simpair');card.append(show(p.i,sets[p.j].set),show(p.j,sets[p.i].set));b.append(card)});
+}
+
 /* ---------- floating counter ----------
    The page marks its repetition counter with data-fab. When that counter scrolls out of view (while reading the verses
    further down), a round copy floats at the bottom corner, above any bottom bar, and taps the real one. */
@@ -377,5 +400,5 @@ function fadeBar(onChange){
   paint(); addEventListener('prefs',h); w.append(minus,lbl,plus); return w;
 }
 
-window.UI={quiz,play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,BOOKS};
+window.UI={similar,quiz,play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,BOOKS};
 })();

@@ -160,3 +160,9 @@ body.ui-playing .tabs{top:calc(env(safe-area-inset-top,0px) + 60px)}
 .ui-myrec{max-width:640px;margin:6px auto 0;display:flex;align-items:center;gap:8px}
 .ui-myrec small{flex:none;color:var(--muted);font-size:12px}
 .ui-myrec audio{flex:1;height:36px;min-width:0}
+/* «المتشابهات» */
+.ui-simpair{display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:var(--bg)}
+.ui-sim small{color:var(--muted);font-size:12px;font-weight:700}
+.ui-simt{font-family:var(--verse);font-size:calc(19px*var(--vs));line-height:1.9}
+.ui-simt .diff{color:var(--gold);background:var(--gold-soft);border-radius:4px}
+.ui-sim+.ui-sim{border-top:1px dashed var(--line);padding-top:6px}
