@@ -166,3 +166,5 @@ body.ui-playing .tabs{top:calc(env(safe-area-inset-top,0px) + 60px)}
 .ui-simt{font-family:var(--verse);font-size:calc(19px*var(--vs));line-height:1.9}
 .ui-simt .diff{color:var(--gold);background:var(--gold-soft);border-radius:4px}
 .ui-sim+.ui-sim{border-top:1px dashed var(--line);padding-top:6px}
+.ui-sec{margin:8px 0 -6px;font-size:calc(14px*var(--us));color:var(--accent);border-bottom:1px solid var(--line);padding-bottom:6px}
+.ui-sheet-b > .ui-sec:first-child{margin-top:0}

@@ -89,16 +89,19 @@ function seg(name,opts,val,on){
 function field(label,ctrl,hint){const f=el('div','ui-field');f.append(el('div','ui-lbl',label),ctrl);if(hint)f.append(el('div','ui-hint',hint));return f}
 function openSettings(){
   const b=sheet('الإعدادات');
+  b.append(el('h3','ui-sec','القراءة والمظهر'));
   b.append(field('المظهر',seg('المظهر',[['auto','حسب الجهاز'],['light','فاتح'],['dark','غامق']],P.theme,v=>{P.theme=v;save()})));
   const prev=el('div','ui-preview','وَالْأَخْذُ بِالتَّجْوِيدِ حَتْمٌ لَازِمُ');
   const rng=(min,max,step,key,fmt)=>{const r=el('input');r.type='range';r.min=min;r.max=max;r.step=step;r.value=P[key];const o=el('span','ui-val',fmt(P[key]));
     r.oninput=()=>{P[key]=+r.value;o.textContent=fmt(P[key]);save()};const w=el('div','ui-range');w.append(r,o);return w};
   const pct=v=>ar(Math.round(v*100))+'٪';
   b.append(field('حجم خط المتن',rng(.8,1.6,.05,'vs',pct)),prev,field('حجم خط الأزرار والشرح',rng(.9,1.3,.05,'us',pct)));
+  b.append(el('h3','ui-sec','المراجعة'));
   b.append(field('كثرة المراجعة',seg('كثرة المراجعة',[[0.85,'أقل'],[0.9,'متوازنة'],[0.95,'أكثر']],P.ret,v=>{P.ret=v;save()}),
     'مواعيد مراجعة الأبواب والمقاطع بتنحسب بخوارزمية FSRS حسب تقييمك لحالك. «أكثر» بتقرّب المواعيد وبتثبّت أكثر، و«أقل» بتبعّدها وبتوفّر وقت. التغيير بيأثر على المراجعات الجاية.'));
   // speech recognition language: Modern Standard Arabic suits classical texts best, but devices differ
   let asr=''; try{asr=localStorage.getItem('ui_asrLang')||''}catch(e){}
+  b.append(el('h3','ui-sec','التسميع بالصوت'));
   b.append(field('لغة التعرّف على الصوت',seg('لغة التعرّف',[['','تلقائي'],['ar-SA','فصحى (السعودية)'],['ar-EG','مصر'],['ar-JO','الأردن']],asr,v=>{try{v?localStorage.setItem('ui_asrLang',v):localStorage.removeItem('ui_asrLang')}catch(e){}toast('بيتطبّق من التسميع الجاي')}),
     'إذا التسميع ما بيلتقط كلامك منيح، جرّب لغة ثانية. التلقائي بيبلّش بالفصحى.'));
   // recognition engine: live browser recognition, or Whisper on the device (more precise, corrects after you finish)
@@ -113,6 +116,7 @@ function openSettings(){
   paintDl();
   const wk=el('label','ui-check'); const cb=el('input'); cb.type='checkbox'; cb.checked=P.wake; cb.onchange=()=>{P.wake=cb.checked;save();P.wake?wake():sleep()};
   wk.append(cb,document.createTextNode(' خلّي الشاشة شغّالة وأنا بحفظ'));
+  b.append(el('h3','ui-sec','الجهاز والبيانات'));
   b.append(field('الشاشة',wk,'wakeLock' in navigator?'بتمنع الجوال يطفّي الشاشة وإنت بتقرأ أو بتسمّع.':'متصفحك ما بيدعم هالخاصية.'));
   // reminder
   const rw=el('div','ui-row'); const ti=el('input'); ti.type='time'; ti.value=P.remind; ti.onchange=()=>{P.remind=ti.value;save()};
@@ -126,8 +130,13 @@ function openSettings(){
   eb.onclick=async()=>{out.value=exportAll();try{localStorage.setItem('ui_lastBackup',String(Date.now()))}catch(e){}try{await navigator.clipboard.writeText(out.value);toast('انتسخ الكود ✓ خزّنه بالملاحظات')}catch(e){out.select();toast('حدّد الكود وانسخه')}};
   const inp=el('textarea'); inp.rows=3; inp.placeholder='الصق كود نسخة احتياطية هون لترجّع كل تقدمك';
   const ib=el('button','btn','استرجع');
-  ib.onclick=()=>{try{const n=importAll(inp.value);if(!confirm('رح يرجّع التقدم من الكود ويستبدل تقدمك الحالي بالمتون اللي فيه. متأكد؟'))return;toast('رجع التقدم ✓');setTimeout(()=>location.reload(),600)}catch(e){toast('الكود مش صحيح')}};
-  bk.append(eb,out,inp,ib);
+  ib.onclick=()=>{try{const o=fromCode(inp.value);if(o.app!=='mutoon-all'||!o.data)throw 0;if(!confirm('رح يرجّع التقدم من الكود ويستبدل تقدمك الحالي بالمتون اللي فيه. متأكد؟'))return;importAll(inp.value);toast('رجع التقدم ✓');setTimeout(()=>location.reload(),600)}catch(e){toast('الكود مش صحيح')}};
+  // the same backup as a file, easier to keep in iCloud/Files than a pasted code
+  const fileRow=el('div','ui-row'); const fb=el('button','btn','💾 نزّل ملف نسخة'); const lb=el('label','btn','📂 افتح ملف نسخة'); const fi=el('input'); fi.type='file'; fi.accept='.txt,.json,text/plain'; fi.hidden=true; lb.append(fi);
+  fb.onclick=()=>{const code=exportAll();try{localStorage.setItem('ui_lastBackup',String(Date.now()))}catch(e){}const a=el('a');a.href=URL.createObjectURL(new Blob([code],{type:'text/plain'}));a.download='نسخة-حفظ-المتون-'+new Date().toISOString().slice(0,10)+'.txt';document.body.append(a);a.click();a.remove();toast('نزل الملف ✓ خزّنه بمكان آمن')};
+  fi.onchange=async()=>{const f=fi.files[0];if(!f)return;try{const t=(await f.text()).trim();const o=fromCode(t);if(o.app!=='mutoon-all'||!o.data)throw 0;if(!confirm('رح يرجّع التقدم من الملف ويستبدل تقدمك الحالي بالمتون اللي فيه. متأكد؟'))return;importAll(t);toast('رجع التقدم ✓');setTimeout(()=>location.reload(),600)}catch(e){toast('الملف مش نسخة صحيحة')}};
+  fileRow.append(fb,lb);
+  bk.append(eb,out,fileRow,inp,ib);
   b.append(field('النسخة الاحتياطية',bk,'كود واحد فيه تقدمك بكل المتون، بتنقله لجهاز ثاني أو بتخزنه احتياط.'));
   b.append(el('p','ui-hint','تقدمك محفوظ على هالجهاز بس. الموقع بيشتغل بدون نت بعد أول فتحة.'));
 }
