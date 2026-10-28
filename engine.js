@@ -322,7 +322,7 @@ function snap(label){UNDO.push({label,s:JSON.stringify(S)});if(UNDO.length>30)UN
 function redraw(){Object.keys(lastSig).forEach(k=>delete lastSig[k]);save();render()}
 function undo(){const u=UNDO.pop();if(!u)return;S=JSON.parse(u.s);redraw();UI.toast('رجعت عن: '+u.label)}
 function act(label,fn){snap(label);fn();redraw();UI.toast(label,{label:'تراجع',fn:undo})}
-$('undo').closest('.side').insertAdjacentHTML('afterend','<div class="wardctl" id="wardCtl"></div>');
+$('undo').closest('.counter').insertAdjacentHTML('afterend','<div class="wardctl" id="wardCtl"></div>');
 function renderWardCtl(){
   const box=$('wardCtl'); box.replaceChildren();
   const b=(txt,fn,cls)=>{const x=document.createElement('button');x.type='button';x.className='btn'+(cls?' '+cls:'');x.textContent=txt;x.addEventListener('click',fn);box.append(x)};
