@@ -27,13 +27,13 @@ function poemBook(b){
   if(c){const {p,s}=c, N=p.verses.length, per=s.per||2, win=Math.max(per,s.win||10), goal=s.goal||20;
     let end=s.end; if(s.day!==T&&s.done&&end<N)end=Math.min(N,end+per);
     const grow=s.grow&&s.grow.d===T&&s.day===T?s.grow.n:0, from=Math.max(s.old===false?s.start:1,end-win-grow+1), done=s.day===T&&s.done, reps=s.day===T?s.reps:0;
-    r.tasks.push({t:`ورد اليوم: الأبيات ${ar(from)}–${ar(end)}`+(multi?` من «${p.title}»`:''),sub:done?'تمّ ✓':`${ar(reps)} من ${ar(goal)} تكرار`,done});
+    r.tasks.push({k:'new',t:`ورد اليوم: الأبيات ${ar(from)}–${ar(end)}`+(multi?` من «${p.title}»`:''),sub:done?'تمّ ✓':`${ar(reps)} من ${ar(goal)} تكرار`,done});
     const wd=s.wday??5;
-    if(wd===new Date().getDay()&&s.mem>0){const ok=(s.tasmee||[]).some(x=>x.d===T);r.tasks.push({t:'التسميع الأسبوعي',sub:ok?'سجّلته ✓':'اليوم موعده',done:ok})}
+    if(wd===new Date().getDay()&&s.mem>0){const ok=(s.tasmee||[]).some(x=>x.d===T);r.tasks.push({k:'test',t:'التسميع الأسبوعي',sub:ok?'سجّلته ✓':'اليوم موعده',done:ok})}
   }
   const due=all.reduce((n,{s})=>n+(s.oldB||[]).filter(x=>x.due<=T).length,0);
-  if(due)r.tasks.push({t:'مراجعة المحفوظ القديم',sub:due===1?'مقطع واحد':`${ar(due)} مقاطع`,done:false});
-  else if(all.some(({s})=>s.olog&&s.olog[T]))r.tasks.push({t:'مراجعة المحفوظ القديم',sub:'خلصتها ✓',done:true});
+  if(due)r.tasks.push({k:'old',t:'مراجعة المحفوظ القديم',sub:due===1?'مقطع واحد':`${ar(due)} مقاطع`,done:false});
+  else if(all.some(({s})=>s.olog&&s.olog[T]))r.tasks.push({k:'old',t:'مراجعة المحفوظ القديم',sub:'خلصتها ✓',done:true});
   return r;
 }
 
@@ -48,12 +48,12 @@ function proseBook(b){
   Object.entries(s.log||{}).forEach(([d,x])=>{if(x.n||x.r)r.days.add(d)});
   const cur=b.chapters.find(c=>c.id===s.cur)||b.chapters[0];
   const due=b.chapters.filter(c=>blocks[c.id]&&(blocks[c.id].due<=T||ahead[c.id]===T));
-  if(due.length)r.tasks.push({t:due.length===1?`مراجعة «${due[0].title}» كامل`:`مراجعة ${ar(due.length)} أبواب`,sub:due.length>1?due.slice(0,3).map(c=>c.title).join('، ')+(due.length>3?'…':''):'',done:false});
+  if(due.length)r.tasks.push({k:'old',t:due.length===1?`مراجعة «${due[0].title}» كامل`:`مراجعة ${ar(due.length)} أبواب`,sub:due.length>1?due.slice(0,3).map(c=>c.title).join('، ')+(due.length>3?'…':''):'',done:false});
   const learned=cur.units.filter(u=>cards[u.id]).length, left=cur.units.length-learned;
   const used=s.newDay===T?s.newCount:0, extra=s.extra&&s.extra.d===T?s.extra.n:0, fresh=Math.min(left,Math.max(0,(s.per||1)+extra-used));
-  if(fresh)r.tasks.push({t:`جديد: ${ar(fresh)} ${fresh===1?W:W==='فقرة'?'فقرات':'أحاديث'}`,sub:b.chapters.length>1?'من «'+cur.title+'»':'',done:false});
-  else if(used&&left>=0)r.tasks.push({t:'الجديد',sub:'حفظته ✓',done:true});
-  if(left&&learned>=2){const ok=link[cur.id]===T;r.tasks.push({t:'الربط',sub:ok?'سمّعته ✓':`سمّع ${ar(learned)} ${W==='فقرة'?'فقرة':'وحدة'} متصلة`,done:ok})}
+  if(fresh)r.tasks.push({k:'new',t:`جديد: ${ar(fresh)} ${fresh===1?W:W==='فقرة'?'فقرات':'أحاديث'}`,sub:b.chapters.length>1?'من «'+cur.title+'»':'',done:false});
+  else if(used&&left>=0)r.tasks.push({k:'new',t:'الجديد',sub:'حفظته ✓',done:true});
+  if(left&&learned>=2){const ok=link[cur.id]===T;r.tasks.push({k:'recent',t:'الربط',sub:ok?'سمّعته ✓':`سمّع ${ar(learned)} ${W==='فقرة'?'فقرة':'وحدة'} متصلة`,done:ok})}
   return r;
 }
 
@@ -72,7 +72,9 @@ active.forEach(r=>{
   h.append(el('span','pill'+(pend?'':' new'),pend?`باقي ${ar(pend)}`:'خلصت ✓')); c.append(h);
   const ul=el('ul','tasks');
   if(!r.tasks.length)ul.append(el('li','done','ما في شي اليوم بهالكتاب'));
-  r.tasks.forEach(x=>{const li=el('li',x.done?'done':'');li.append(el('span','',x.t));if(x.sub)li.append(el('small','',x.sub));ul.append(li)});
+  // each task wears its kind, as huffaz split the day: new (sabaq), recent (sabqi), old (manzil)
+const KIND={new:'جديد',recent:'قريب',old:'قديم',test:'تسميع'};
+  r.tasks.forEach(x=>{const li=el('li',x.done?'done':'');if(x.k)li.append(el('em','k-'+x.k,KIND[x.k]));li.append(el('span','',x.t));if(x.sub)li.append(el('small','',x.sub));ul.append(li)});
   c.append(ul);
   const go=el('a','btn'+(pend?' primary':''),pend?'افتح وكمّل':'افتحه'); go.href=PAGE[r.b.key]; c.append(go);
   list.append(c);
