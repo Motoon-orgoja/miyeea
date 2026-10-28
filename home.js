@@ -79,7 +79,8 @@ $('todaySum').textContent=!started.length?'لسا ما بلّشت بأي متن.
 
 /* not started yet */
 $('restCard').hidden=!rest.length;
-rest.forEach(r=>{const a=el('a','btn',r.b.title);a.href=PAGE[r.b.key];$('restList').append(a)});
+// each text not started yet, with what it is about, as a tappable card
+rest.forEach(r=>{const a=el('a','ui-book');a.href=PAGE[r.b.key];const info=(window.UI&&UI.BOOKS.find(x=>x.key===r.b.key))||{};a.append(el('b','',r.b.title),el('small','',info.d||r.b.sub||''));$('restList').append(a)});
 
 /* statistics: one streak across every book, totals, per-book progress, and twelve weeks of activity */
 const days=new Set(); started.forEach(r=>r.days.forEach(d=>days.add(d)));

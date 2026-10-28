@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0B7A55">
 <title>حفظ مختصر القدوري</title>
+<link rel="preload" href="fonts/Amiri-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/NotoKufiArabic-500_800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="fonts.css">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -13,6 +15,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="المتون">
 <link rel="stylesheet" href="prose.css">
+<link rel="stylesheet" href="ui.css">
+<script src="ui.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -37,7 +41,7 @@
   <section id="welcome" class="card guide" hidden>
     <div class="eyebrow">أهلًا وسهلًا</div>
     <div class="range">كيف بتحفظ المتن هون؟</div>
-    <p class="note" style="margin:0">المتن مقسوم أبواب، وكل باب مقسوم فقرات. بتحفظ الباب فقرة فقرة بالترتيب، وكل يوم بتربط اللي حفظته ببعض. ولما تختم الباب، بيصير كتلة وحدة بتراجعها كاملة على مواعيد متباعدة (بعد يوم، ويومين، و٤، وأسبوع، وأسبوعين، وشهر، وشهرين)، وبتنتقل للباب الجاي.</p>
+    <p class="note" style="margin:0">المتن مقسوم أبواب، وكل باب مقسوم فقرات. بتحفظ الباب فقرة فقرة بالترتيب، وكل يوم بتربط اللي حفظته ببعض. ولما تختم الباب، بيصير كتلة وحدة بتراجعها كاملة على مواعيد متباعدة بتتحدد حسب تقييمك لحالك (كل ما ثبت أكثر، بتتباعد مراجعته لحد شهرين)، وبتنتقل للباب الجاي.</p>
     <ol>
       <li><b>جديد اليوم:</b> فقرة جديدة (أو أكثر حسب إعداداتك). اقرأها، واضغط الدائرة بعد كل قراءة، ولما توصل للعدد اضغط «حفظته».</li>
       <li><b>الربط:</b> بعد الجديد، بتسمّع كل اللي حفظته من الباب لحد هلأ مرة وحدة متصلة، وبتضغط «سمّعته».</li>
@@ -117,6 +121,7 @@
 </div>
 
 <script src="data/qudouri.js"></script>
+<script src="srs.js"></script>
 <script src="prose-engine.js"></script>
 </body>
 </html>

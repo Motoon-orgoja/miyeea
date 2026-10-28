@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0B7A55">
 <title>حفظ الشاطبية</title>
+<link rel="preload" href="fonts/Amiri-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/NotoKufiArabic-500_800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="fonts.css">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -14,6 +16,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="الميئية">
 <link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="ui.css">
+<script src="ui.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -84,7 +88,7 @@
 
   <div class="tabs" role="tablist" id="mainTabs">
     <button id="t-today" role="tab" aria-selected="true" data-v="today">ورد اليوم</button>
-    <button id="t-fri" role="tab" aria-selected="false" data-v="fri">تسميع أسبوعي</button>
+    <button id="t-fri" role="tab" aria-selected="false" data-v="fri">التسميع</button>
     <button id="t-all" role="tab" aria-selected="false" data-v="all">المنظومة</button>
     <button id="t-expl" role="tab" aria-selected="false" data-v="expl" hidden>الشرح</button>
   </div>
@@ -193,6 +197,7 @@
 </div>
 
 <script src="data/shatibiyya.js"></script>
+<script src="srs.js"></script>
 <script src="engine.js"></script>
 
 </body>

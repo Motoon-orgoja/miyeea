@@ -1,0 +1,94 @@
+/* Shared shell on top of app.css / prose.css: app bar, sheets, toast, reader preferences (text size), and larger touch targets.
+   --vs scales the memorised text, --us the interface text; both come from the settings sheet (ui.js). */
+:root{--vs:1;--us:1;--radius:14px;--shadow:0 1px 2px rgba(16,40,30,.06),0 4px 14px rgba(16,40,30,.05)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--shadow:0 1px 2px rgba(0,0,0,.4)}}
+:root[data-theme="dark"]{--shadow:0 1px 2px rgba(0,0,0,.4)}
+body{font-size:calc(15px*var(--us));-webkit-tap-highlight-color:transparent}
+.card{box-shadow:var(--shadow);border-radius:18px}
+
+/* memorised text follows the reader's size */
+.bayt{font-size:calc(21px*var(--vs))}
+.utext{font-size:calc(22px*var(--vs))}
+.sharh p{font-size:calc(18px*var(--vs))}
+.vsharh p,.ecard p,.ecard ul{font-size:calc(15px*var(--vs))}
+.heard{font-size:calc(15px*var(--vs))!important}
+@media (max-width:420px){.bayt{font-size:calc(19.5px*var(--vs))}}
+
+/* touch targets of at least 44px, as Apple's guidelines ask */
+.btn{min-height:44px;padding:10px 16px;border-radius:12px;font-size:calc(14px*var(--us));transition:transform .08s,background .15s}
+.btn:active{transform:scale(.97)}
+.btn.primary{box-shadow:0 1px 0 rgba(0,0,0,.08)}
+.ward .btn,.unit .row .btn,.pacts .btn,.orow .btn{min-height:40px;font-size:calc(13px*var(--us))}
+.tabs{position:sticky;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:12;box-shadow:var(--shadow)}
+.tabs button{min-height:42px;font-size:calc(14px*var(--us))}
+.modes button{min-height:40px;font-size:calc(12.5px*var(--us))}
+input,textarea,select{min-height:44px;font-size:16px} /* 16px keeps iOS from zooming into the field */
+.plan input{font-size:18px}
+input[type="checkbox"]{min-height:0;width:20px;height:20px;accent-color:var(--accent)}
+
+/* app bar */
+.ui-bar{display:flex;gap:6px;align-items:center;margin-bottom:4px}
+.ui-tab{display:flex;align-items:center;gap:6px;min-height:42px;padding:0 14px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:600 calc(13.5px*var(--us)) var(--ui);text-decoration:none;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ui-tab.on{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+button.ui-tab{flex:1 1 auto;justify-content:center}
+a.ui-tab{flex:none}
+.ui-caret{font-size:.8em;opacity:.7}
+.ui-ico{flex:none;width:44px;height:42px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:20px;cursor:pointer;display:grid;place-items:center}
+.ui-tab:focus-visible,.ui-ico:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+/* bottom sheet */
+.ui-locked{overflow:hidden}
+.ui-backdrop{position:fixed;inset:0;z-index:50;background:rgba(10,20,15,.42);display:flex;align-items:flex-end;justify-content:center;opacity:0;transition:opacity .18s}
+.ui-backdrop.on{opacity:1}
+.ui-sheet{width:100%;max-width:640px;max-height:88vh;overflow:auto;background:var(--surface);color:var(--ink);border-radius:20px 20px 0 0;padding:6px 18px calc(18px + env(safe-area-inset-bottom,0px));transform:translateY(24px);transition:transform .2s;box-shadow:0 -8px 30px rgba(0,0,0,.18)}
+.ui-backdrop.on .ui-sheet{transform:none}
+.ui-sheet-h{position:sticky;top:0;background:var(--surface);display:flex;align-items:center;justify-content:space-between;padding:12px 0 10px;border-bottom:1px solid var(--line);margin-bottom:10px;z-index:1}
+.ui-sheet-h b{font-size:calc(17px*var(--us))}
+.ui-x{width:40px;height:40px;border-radius:50%;border:0;background:var(--bg);color:var(--ink);font-size:16px;cursor:pointer}
+.ui-sheet-b{display:flex;flex-direction:column;gap:16px}
+.ui-field{display:flex;flex-direction:column;gap:8px}
+.ui-lbl{font-size:calc(12.5px*var(--us));font-weight:700;color:var(--muted)}
+.ui-hint{font-size:calc(12px*var(--us));color:var(--muted);margin:0}
+.ui-seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:4px}
+.ui-seg button{min-height:40px;border:0;border-radius:9px;background:transparent;color:var(--muted);font:600 calc(13.5px*var(--us)) var(--ui);cursor:pointer}
+.ui-seg button[aria-checked="true"]{background:var(--surface);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.ui-range{display:flex;align-items:center;gap:10px}
+.ui-range input{flex:1;min-height:32px;padding:0;background:transparent;border:0;accent-color:var(--accent)}
+.ui-val{min-width:46px;text-align:center;font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent)}
+.ui-preview{font-family:var(--verse);font-size:calc(21px*var(--vs));line-height:1.9;text-align:center;background:var(--bg);border-radius:12px;padding:8px}
+.ui-check{display:flex;align-items:center;gap:8px;font-weight:600;cursor:pointer}
+.ui-row{display:flex;gap:8px;align-items:center}
+.ui-row input[type="time"]{width:auto;flex:none}
+.ui-row .btn{flex:1}
+.ui-col{display:flex;flex-direction:column;gap:8px}
+.ui-book{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;color:var(--ink);text-decoration:none;background:var(--bg)}
+.ui-book b{font-family:var(--verse);font-size:calc(19px*var(--us))}
+.ui-book small{color:var(--muted);font-size:calc(12.5px*var(--us))}
+.ui-book.cur{border-color:var(--accent);background:var(--accent-soft)}
+
+/* toast */
+.ui-toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);z-index:60;background:var(--ink);color:var(--surface);font:600 calc(14px*var(--us)) var(--ui);padding:10px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:90vw;text-align:center}
+.ui-toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){.ui-backdrop,.ui-sheet,.ui-toast,.btn{transition:none}}
+.ui-nudge{display:flex;flex-direction:column;gap:8px;background:var(--gold-soft);color:var(--ink);border-radius:14px;padding:12px 14px;font-size:calc(13.5px*var(--us));font-weight:600}
+.ui-nudge .btn{flex:none}
+/* graded fading (mode «تدريجي») */
+.m-fade .w.fz:not(.peek){background:var(--veil);border-radius:5px;cursor:pointer}
+.m-fade .w.fz:not(.peek),.m-fade .w.fz:not(.peek) *{color:transparent!important;text-decoration:none!important}
+.m-fade .w.peek{background:var(--gold-soft);border-radius:5px}
+.ui-fade{display:flex;align-items:center;gap:8px}
+.ui-fade .btn{flex:none;min-height:40px;padding:8px 14px}
+.ui-fade-l{flex:1;text-align:center;font-size:calc(13px*var(--us));font-weight:700;color:var(--muted)}
+
+/* verses: on a phone the first hemistich sits at the start and the second at the end, like a printed poem stacked;
+   with room for both, they stand side by side, each justified across its half */
+.verses{container-type:inline-size}
+.bayt{display:flex;flex-direction:column;gap:0;column-gap:0}
+.bayt .sh{max-width:100%}
+.bayt .sh.b1{align-self:flex-start}
+.bayt .sh.b2{align-self:flex-end;padding-inline-start:1.2em}
+@container (min-width:560px){
+  .bayt{display:grid;grid-template-columns:1fr 1fr;column-gap:2.2em}
+  .bayt .sh{text-align:justify;text-align-last:justify;align-self:auto;padding:0}
+}
+.modes{grid-template-columns:repeat(3,1fr)}

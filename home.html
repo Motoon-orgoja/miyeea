@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0B7A55">
 <title>وردي اليوم</title>
+<link rel="preload" href="fonts/Amiri-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/NotoKufiArabic-500_800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="fonts.css">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -13,6 +15,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="المتون">
 <link rel="stylesheet" href="prose.css">
+<link rel="stylesheet" href="ui.css">
+<script src="ui.js"></script>
 <style>
 /* the day's tasks per book, then statistics */
 .bk{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-top:1px solid var(--line)}
@@ -56,8 +60,8 @@ a.btn{text-decoration:none;text-align:center}
   </section>
 
   <section class="card" id="restCard" hidden>
-    <div class="eyebrow">متون ما بلّشت فيها بعد</div>
-    <div class="row" id="restList"></div>
+    <div class="eyebrow">متون ما بلّشت فيها بعد · اضغط على أي واحد لتبلّش</div>
+    <div class="ui-col" id="restList"></div>
   </section>
 
   <section class="card">

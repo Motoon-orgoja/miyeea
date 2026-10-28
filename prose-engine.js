@@ -40,13 +40,13 @@ const today=()=>{try{return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Amma
 const addDays=(d,n)=>{const x=new Date(d+'T12:00:00Z');x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10)};
 const dayDiff=(a,b)=>Math.round((new Date(a+'T12:00:00Z')-new Date(b+'T12:00:00Z'))/864e5);
 const dayName=d=>{try{return new Intl.DateTimeFormat('ar-JO',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'}).format(new Date(d+'T12:00:00Z'))}catch(e){return d}};
-const when=d=>{const n=dayDiff(d,today());return n<=0?'اليوم':n===1?'بكرة':n===2?'بعد بكرة':`بعد ${ar(n)} أيام`};
+const when=d=>{const n=dayDiff(d,today());return n<=0?'اليوم':n===1?'بكرة':n===2?'بعد بكرة':`بعد ${ar(n)} ${n<=10?'أيام':'يوم'}`};
 
 /* ---------- learning, linking, block review ----------
    Units of the current chapter are learned in order (or as picked). Each day after the new unit, everything learned so far
    in that chapter is recited once together ("ربط"). A finished chapter becomes one block, reviewed on spaced steps:
-   blocks[chapter]: {st: stage 1..7, due: date, lap: lapses}. Stage n waits STEPS[n-1] days. */
-const STEPS=[1,2,4,7,15,30,60];
+   blocks[chapter] is one FSRS card (srs.js): {s, d, last, due, lap, reps}. */
+const inDays=n=>n<=1?'بكرة':n===2?'بعد يومين':`بعد ${ar(n)} ${n<=10?'أيام':'يوم'}`;
 const LSK=BOOK.lsk;
 // extra: today's added allowance of new units; pick: units chosen to learn next; blockAhead/link: per chapter, the day a review was pulled forward / the linking was done
 let S={per:1,goal:10,cards:{},newDay:'',newCount:0,reps:{},log:{},mistW:{},extra:{d:'',n:0},pick:[],blocks:{},blockAhead:{},link:{},cur:''};
@@ -63,15 +63,13 @@ function logToday(k){const t=today();S.log[t]=S.log[t]||{n:0,r:0};S.log[t][k]++}
 const unitsOf=ch=>CHI[ch].units;
 const learnedIds=(ch=CUR)=>unitsOf(ch).filter(u=>S.cards[u.id]).map(u=>u.id);
 const allLearned=(ch=CUR)=>unitsOf(ch).every(u=>S.cards[u.id]);
-function ensureBlock(ch){if(allLearned(ch)&&!S.blocks[ch])S.blocks[ch]={st:1,due:addDays(today(),1),lap:0}}
+function ensureBlock(ch){if(allLearned(ch)&&!S.blocks[ch])S.blocks[ch]=SRS.fresh(today())}
 function setCur(id){if(!CHI[id])id=CH[0].id;CUR=id;U=unitsOf(id);S.cur=id}
 // the next chapter after the current one that is not finished yet
 const nextChapter=()=>{const i=CH.findIndex(c=>c.id===CUR);return [...CH.slice(i+1),...CH.slice(0,i)].find(c=>!allLearned(c.id))};
 function gradeBlock(ch,g){
   const c=S.blocks[ch]; if(!c)return; delete S.blockAhead[ch]; delete c.old;
-  if(g==='again'){c.st=1;c.lap=(c.lap||0)+1;c.due=addDays(today(),1)}
-  else if(g==='hard'){c.due=addDays(today(),Math.max(1,Math.ceil(STEPS[c.st-1]/2)))}
-  else{c.st=Math.min(STEPS.length,c.st+1);c.due=addDays(today(),STEPS[c.st-1])}
+  SRS.review(c,g,today(),ch);
   logToday('r'); save();
 }
 function learn(id){S.cards[id]={d:today()};delete S.reps[id];rollNew();S.newCount++;logToday('n');ensureBlock(CUR);save()}
@@ -83,7 +81,7 @@ function newList(){rollNew();const left=Math.max(0,S.per+extraToday()-S.newCount
 // flexible ward: learn one more today, review a chapter early, or put the current card off until tomorrow
 function addNew(id){if(S.extra.d!==today())S.extra={d:today(),n:0};S.extra.n++;if(id){S.pick=[id,...S.pick.filter(x=>x!==id)]}save()}
 function postpone(kind,ch){if(kind==='block'){S.blocks[ch].due=addDays(today(),1);delete S.blockAhead[ch]}else if(kind==='link'){S.link[CUR]=today()}else{rollNew();S.newCount++}save()}
-const stageTxt=c=>c.st>=STEPS.length?'ثابت':`مرحلة ${ar(c.st)} من ${ar(STEPS.length)}`;
+const stageTxt=c=>SRS.label(c);
 // a chapter that turned out forgotten goes back to learning, unit by unit
 function relearn(ch){unitsOf(ch).forEach(u=>{delete S.cards[u.id];delete S.reps[u.id]});delete S.blocks[ch];delete S.blockAhead[ch];delete S.link[ch];setCur(ch);save()}
 
@@ -91,7 +89,7 @@ function relearn(ch){unitsOf(ch).forEach(u=>{delete S.cards[u.id];delete S.reps[
    Fully known chapters become blocks right away. Their first reviews are spread over the coming days, at most `cap` reviews a day
    counting the ones already due, so a long list never lands on one day. Strength sets the starting stage. Partly known chapters
    get their first units marked as learned and continue from there. */
-const OLD_ST={strong:4,mid:3,weak:1};
+
 function spread(dues,n,cap){
   const cnt={}; dues.forEach(d=>{const k=d<today()?today():d;cnt[k]=(cnt[k]||0)+1});
   const out=[]; let d=today();
@@ -118,12 +116,12 @@ function openOld(first){
   showScreen('old');
 }
 function applyOld(){
-  const st=OLD_ST[$('oldStr').value]||3, cap=Math.max(1,Math.min(20,numIn($('oldCap').value)||2));
+  const str=$('oldStr').value, cap=Math.max(1,Math.min(20,numIn($('oldCap').value)||2));
   const full=[], part=[];
   document.querySelectorAll('#oldList select').forEach(s=>{const v=s.value,ch=s.dataset.ch; if(v==='all')full.push(ch); else if(v)part.push([ch,+v])});
   if(!full.length&&!part.length){$('oldMsg').textContent='ما علّمت ولا باب. اختر «حافظه كامل» أو «لحد…» جنب الأبواب اللي حافظها.';return}
   const dues=spread(Object.values(S.blocks).map(b=>b.due),full.length,cap);
-  full.forEach((ch,i)=>{unitsOf(ch).forEach(u=>{if(!S.cards[u.id])S.cards[u.id]={d:today(),old:1}}); S.blocks[ch]={st,due:dues[i],lap:0,old:1}});
+  full.forEach((ch,i)=>{unitsOf(ch).forEach(u=>{if(!S.cards[u.id])S.cards[u.id]={d:today(),old:1}}); S.blocks[ch]=SRS.known(str,today(),dues[i])});
   part.forEach(([ch,k])=>unitsOf(ch).slice(0,k).forEach(u=>{if(!S.cards[u.id])S.cards[u.id]={d:today(),old:1}}));
   // carry on learning in a partly known chapter, unless the current one is already under way
   if(part.length&&(allLearned()||!learnedIds().length||full.includes(CUR)))setCur(part[0][0]);
@@ -161,16 +159,20 @@ function unitEl(u,opts={}){
 }
 
 /* ---------- study modes ---------- */
-const MODES=[['full','كامل'],['hint','أول حرف'],['hide','مخفي'],['voice','تسميع بالصوت']];
+const MODES=[['full','كامل'],['hint','أول حرف'],['fade','إخفاء تدريجي'],['hide','مخفي'],['voice','تسميع بالصوت']];
 let mode={today:'full',all:'full'};
 function modeBar(key,box,onChange){
   box.replaceChildren();
   MODES.forEach(([m,l])=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.setAttribute('aria-pressed',String(mode[key]===m));
     b.addEventListener('click',()=>{if(VS.on)vStop(true);mode[key]=m;onChange()});box.append(b)});
+  // the fading mode adds its level control under the buttons
+  if(mode[key]==='fade'){const fb=window.UI.fadeBar(onChange);fb.style.gridColumn='1/-1';box.append(fb)}
 }
-function applyMode(el,m){el.classList.remove('m-full','m-hint','m-hide','m-voice','open');el.classList.add('m-'+m)}
+function applyMode(el,m){el.classList.remove('m-full','m-hint','m-fade','m-hide','m-voice','open');el.classList.add('m-'+m);if(m==='fade')window.UI.fade(el,window.UI.fadeLevel())}
 document.addEventListener('click',e=>{
-  const w=e.target.closest('.w'); if(!w)return; const host=w.closest('.m-hide,.m-voice'); if(!host)return;
+  const w=e.target.closest('.w'); if(!w)return;
+  if(w.classList.contains('fz')&&w.closest('.m-fade')){w.classList.toggle('peek');return}
+  const host=w.closest('.m-hide,.m-voice'); if(!host)return;
   if(host.classList.contains('m-hide'))w.classList.toggle('peek');
   else if(!w.classList.contains('said')){const k=vWords().indexOf(w);if(k>=0){VS.hints.add(k);vUpdate()}}
 });
@@ -228,7 +230,8 @@ function renderToday(){
     }else{
       hint.textContent='سمّع الباب كامل من حفظك بالترتيب، اكشفه، وبعدين قيّم حالك بصدق.';
       const g=document.createElement('div'); g.className='grades';
-      [['again','نسيت','بكرة','bad'],['hard','صعب',`بعد ${ar(Math.max(1,Math.ceil(STEPS[S.blocks[bd.id].st-1]/2)))} يوم`,'gold'],['good','تمام',`بعد ${ar(STEPS[Math.min(STEPS.length,S.blocks[bd.id].st+1)-1])} يوم`,'primary']].forEach(([k,l,sub,c])=>{
+      const pv=SRS.preview(S.blocks[bd.id],today());
+      [['again','نسيت',inDays(pv.again),'bad'],['hard','صعب',inDays(pv.hard),'gold'],['good','تمام',inDays(pv.good),'primary']].forEach(([k,l,sub,c])=>{
         const b=document.createElement('button'); b.className='btn '+c; b.innerHTML=`${l}<small>${sub}</small>`;
         b.addEventListener('click',()=>{if(VS.on)vStop(true);mode._seen='';gradeBlock(bd.id,k);renderAll()}); g.append(b)});
       box.append(show,hint,g);
@@ -411,7 +414,7 @@ $('setup').insertAdjacentHTML('afterend',`<section id="oldMem" class="card" hidd
       <label><span class="eyebrow">كيف حفظك فيه؟</span><select id="oldStr"><option value="strong">قوي</option><option value="mid" selected>متوسط</option><option value="weak">ضعيف</option></select></label>
       <label><span class="eyebrow">مراجعات الأبواب باليوم (أقصى حد)</span><input id="oldCap" type="text" inputmode="numeric" value="2"></label>
     </div>
-    <p class="note" style="margin:0">القوي بتيجي مراجعته الثانية بعد أسبوعين، والمتوسط بعد أسبوع، والضعيف بعد يومين. وأول مراجعة إلك بتكون اختبار: إذا قيّمت «نسيت» بيرجع قريب، وفي زر يرجّع الباب للحفظ من جديد.</p>
+    <p class="note" style="margin:0">القوي بتتباعد مراجعته أسرع، والضعيف بيرجعلك أقرب. وبعد كل مراجعة بيتحدد موعد اللي بعدها حسب تقييمك. وأول مراجعة إلك بتكون اختبار: إذا قيّمت «نسيت» بيرجع قريب، وفي زر يرجّع الباب للحفظ من جديد.</p>
     <p class="note" id="oldMsg" style="margin:0;color:var(--bad)"></p>
     <button class="btn primary" id="oldApply">أضفه للمراجعة</button>
     <button class="btn" id="oldSkip">رجوع</button>

@@ -64,18 +64,21 @@ function verseRow(i,opts={}){
 }
 
 /* ---------- study modes ---------- */
-const MODES=[['full','كامل'],['step','بيت بيت'],['hint','أول حرف'],['half','إخفاء الشطر٢'],['voice','تسميع بالصوت']];
+const MODES=[['full','كامل'],['step','بيت بيت'],['hint','أول حرف'],['fade','إخفاء تدريجي'],['half','إخفاء الشطر٢'],['voice','تسميع بالصوت']];
 const LISTS={today:'todayVerses',fri:'friVerses',all:'allVerses'};
 const mode={today:store.get('mode_today','full'),fri:store.get('mode_fri','half'),all:store.get('mode_all','full')};
 const step={today:0,fri:0,all:0};
 let active='today';
 document.querySelectorAll('.modes').forEach(box=>{
   const key=box.dataset.list;
+  const fb=UI.fadeBar(()=>Object.keys(LISTS).forEach(k=>mode[k]==='fade'&&applyMode(k))); fb.classList.add('fadebox'); fb.dataset.list=key; fb.hidden=true; box.after(fb);
   MODES.forEach(([m,l])=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.dataset.m=m;b.id='mode-'+key+'-'+m;b.addEventListener('click',()=>{if(mode[key]==='voice'&&m!=='voice')vStop(true);mode[key]=m;store.set('mode_'+key,m);step[key]=0;if(m==='voice')vReset();applyMode(key)});box.append(b)});
 });
 function applyMode(key){
   const list=$(LISTS[key]), m=mode[key];
-  list.classList.remove('m-full','m-step','m-hint','m-half','m-voice'); list.classList.add('m-'+m);
+  list.classList.remove('m-full','m-step','m-hint','m-fade','m-half','m-voice'); list.classList.add('m-'+m);
+  document.querySelectorAll(`.fadebox[data-list="${key}"]`).forEach(b=>b.hidden=m!=="fade");
+  if(m==='fade')UI.fade(list,UI.fadeLevel());
   document.querySelectorAll(`.modes[data-list="${key}"] button`).forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.m===m)));
   const rows=[...list.querySelectorAll('.v')];
   rows.forEach((r,k)=>{r.classList.remove('open'); r.classList.toggle('veiled',m==='step'&&k>=step[key]); r.classList.toggle('next',m==='step'&&k===step[key])});
@@ -105,6 +108,7 @@ Object.entries(LISTS).forEach(([key,id])=>{
     const m=mode[key];
     if(m==='step'){const rows=[...$(id).querySelectorAll('.v')]; const k=rows.indexOf(r); if(k>=step[key])revealTo(key,k+1)}
     else if(m==='hint'||m==='half'){r.classList.toggle('open')}
+    else if(m==='fade'){const w=e.target.closest('.w.fz'); if(w)w.classList.toggle('peek')}
     else if(m==='voice'){const w=e.target.closest('.w'); if(w&&!w.classList.contains('said')){const ws=vWords(); const k=ws.indexOf(w); if(k>=0){VS.hints.add(k);vUpdate()}}}
   });
 });
@@ -287,7 +291,7 @@ function render(){
   $('done').disabled=S.done;
   fill('today',f,e,{markNew:true});
   const oc=friMode==='old'&&S.oldB&&S.oldB[oldK]; if(friMode==='old'&&!oc)friMode='all';
-  $('friEyebrow').textContent=oc?'مراجعة المحفوظ القديم'+(c=>c.old?' · أول مراجعة':' · مرحلة '+ar(c.st)+' من '+ar(STEPS.length))(oc):WDAY()<0?'التسميع الأسبوعي':'التسميع الأسبوعي · يوم '+WDAYS[WDAY()];
+  $('friEyebrow').textContent=oc?'مراجعة المحفوظ القديم'+(c=>c.old?' · أول مراجعة':' · '+SRS.label(c))(oc):WDAY()<0?'التسميع الأسبوعي':'التسميع الأسبوعي · يوم '+WDAYS[WDAY()];
   const weak=weakVerses(); $('friWeak').hidden=!weak.length; if(friMode==='weak'&&!weak.length)friMode='all';
   const fe=S.mem, fs=friMode==='week'?Math.max(1,fe-11):1;
   $('friRange').textContent=oc?`الأبيات ${ar(oc.a)} – ${ar(oc.b)}`:friMode==='weak'?`${ar(weak.length)} أبيات بتغلط فيها`:fe?`من ${ar(fs)} إلى ${ar(fe)}`:'لا يوجد محفوظ بعد';
@@ -326,12 +330,12 @@ function weakVerses(){return Object.keys(S.mist||{}).map(Number).filter(i=>S.mis
 
 /* ---------- old memorisation: verses known before using the site ----------
    S.oldB holds review blocks [{a,b,st,due,lap,old}]: verse ranges cut at the poem's sections, about `size` verses each.
-   They are reviewed on spaced steps (stage n waits STEPS[n-1] days); first reviews are spread over the coming days so no day
+   Each is an FSRS card (srs.js) reviewed on its own schedule; first reviews are spread over the coming days so no day
    gets more than `cap` of them. Strength sets the starting stage. Verses still inside the daily ward are left to the ward. */
-const STEPS=[1,2,4,7,15,30,60], OLD_ST={strong:4,mid:3,weak:1};
+const inDays=n=>n<=1?'بكرة':n===2?'بعد يومين':`بعد ${ar(n)} ${n<=10?'أيام':'يوم'}`;
 const addDays=(d,n)=>{const x=new Date(d+'T12:00:00Z');x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10)};
 const dayDiff=(a,b)=>Math.round((new Date(a+'T12:00:00Z')-new Date(b+'T12:00:00Z'))/864e5);
-const when=d=>{const n=dayDiff(d,today());return n<=0?'اليوم':n===1?'بكرة':n===2?'بعد بكرة':`بعد ${ar(n)} أيام`};
+const when=d=>{const n=dayDiff(d,today());return n<=0?'اليوم':n===1?'بكرة':n===2?'بعد بكرة':`بعد ${ar(n)} ${n<=10?'أيام':'يوم'}`};
 let oldK=-1, oldNote='';
 function spread(dues,n,cap){
   const cnt={}; dues.forEach(d=>{const k=d<today()?today():d;cnt[k]=(cnt[k]||0)+1});
@@ -349,9 +353,7 @@ const oldDue=st=>((st&&st.oldB)||[]).map((c,k)=>[c,k]).filter(([c])=>c.due<=toda
 const secOf=i=>{for(let j=i;j>0;j--)if(SECS[j])return SECS[j];return ''};
 function gradeOld(k,g){
   const c=S.oldB[k]; if(!c)return; delete c.old;
-  if(g==='again'){c.st=1;c.lap=(c.lap||0)+1;c.due=addDays(today(),1)}
-  else if(g==='hard'){c.due=addDays(today(),Math.max(1,Math.ceil(STEPS[c.st-1]/2)))}
-  else{c.st=Math.min(STEPS.length,c.st+1);c.due=addDays(today(),STEPS[c.st-1])}
+  SRS.review(c,g,today(),c.a+'-'+c.b);
   S.olog=S.olog||{}; S.olog[today()]=(S.olog[today()]||0)+1; save();
 }
 function reviewOld(k){oldK=k;friMode='old';if(VS.on)vStop(true);vReset();render();$('t-fri').click();scrollTo(0,0)}
@@ -376,7 +378,8 @@ function renderOldGrade(){
   const c=friMode==='old'&&S.oldB&&S.oldB[oldK], box=$('oldGrade');
   box.hidden=!c; $('friNote').parentElement.hidden=!!c; if(!c)return;
   const g=box.querySelector('.grades'); g.replaceChildren();
-  [['again','نسيت','بكرة','bad'],['hard','صعب',`بعد ${ar(Math.max(1,Math.ceil(STEPS[c.st-1]/2)))} يوم`,'gold'],['good','تمام',`بعد ${ar(STEPS[Math.min(STEPS.length,c.st+1)-1])} يوم`,'primary']].forEach(([k,l,sub,cl])=>{
+  const pv=SRS.preview(c,today());
+  [['again','نسيت',inDays(pv.again),'bad'],['hard','صعب',inDays(pv.hard),'gold'],['good','تمام',inDays(pv.good),'primary']].forEach(([k,l,sub,cl])=>{
     const b=document.createElement('button'); b.className='btn '+cl; b.innerHTML=`${l}<small>${sub}</small>`;
     b.addEventListener('click',()=>{if(VS.on)vStop(true);gradeOld(oldK,k);oldNote='';const nx=oldDue(S)[0];
       if(nx)reviewOld(nx[1]);else{friMode='all';oldK=-1;render();$('t-today').click();scrollTo(0,0)}});
@@ -394,7 +397,7 @@ function openOld(first){
   showScreen('old');
 }
 function applyOld(){
-  const st0=OLD_ST[$('oldStr').value]||3, cap=Math.max(1,Math.min(20,numIn($('oldCap').value)||2)), size=Math.max(4,Math.min(60,numIn($('oldSize').value)||20));
+  const str=$('oldStr').value, cap=Math.max(1,Math.min(20,numIn($('oldCap').value)||2)), size=Math.max(4,Math.min(60,numIn($('oldSize').value)||20));
   const picks=[...document.querySelectorAll('#oldList .orow')].map(r=>({id:r.dataset.id,a:numIn(r.querySelector('.oa').value)||1,b:numIn(r.querySelector('.ob').value)||0})).filter(x=>x.b>0);
   if(!picks.length){$('oldMsg').textContent='اكتب لحد أي بيت حافظ (بخانة «لحد»).';return}
   const plan=store.get('plan',null)||{per:PER(),goal:GOAL(),win:WIN()};
@@ -413,7 +416,7 @@ function applyOld(){
     states[id]=s;
   });
   const dues=spread(dues0,jobs.length,cap);
-  jobs.forEach(([s,[a,b]],i)=>s.oldB.push({a,b,st:st0,due:dues[i],lap:0,old:1}));
+  jobs.forEach(([s,[a,b]],i)=>s.oldB.push({a,b,...SRS.known(str,today(),dues[i])}));
   Object.entries(states).forEach(([id,s])=>{if(!s)return; if(s.oldB)s.oldB.sort((x,y)=>x.a-y.a);
     if(id===CUR)S=s; else try{localStorage.setItem(lskOf(id),JSON.stringify(s))}catch(e){}});
   const last=dues[dues.length-1];
@@ -430,7 +433,7 @@ $('setup').insertAdjacentHTML('afterend',`<section id="oldMem" class="card setup
       <label><span class="eyebrow">أبيات المقطع</span><input id="oldSize" type="text" inputmode="numeric" value="٢٠"></label>
       <label><span class="eyebrow">مقاطع باليوم (أقصى حد)</span><input id="oldCap" type="text" inputmode="numeric" value="٢"></label>
     </div>
-    <p class="note" style="margin:0">القوي بتيجي مراجعته الثانية بعد أسبوعين، والمتوسط بعد أسبوع، والضعيف بعد يومين. وأول مراجعة بتكون اختبار: إذا قيّمت «نسيت» بيرجعلك المقطع بكرة.</p>
+    <p class="note" style="margin:0">القوي بتتباعد مراجعته أسرع، والضعيف بيرجعلك أقرب. وبعد كل مراجعة بيتحدد موعد اللي بعدها حسب تقييمك. وأول مراجعة بتكون اختبار: إذا قيّمت «نسيت» بيرجعلك المقطع بكرة.</p>
     <p class="note" id="oldMsg" style="margin:0;color:var(--bad)"></p>
     <button class="btn primary" id="oldApply">أضفه للمراجعة</button>
     <button class="btn" id="oldSkip">رجوع</button>

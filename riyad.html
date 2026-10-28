@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0B7A55">
 <title>حفظ رياض الصالحين</title>
+<link rel="preload" href="fonts/Amiri-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/NotoKufiArabic-500_800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="fonts.css">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -13,6 +15,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="المتون">
 <link rel="stylesheet" href="prose.css">
+<link rel="stylesheet" href="ui.css">
+<script src="ui.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -37,7 +41,7 @@
   <section id="welcome" class="card guide" hidden>
     <div class="eyebrow">أهلًا وسهلًا</div>
     <div class="range">كيف بتحفظ الأحاديث هون؟</div>
-    <p class="note" style="margin:0">بتحفظ الباب حديث حديث بالترتيب، وكل يوم بتربط اللي حفظته ببعض. ولما تختم الباب، بيصير كتلة وحدة بتراجعها كاملة على مواعيد متباعدة: بعد يوم، ويومين، و٤، وأسبوع، وأسبوعين، وشهر، وشهرين. وإذا نسيت، بترجع المراجعة تقرب.</p>
+    <p class="note" style="margin:0">بتحفظ الباب حديث حديث بالترتيب، وكل يوم بتربط اللي حفظته ببعض. ولما تختم الباب، بيصير كتلة وحدة بتراجعها كاملة على مواعيد متباعدة بتتحدد حسب تقييمك لحالك، وكل ما ثبت أكثر بتتباعد لحد شهرين. وإذا نسيت، بترجع المراجعة تقرب.</p>
     <ol>
       <li><b>المحفوظ كامل:</b> الآيات، واسم الراوي، ونص الحديث، والتخريج (متفق عليه، رواه مسلم…).</li>
       <li><b>جديد اليوم:</b> كل يوم بيطلعلك حديث جديد (أو مقطع من حديث طويل). اقرأه، واضغط الدائرة بعد كل قراءة، ولما توصل للعدد اضغط «حفظته».</li>
@@ -120,6 +124,7 @@
 
 <script src="data/riyad.js"></script>
 <script src="riyad91-sharh.js"></script>
+<script src="srs.js"></script>
 <script src="prose-engine.js"></script>
 </body>
 </html>
