@@ -26,7 +26,7 @@ function poemBook(b){
   const c=all.find(x=>x.p.id===cur);
   if(c){const {p,s}=c, N=p.verses.length, per=s.per||2, win=Math.max(per,s.win||10), goal=s.goal||20;
     let end=s.end; if(s.day!==T&&s.done&&end<N)end=Math.min(N,end+per);
-    const from=Math.max(s.old===false?s.start:1,end-win+1), done=s.day===T&&s.done, reps=s.day===T?s.reps:0;
+    const grow=s.grow&&s.grow.d===T&&s.day===T?s.grow.n:0, from=Math.max(s.old===false?s.start:1,end-win-grow+1), done=s.day===T&&s.done, reps=s.day===T?s.reps:0;
     r.tasks.push({t:`ورد اليوم: الأبيات ${ar(from)}–${ar(end)}`+(multi?` من «${p.title}»`:''),sub:done?'تمّ ✓':`${ar(reps)} من ${ar(goal)} تكرار`,done});
     const wd=s.wday??5;
     if(wd===new Date().getDay()&&s.mem>0){const ok=(s.tasmee||[]).some(x=>x.d===T);r.tasks.push({t:'التسميع الأسبوعي',sub:ok?'سجّلته ✓':'اليوم موعده',done:ok})}
@@ -59,11 +59,13 @@ function proseBook(b){
 
 const R=BOOKS.map(b=>b.poems?poemBook(b):proseBook(b));
 const started=R.filter(r=>r.started), rest=R.filter(r=>!r.started);
+// the daily ward shows only the texts the reader is working on now; paused ones wait below
+const paused=k=>window.UI&&UI.isPaused(k), active=started.filter(r=>!paused(r.b.key)), held=started.filter(r=>paused(r.b.key));
 
 /* today */
 $('dayLbl').textContent=dayName(T);
 const list=$('todayList'); let open=0;
-started.forEach(r=>{
+active.forEach(r=>{
   const c=el('div','bk'), h=el('div','bkh');
   const a=el('a','bkt',r.b.title); a.href=PAGE[r.b.key]; h.append(a);
   const pend=r.tasks.filter(x=>!x.done).length; open+=pend;
@@ -75,7 +77,13 @@ started.forEach(r=>{
   const go=el('a','btn'+(pend?' primary':''),pend?'افتح وكمّل':'افتحه'); go.href=PAGE[r.b.key]; c.append(go);
   list.append(c);
 });
-$('todaySum').textContent=!started.length?'لسا ما بلّشت بأي متن. اختر متن من تحت وابدأ فيه.':open?`باقي عليك ${ar(open)} ${open===1?'مهمة':'مهام'} اليوم.`:'ما شاء الله، خلصت ورد اليوم بكل المتون 🤍';
+$('todaySum').textContent=!started.length?'لسا ما بلّشت بأي متن. اختر متن من تحت وابدأ فيه.':!active.length?'كل متونك موقوفة. فعّل اللي بدك تحفظه من تحت.':open?`باقي عليك ${ar(open)} ${open===1?'مهمة':'مهام'} اليوم.`:'ما شاء الله، خلصت ورد اليوم بكل المتون 🤍';
+
+/* paused texts: one tap brings each back to the ward */
+if(held.length){const box=el('div','held');box.append(el('div','eyebrow','متون موقوفة · ما بتطلع بالورد'));
+  held.forEach(r=>{const row=el('div','ui-book paused');const a=el('a','ui-book-link');a.href=PAGE[r.b.key];a.append(el('b','',r.b.title),el('small','',ar(r.done)+' من '+ar(r.total)));
+    const t=el('button','ui-switch','فعّله');t.type='button';t.onclick=()=>{UI.setPaused(r.b.key,false);location.reload()};row.append(a,t);box.append(row)});
+  list.after(box)}
 
 /* not started yet */
 $('restCard').hidden=!rest.length;

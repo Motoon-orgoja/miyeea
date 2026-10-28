@@ -152,14 +152,13 @@ function unitEl(u,opts={}){
   if(opts.status){const c=S.cards[u.id]; const p=document.createElement('span'); p.className='pill'+(c?'':' new'); p.textContent=c?'محفوظ ✓':'لسا ما بلّشته'; h.append(p)}
   const t=document.createElement('div'); t.className='utext';
   u.segs.forEach(([k,txt],i)=>{t.append(words(txt,'seg-'+k)); if(i<u.segs.length-1)t.append(document.createTextNode(' '))});
-  const ws=t.querySelectorAll('.w'); Object.keys(S.mistW).forEach(x=>{const [id,wi]=x.split(':'); if(id===u.id&&ws[+wi])ws[+wi].classList.add('wk')});
   d.append(h,t);
   if(u.gloss&&opts.gloss!==false){const g=document.createElement('div');g.className='gloss';g.innerHTML='معاني: '+u.gloss.map(([a,b])=>`<b>${a}</b>: ${b}`).join(' · ');d.append(g)}
   return d;
 }
 
 /* ---------- study modes ---------- */
-const MODES=[['full','كامل'],['hint','أول حرف'],['fade','إخفاء تدريجي'],['hide','مخفي'],['voice','تسميع بالصوت']];
+const MODES=[['full','كامل'],['fade','إخفاء تدريجي'],['hide','مخفي'],['voice','تسميع بالصوت']];
 let mode={today:'full',all:'full'};
 function modeBar(key,box,onChange){
   box.replaceChildren();
@@ -211,12 +210,12 @@ function renderToday(){
   if(kind==='new'){
     const n=S.reps[u.id]||0;
     const c=document.createElement('div'); c.className='counter';
-    const t=document.createElement('button'); t.className='tap'+(n>=S.goal?' full':''); t.innerHTML=`${ar(n)}<small>من ${ar(S.goal)}</small>`;
+    const t=document.createElement('button'); t.className='tap'+(n>=S.goal?' full':''); t.dataset.fab=''; t.innerHTML=`${ar(n)}<small>من ${ar(S.goal)}</small>`;
     t.addEventListener('click',()=>{S.reps[u.id]=(S.reps[u.id]||0)+1;save();renderToday()});
     const side=document.createElement('div'); side.style.flex='1';
     side.innerHTML='<p class="note" style="margin:0 0 8px">اقرأه كامل، واضغط الدائرة بعد كل قراءة. جرّب «أول حرف» و«مخفي» لما تحس إنه بلّش يثبت.</p>';
     const done=document.createElement('button'); done.className='btn primary'; done.textContent='حفظته ✓'; done.disabled=n<Math.min(3,S.goal);
-    done.addEventListener('click',()=>{if(VS.on)vStop(true);mode._seen='';learn(u.id);renderAll()});
+    done.addEventListener('click',()=>{if(VS.on)vStop(true);mode._seen='';snap('حفظت '+u.label);learn(u.id);renderAll();undoToast('حفظته ✓')});
     side.append(done); c.append(t,side); box.append(c);
   }else{
     const show=document.createElement('button'); show.className='btn'; show.textContent='اكشف النص';
@@ -225,7 +224,7 @@ function renderToday(){
     if(kind==='link'){
       hint.textContent='سمّع كل اللي حفظته من أول الباب لآخر '+W+' حفظته، مرة وحدة متصلة، بصوتك أو بقلبك. هاد بيربط المحفوظ ببعضه.';
       const ok=document.createElement('button'); ok.className='btn primary'; ok.textContent='سمّعته ✓';
-      ok.addEventListener('click',()=>{if(VS.on)vStop(true);mode._seen='';doneLink();renderAll()});
+      ok.addEventListener('click',()=>{if(VS.on)vStop(true);mode._seen='';snap('سمّعت الربط');doneLink();renderAll();undoToast('سمّعته ✓')});
       box.append(show,hint,ok);
     }else{
       hint.textContent='سمّع الباب كامل من حفظك بالترتيب، اكشفه، وبعدين قيّم حالك بصدق.';
@@ -233,16 +232,21 @@ function renderToday(){
       const pv=SRS.preview(S.blocks[bd.id],today());
       [['again','نسيت',inDays(pv.again),'bad'],['hard','صعب',inDays(pv.hard),'gold'],['good','تمام',inDays(pv.good),'primary']].forEach(([k,l,sub,c])=>{
         const b=document.createElement('button'); b.className='btn '+c; b.innerHTML=`${l}<small>${sub}</small>`;
-        b.addEventListener('click',()=>{if(VS.on)vStop(true);mode._seen='';gradeBlock(bd.id,k);renderAll()}); g.append(b)});
+        b.addEventListener('click',()=>{if(VS.on)vStop(true);mode._seen='';snap('قيّمت مراجعة «'+bd.title+'»');gradeBlock(bd.id,k);renderAll();undoToast('انسجّل التقييم: '+l)}); g.append(b)});
       box.append(show,hint,g);
     }
   }
   box.append(wardActions(kind,bd&&bd.id));
   updateVoicebar();
 }
+/* ---------- undo: each step that changes progress is snapshotted first, and can be taken back ---------- */
+const UNDO=[];
+function snap(label){UNDO.push({label,s:JSON.stringify(S)});if(UNDO.length>30)UNDO.shift()}
+function undo(){const u=UNDO.pop();if(!u)return;S=JSON.parse(u.s);setCur(S.cur);mode._seen='';save();renderAll();window.UI.toast('رجعت عن: '+u.label)}
+const undoToast=label=>window.UI.toast(label,{label:'تراجع',fn:undo});
 function doneLink(){S.link[CUR]=today();logToday('r');save()}
 const goToday=()=>document.querySelector('.tabs button[data-v="today"]').click();
-function actBtn(txt,fn){const b=document.createElement('button');b.className='btn';b.textContent=txt;b.addEventListener('click',()=>{if(VS.on)vStop(true);mode._seen='';fn();renderAll()});return b}
+function actBtn(txt,fn){const b=document.createElement('button');b.className='btn';b.textContent=txt;b.addEventListener('click',()=>{snap(txt.replace(/^\S+\s/,''));if(VS.on)vStop(true);mode._seen='';fn();renderAll()});return b}
 function wardActions(kind,ch){
   const box=document.createElement('div'); box.className='ward';
   const h=document.createElement('div'); h.className='eyebrow'; h.textContent='تحكّم بورد اليوم'; box.append(h);
@@ -252,6 +256,7 @@ function wardActions(kind,ch){
   if(S.blocks[CUR]&&!due.includes(CUR))row.append(actBtn('🔁 راجع الباب كامل اليوم',()=>{S.blockAhead[CUR]=today();save()}));
   if(kind)row.append(actBtn('⏭ أجّل هاد لبكرة',()=>postpone(kind,ch)));
   if(kind==='block')row.append(actBtn('↩︎ نسيته، رجّعه للحفظ',()=>{if(confirm('بدك ترجع تحفظ «'+CHI[ch].title+'» فقرة فقرة من جديد؟'))relearn(ch)}));
+  if(UNDO.length){const u=document.createElement('button');u.className='btn';u.textContent='↶ تراجع عن «'+UNDO[UNDO.length-1].label+'»';u.addEventListener('click',undo);row.append(u)}
   if(!row.childElementCount)return document.createTextNode('');
   box.append(row); return box;
 }
@@ -265,6 +270,7 @@ function renderAll(){
   U.forEach(u=>{const el=unitEl(u,{status:true});applyMode(el,mode.all);
     const c=S.cards[u.id], acts=document.createElement('div'); acts.className='row';
     if(!c)acts.append(actBtn('➕ احفظه اليوم',()=>{addNew(u.id);goToday()}));
+    else acts.append(actBtn('↩︎ رجّعه للحفظ',()=>{delete S.cards[u.id];const ch=CH.find(x=>x.units.includes(u));if(ch){delete S.blocks[ch.id];delete S.blockAhead[ch.id]}save()}));
     if(acts.childElementCount)el.append(acts);
     const sh=sharhEl(u.id); if(sh)el.append(sh);
     list.append(el)});
@@ -314,36 +320,14 @@ if(MULTI){
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const STANDALONE=navigator.standalone===true||matchMedia('(display-mode: standalone)').matches;
-const VS={on:false,rec:null,finals:[],prev:[],lang:'ar-JO',interim:'',hints:new Set()};
-const norm=w=>w.replace(/[ً-ٰٟۖ-ۭـ(){}«»﴿﴾\[\]:؛،.؟!"]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/ؤ/g,'و').replace(/ئ/g,'ي');
-const nz=w=>norm(toAscii(w)).replace(/[^ء-ي0-9]/g,'');
-function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=[...Array(n+1).keys()];for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]}
-const strip=x=>x.replace(/^[وف](?=..)/,'').replace(/^(ال|لل|بال)(?=..)/,'');
-function sim(t,e){
-  if(!t||!e)return false; if(t===e)return true;
-  const a=strip(t),b=strip(e); if(a===b)return true;
-  const L=Math.max(a.length,b.length), d=lev(a,b);
-  if(L<=3)return d<=1&&Math.min(a.length,b.length)>=2;
-  return d/L<=0.34;
-}
-const vWords=()=>voiceHost?[...voiceHost.querySelectorAll('.w')].filter(w=>nz(w.textContent)):[];
-function align(tokens,exp){
-  const st=new Array(exp.length).fill(0); let p=0;
-  const skipHints=()=>{while(p<exp.length&&VS.hints.has(p)){st[p]=3;p++}};
-  for(const t of tokens){
-    skipHints(); if(p>=exp.length)break;
-    if(sim(t,exp[p])){st[p]=1;p++;continue}
-    if(p+1<exp.length&&sim(t,exp[p]+exp[p+1])){st[p]=st[p+1]=1;p+=2;continue}
-    if(strip(t).length>=3){let k=-1;for(let j=1;j<=3&&p+j<exp.length;j++){if(sim(t,exp[p+j])){k=p+j;break}}
-      if(k>0){for(let j=p;j<k;j++)st[j]=VS.hints.has(j)?3:2;st[k]=1;p=k+1}}
-  }
-  skipHints(); return {st,p};
-}
+const VS={on:false,rec:null,finals:[],prev:[],lang:localStorage.getItem('ui_asrLang')||VOICE.LANGS[0],interim:'',hints:new Set()};
+const vWords=()=>voiceHost?[...voiceHost.querySelectorAll('.w')].filter(w=>VOICE.norm(w.textContent)):[];
+const vExp=()=>vWords().map(w=>({n:w.textContent}));
 let lastRes={st:[],p:0};
 function vUpdate(){
   const ws=vWords(); if(!ws.length)return;
   const raw=(VS.finals.join(' ')+' '+VS.interim).trim();
-  const r=align(raw.split(/\s+/).map(nz).filter(Boolean),ws.map(w=>nz(w.textContent))); lastRes=r;
+  const r=VOICE.align(raw.split(/\s+/).filter(Boolean),vExp(),VS.hints); lastRes=r;
   ws.forEach((w,i)=>{w.classList.toggle('said',r.st[i]>0);w.classList.toggle('miss',r.st[i]===2);w.classList.toggle('hinted',r.st[i]===3);w.classList.toggle('cursor',VS.on&&i===r.p)});
   const said=r.st.filter(x=>x>0).length, bad=r.st.filter(x=>x===2).length;
   $('vCount').textContent=`${ar(said)} / ${ar(ws.length)} كلمة`+(bad?` · ${ar(bad)} غلط`:'');
@@ -366,19 +350,21 @@ function vStart(){
 }
 // one recognizer per session; Safari ends sessions often, so each end starts a fresh one
 function vRecStart(){
-  const r=new SR(); VS.rec=r; r.lang=VS.lang; r.continuous=true; r.interimResults=true; r.maxAlternatives=1;
+  const r=new SR(); VS.rec=r; r.lang=VS.lang; r.continuous=true; r.interimResults=true; r.maxAlternatives=3;
   let txt='';
   r.onresult=e=>{if(VS.rec!==r)return;
-    // rebuild the whole session from e.results: iOS repeats or grows earlier results instead of using resultIndex
-    const parts=[];let fin='',it='';
-    for(let i=0;i<e.results.length;i++){const x=e.results[i],t=x[0].transcript.trim();if(!t)continue;
+    // rebuild the whole session from e.results: iOS repeats or grows earlier results instead of using resultIndex.
+    // When the recognizer offers alternatives, keep the one that carries the recitation furthest
+    const exp=vExp(), base=VS.prev.join(' ').split(/\s+/).filter(Boolean), parts=[];let fin='',it='';
+    for(let i=0;i<e.results.length;i++){const x=e.results[i],alts=[];for(let k=0;k<x.length;k++){const a=x[k].transcript.trim();if(a)alts.push(a)}if(!alts.length)continue;
+      const t=alts.length>1?VOICE.best(base.concat(parts.map(p=>p.t).join(' ').split(/\s+/).filter(Boolean)),alts,exp,VS.hints):alts[0];
       const last=parts[parts.length-1];
       if(last&&(t.startsWith(last.t)||last.t.startsWith(t)))parts[parts.length-1]={t:t.length>=last.t.length?t:last.t,f:x.isFinal||last.f};
       else parts.push({t,f:x.isFinal})}
     parts.forEach(p=>{if(p.f)fin+=p.t+' ';else it+=p.t+' '});
     txt=(fin+it).trim(); VS.finals=[...VS.prev,fin.trim()].filter(Boolean); VS.interim=it; vUpdate()};
   r.onerror=e=>{if(VS.rec!==r)return;
-    if(e.error==='language-not-supported'&&VS.lang!=='ar-SA'){VS.lang='ar-SA';return}
+    if(e.error==='language-not-supported'){const i=VOICE.LANGS.indexOf(VS.lang);if(i<VOICE.LANGS.length-1){VS.lang=VOICE.LANGS[i+1];try{localStorage.setItem('ui_asrLang',VS.lang)}catch(_){}}return}
     if(e.error==='not-allowed'||e.error==='service-not-allowed'){
       vMsg(IOS?(STANDALONE?'التعرّف على الصوت ما بيشتغل من أيقونة الشاشة الرئيسية بهالإصدار. افتح الرابط بسفاري.':'اسمح لسفاري بالمايك، وتأكد إن «الإملاء» شغّال: الإعدادات ← عام ← لوحة المفاتيح ← تفعيل الإملاء.'):'لازم تسمح للمتصفح يستخدم المايك.');
       vStop(true)}
@@ -396,8 +382,8 @@ function vStop(silent){
   const ws=vWords(); vUpdate(); const r=lastRes; if(silent)return;
   const said=r.st.filter(x=>x===1).length; if(!said)return;
   const badW=[]; r.st.forEach((s,i)=>{if((s===2||s===3)&&ws[i]){const u=ws[i].closest('.unit');badW.push(u.dataset.id+':'+[...u.querySelectorAll('.w')].indexOf(ws[i]))}});
-  badW.forEach(k=>S.mistW[k]=(S.mistW[k]||0)+1); if(badW.length)save();
-  vMsg(badW.length?`غلطت بـ ${ar(badW.length)} كلمة، تعلّمت بخط أحمر.`:r.p>=ws.length?'ما شاء الله، سمّعته كامل بدون غلط 🤍':`وقفت عند الكلمة ${ar(r.p+1)} من ${ar(ws.length)}، بدون أغلاط لحد هون.`);
+
+  vMsg(badW.length?`فاتك ${ar(badW.length)} ${badW.length<=10?'كلمات':'كلمة'}، طلعت بلون مختلف. سمّع مرة ثانية من «من جديد».`:r.p>=ws.length?'ما شاء الله، سمّعته كامل بدون غلط 🤍':`وقفت عند الكلمة ${ar(r.p+1)} من ${ar(ws.length)}، بدون أغلاط لحد هون.`);
 }
 $('vMic').addEventListener('click',()=>{VS.on?vStop(false):vStart()});
 $('vReset').addEventListener('click',()=>{if(VS.on)vStop(true);vReset()});

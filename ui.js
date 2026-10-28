@@ -5,7 +5,7 @@
    (toast, sheet) that the engines may use through window.UI. */
 (function(){
 const PK='mutoon_prefs';
-const DEF={theme:'auto',vs:1,us:1,wake:true,remind:'20:00',fade:2,ret:0.9};
+const DEF={theme:'auto',vs:1,us:1,wake:true,remind:'20:00',fade:2,ret:0.9,paused:[]};
 let P; try{P={...DEF,...JSON.parse(localStorage.getItem(PK)||'{}')}}catch(e){P={...DEF}}
 const root=document.documentElement;
 function apply(){
@@ -18,21 +18,24 @@ apply();
 
 // every text the site teaches, in the order of the switcher
 const BOOKS=[
-  {key:'miyeea',url:'./',t:'الأرجوزة الميئية',d:'السيرة النبوية نظمًا · ١٠٠ بيت'},
-  {key:'munajat',url:'munajat.html',t:'منظومات المناجاة',d:'٨ قصائد في الأنس بالله'},
-  {key:'shatibiyya',url:'shatibiyya.html',t:'الشاطبية',d:'حرز الأماني في القراءات السبع'},
-  {key:'jazariyya',url:'jazariyya.html',t:'المقدمة الجزرية',d:'أحكام التجويد · ١٠٩ أبيات'},
-  {key:'riyad',url:'riyad.html',t:'رياض الصالحين',d:'مختارات: باب الوعظ والاقتصاد فيه'},
-  {key:'qudouri',url:'qudouri.html',t:'مختصر القدوري',d:'الفقه الحنفي · ١١٨ بابًا'},
+  {key:'miyeea',lsk:'miyeea_progress_v1',url:'./',t:'الأرجوزة الميئية',d:'السيرة النبوية نظمًا · ١٠٠ بيت'},
+  {key:'munajat',lsk:'mutoon_munajat_v1:',url:'munajat.html',t:'منظومات المناجاة',d:'٨ قصائد في الأنس بالله'},
+  {key:'shatibiyya',lsk:'mutoon_shatibiyya_v1',url:'shatibiyya.html',t:'الشاطبية',d:'حرز الأماني في القراءات السبع'},
+  {key:'jazariyya',lsk:'mutoon_jazariyya_v1',url:'jazariyya.html',t:'المقدمة الجزرية',d:'أحكام التجويد · ١٠٩ أبيات'},
+  {key:'riyad',lsk:'mutoon_riyad91_v1',url:'riyad.html',t:'رياض الصالحين',d:'مختارات: باب الوعظ والاقتصاد فيه'},
+  {key:'qudouri',lsk:'mutoon_qudouri_v1',url:'qudouri.html',t:'مختصر القدوري',d:'الفقه الحنفي · ١١٨ بابًا'},
 ];
 
 /* ---------- small helpers ---------- */
 const ar=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
 const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
 let toastT=null;
-function toast(msg){
+// a short message at the bottom; with an action (e.g. «تراجع») it stays longer and takes taps
+function toast(msg,action){
   let t=document.getElementById('uiToast'); if(!t){t=el('div','ui-toast');t.id='uiToast';t.setAttribute('role','status');document.body.append(t)}
-  t.textContent=msg; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),2600);
+  t.replaceChildren(el('span','',msg));
+  if(action){const b=el('button','ui-toast-act',action.label);b.type='button';b.onclick=()=>{t.classList.remove('on');action.fn()};t.append(b)}
+  t.classList.toggle('act',!!action); t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),action?6000:2600);
 }
 // a bottom sheet; returns its body to fill. Closing: the ✕, the backdrop, or Escape
 function sheet(title){
@@ -114,9 +117,32 @@ function openSettings(){
   b.append(field('النسخة الاحتياطية',bk,'كود واحد فيه تقدمك بكل المتون، بتنقله لجهاز ثاني أو بتخزنه احتياط.'));
   b.append(el('p','ui-hint','تقدمك محفوظ على هالجهاز بس. الموقع بيشتغل بدون نت بعد أول فتحة.'));
 }
+/* ---------- the texts the reader is working on now ----------
+   A text counts once it has progress; the reader can pause any of them, and paused texts leave the daily ward
+   (their progress stays, and they come back with one tap). */
+function started(key){const b=BOOKS.find(x=>x.key===key);if(!b)return false;
+  if(b.lsk.endsWith(':')){for(let i=0;i<localStorage.length;i++)if(localStorage.key(i).startsWith(b.lsk))return true;return false}
+  return localStorage.getItem(b.lsk)!=null}
+const isPaused=key=>(P.paused||[]).includes(key);
+function setPaused(key,on){P.paused=(P.paused||[]).filter(k=>k!==key);if(on)P.paused.push(key);save()}
 function openBooks(){
   const b=sheet('المتون');
-  BOOKS.forEach(x=>{const a=el('a','ui-book'+(x.key===CUR?' cur':''));a.href=x.url;a.append(el('b','',x.t),el('small','',x.d));b.append(a)});
+  b.append(el('p','ui-hint','المتون اللي بتحفظها هلأ بتطلع بـ«وردي اليوم». أوقف اللي مش شغّال عليه، وتقدمك فيه بيضل محفوظ.'));
+  BOOKS.forEach(x=>{
+    const row=el('div','ui-book'+(x.key===CUR?' cur':'')+(isPaused(x.key)?' paused':''));
+    const a=el('a','ui-book-link');a.href=x.url;a.append(el('b','',x.t),el('small','',x.d));row.append(a);
+    if(started(x.key)){const t=el('button','ui-switch'+(isPaused(x.key)?'':' on'));t.type='button';t.setAttribute('role','switch');
+      const paint=()=>{const p=isPaused(x.key);t.classList.toggle('on',!p);t.setAttribute('aria-checked',String(!p));t.textContent=p?'موقوف':'فعّال';row.classList.toggle('paused',p)};
+      t.onclick=()=>{setPaused(x.key,!isPaused(x.key));paint();toast(isPaused(x.key)?'وقّفته، ما رح يطلع بوردك':'رجع لوردك اليومي ✓')};paint();row.append(t)}
+    else row.append(el('span','ui-new','ابدأ'));
+    b.append(row)});
+}
+// on a paused text's own page, say so and offer to bring it back
+function pausedBanner(){
+  if(!CUR||CUR==='home'||!isPaused(CUR))return; const bar=document.querySelector('.ui-bar'); if(!bar)return;
+  const n=el('div','ui-nudge'); n.append(el('span','','هالمتن موقوف، وما بيطلع بـ«وردي اليوم».'));
+  const go=el('button','btn primary','رجّعه لوردي'); go.onclick=()=>{setPaused(CUR,false);n.remove();toast('رجع لوردك اليومي ✓')};
+  const row=el('div','ui-row'); row.append(go); n.append(row); bar.after(n);
 }
 
 /* ---------- the app bar replaces each page's list of book links ---------- */
@@ -133,6 +159,28 @@ function mountBar(){
   const set=el('button','ui-ico');set.type='button';set.setAttribute('aria-label','الإعدادات');set.textContent='⚙︎';set.onclick=openSettings;
   bar.append(home,books,set); nav.replaceWith(bar);
 }
+/* ---------- floating counter ----------
+   The page marks its repetition counter with data-fab. When that counter scrolls out of view (while reading the verses
+   further down), a round copy floats at the bottom corner, above any bottom bar, and taps the real one. */
+function mountFab(){
+  const fab=el('button','ui-fab'); fab.type='button'; fab.hidden=true; fab.setAttribute('aria-label','أضف تكرار'); document.body.append(fab);
+  let raf=0;
+  const update=()=>{raf=0;
+    const t=document.querySelector('[data-fab]');
+    const shown=t&&t.offsetParent!==null&&!document.getElementById('uiSheet');
+    let off=false; if(shown){const r=t.getBoundingClientRect();off=r.bottom<60||r.top>innerHeight-40}
+    fab.hidden=!(shown&&off); if(fab.hidden)return;
+    fab.innerHTML=t.innerHTML; fab.classList.toggle('full',t.classList.contains('full')||Number(t.dataset.fabFull)>0);
+    let h=0; document.querySelectorAll('.stepbar,.voicebar').forEach(b=>{if(!b.hidden&&getComputedStyle(b).display!=='none')h=Math.max(h,b.getBoundingClientRect().height)});
+    fab.style.bottom=`calc(${Math.round(h)+16}px + env(safe-area-inset-bottom,0px))`;
+  };
+  const later=()=>{if(!raf)raf=setTimeout(update,60)};
+  addEventListener('scroll',later,{passive:true}); addEventListener('resize',later);
+  new MutationObserver(later).observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','class']});
+  fab.addEventListener('click',()=>{const t=document.querySelector('[data-fab]');if(t){t.click();later()}});
+  later();
+}
+
 /* ---------- protect progress: ask the browser not to evict storage, nudge a weekly backup, explain installing ---------- */
 const hasProgress=()=>{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k!==PK&&!/^ui_/.test(k))return true}return false};
 function nudges(){
@@ -154,7 +202,7 @@ function nudges(){
   n.append(row); bar.after(n);
 }
 const ready=f=>document.readyState==='loading'?document.addEventListener('DOMContentLoaded',f):f();
-ready(()=>{mountBar();wake();apply();nudges()});
+ready(()=>{mountBar();mountFab();wake();apply();pausedBanner();nudges()});
 
 /* ---------- graded fading: hide a growing share of the words (level 1–4 = a quarter … all) ----------
    The words hidden at a level stay hidden at every higher level, and words the reader slipped on before (.wk) hide first,
@@ -176,5 +224,5 @@ function fadeBar(onChange){
   paint(); addEventListener('prefs',h); w.append(minus,lbl,plus); return w;
 }
 
-window.UI={toast,fade,fadeBar,fadeLevel:()=>P.fade,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,BOOKS};
+window.UI={toast,fade,fadeBar,fadeLevel:()=>P.fade,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,BOOKS};
 })();
