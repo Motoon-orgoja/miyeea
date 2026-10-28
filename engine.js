@@ -332,6 +332,9 @@ function renderWardCtl(){
   // listen-and-repeat over today's ward when the text has one recording per verse
   const m=UI.mediaFor(B.key); if(m&&m.verse){const it=[];for(let i=from();i<=S.end;i++){const u=m.verse(i);if(u)it.push({url:u,label:'البيت '+ar(i)})}
     if(it.length)b('🎧 استمع للورد',()=>UI.playQueue(it,'ورد اليوم '+ar(from())+'–'+ar(S.end)),'primary')}
+  // or the recording of the section today's ward is in
+  else if(m&&m.sec){const keys=Object.keys(SECS).map(Number).sort((x,y)=>x-y);let k=0;keys.forEach((v,i)=>{if(v<=from())k=i});
+    b('🎧 استمع للباب',()=>UI.play(m.sec(k),SECS[keys[k]]+' · '+m.secBy),'primary')}
   if(S.reps>0)b('↺ صفّر العدّاد',()=>act('صفّرت العدّاد',()=>{S.reps=0}));
   if(UNDO.length)b('↶ تراجع عن «'+UNDO[UNDO.length-1].label+'»',undo);
 }

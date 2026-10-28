@@ -31,6 +31,8 @@ window.MEDIA={
         sharh:[{t:'شرح الميمية',by:'الشيخ محمد بن صالح العثيمين',...series('Sharh_almimiah','{n}a.mp3',1,4,1)}]},
     }},
   shatibiyya:{
+    // the site's 78 sections follow the reciter's files 02–78 in order (01 is his introduction)
+    sec:k=>f('sh-ayman-sowaid-matn-ashshatebiih',pad(Math.min(k+2,78),2)+'.mp3'), secBy:'الشيخ أيمن رشدي سويد',
     recite:[
       {t:'المتن كامل',by:'الشيخ أيمن رشدي سويد',url:f('sh-ayman-sowaid-matn-ashshatebiih','00.mp3')},
       {t:'المتن بابًا بابًا',by:'الشيخ أيمن رشدي سويد',...series('sh-ayman-sowaid-matn-ashshatebiih','{n}.mp3',1,78)},
@@ -42,6 +44,8 @@ window.MEDIA={
       {t:'شرح الشاطبية (فيديو)',by:'الشيخ محمد عصام القضاة',yt:'https://www.youtube.com/playlist?list=PLlX1sKIV4qu8GILcKhyRyRvs2_N-H-ICv'},
     ]},
   jazariyya:{
+    // the site's 17 sections against the reciter's 18 files (his «التفخيم والترقيق» also covers «استعمال الحروف»)
+    sec:k=>f('sh-ayman-sowaid-matn-aljazareiiah',pad([2,3,4,5,6,6,7,8,9,10,12,13,14,15,16,17,18][k]||2,2)+'.mp3'), secBy:'الشيخ أيمن رشدي سويد',
     recite:[
       {t:'المتن كامل',by:'الشيخ أيمن رشدي سويد',url:f('sh-ayman-sowaid-matn-aljazareiiah','00.mp3')},
       {t:'المتن بابًا بابًا',by:'الشيخ أيمن رشدي سويد',...series('sh-ayman-sowaid-matn-aljazareiiah','{n}.mp3',1,18),
