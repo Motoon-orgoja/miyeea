@@ -57,6 +57,7 @@ window.MEDIA={
       {t:'الإتقان لتلاوة القرآن (فيديو)',by:'الشيخ أيمن سويد',yt:'https://www.youtube.com/playlist?list=PL5CF688ECD20085C4'},
     ]},
   riyad:{
+    chap:{riyad91:f('Riad_Alsalheen__AlDuraihim','091.mp3')}, chapBy:'حمد الدريهم',
     recite:[
       {t:'باب الوعظ والاقتصاد فيه',by:'حمد الدريهم',url:f('Riad_Alsalheen__AlDuraihim','091.mp3')},
       {t:'باب الوعظ والاقتصاد فيه',by:'قراءة',url:f('Riyad-Saliheen_Book-audio-mp3','0091.mp3')},

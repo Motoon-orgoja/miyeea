@@ -31,7 +31,9 @@ self.onmessage = async ({ data }) => {
     if (data.type === 'load') { await load(data.model, data.device); return; }
     if (data.type === 'run') {
       const p = await load(data.model, data.device);
-      const out = await p(data.audio, { language: 'arabic', task: 'transcribe', chunk_length_s: 30, stride_length_s: 5 });
+      // the Quran fine-tune (Basira) is Arabic-only and its config refuses a language/task
+      const opts = /Basira/.test(data.model || '') ? { chunk_length_s: 30, stride_length_s: 5 } : { language: 'arabic', task: 'transcribe', chunk_length_s: 30, stride_length_s: 5 };
+      const out = await p(data.audio, opts);
       self.postMessage({ type: 'result', text: (out && out.text || '').trim() });
     }
   } catch (e) {

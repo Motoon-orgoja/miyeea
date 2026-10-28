@@ -261,6 +261,8 @@ function wardActions(kind,ch){
   if(S.blocks[CUR]&&!due.includes(CUR))row.append(actBtn('🔁 راجع الباب كامل اليوم',()=>{S.blockAhead[CUR]=today();save()}));
   if(kind)row.append(actBtn('⏭ أجّل هاد لبكرة',()=>postpone(kind,ch)));
   if(kind==='block')row.append(actBtn('↩︎ نسيته، رجّعه للحفظ',()=>{if(confirm('بدك ترجع تحفظ «'+CHI[ch].title+'» فقرة فقرة من جديد؟'))relearn(ch)}));
+  // the recording of the current chapter, when there is one
+  const md=window.UI.mediaFor(BOOK.key); if(md&&md.chap&&md.chap[CUR]){const lb=document.createElement('button');lb.className='btn';lb.textContent='🎧 استمع للباب';lb.addEventListener('click',()=>window.UI.play(md.chap[CUR],CHI[CUR].title+' · '+md.chapBy));row.append(lb)}
   // «اختبرني»: the opening words of a memorised passage, and the reader goes on
   const learnedAll=Object.keys(S.cards).filter(id=>UI_[id]);
   if(learnedAll.length){const qb=document.createElement('button');qb.className='btn gold';qb.textContent='🎯 اختبرني';qb.addEventListener('click',()=>{

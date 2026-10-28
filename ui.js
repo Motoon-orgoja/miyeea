@@ -104,7 +104,7 @@ function openSettings(){
   // recognition engine: live browser recognition, or Whisper on the device (more precise, corrects after you finish)
   const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);v===null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
   const eng=el('div','ui-col'), dl=el('button','btn'), st=el('div','ui-hint');
-  const modelSeg=seg('حجم النموذج',[['base','عادي · ٧٧ م.ب'],['small','أدق · ٢٥٠ م.ب']],ls('ui_asrModel')||'base',v=>{ls('ui_asrModel',v);paintDl()});
+  const modelSeg=seg('حجم النموذج',[['base','عادي · ٧٧ م.ب'],['quran','مدرّب على التلاوة · ١٠٠ م.ب'],['small','أدق · ٢٥٠ م.ب']],ls('ui_asrModel')||'base',v=>{ls('ui_asrModel',v);paintDl()});
   function paintDl(){const on=(ls('ui_asrEngine')||'web')==='whisper';modelSeg.hidden=dl.hidden=!on;st.textContent=on?(window.VOICE&&VOICE.W.ready()?'النموذج نازل على جهازك وجاهز ✓':'بينزل مرة وحدة، وبعدها بيشتغل بدون نت. «أدق» للكمبيوتر والجوالات الحديثة.'):'بيسمعك مباشرة وبيعلّم الكلمات وإنت بتقرأ. بيحتاج نت.'}
   dl.textContent='⬇️ نزّل النموذج هلأ'; dl.onclick=async()=>{if(!window.VOICE){toast('افتح صفحة متن لتنزّل النموذج');return}dl.disabled=true;
     try{await VOICE.W.prepare(p=>{st.textContent='بينزل… '+ar(p)+'٪'});toast('النموذج جاهز ✓')}catch(e){toast('ما زبط التنزيل: '+e.message)}dl.disabled=false;paintDl()};

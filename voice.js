@@ -30,8 +30,9 @@ function score(t,e){
   if(sa.length>=3&&sa===sb)return .8;
   if(Math.min(sa.length,sb.length)>=3){const rs=1-lev(sa,sb)/Math.max(sa.length,sb.length);if(rs>=.67)return .62}
   // the recognizer cut a long word short, or ran it on
-  if(Math.min(a.length,b.length)>=4&&(a.startsWith(b)||b.startsWith(a)))return .65;
-  return 0;
+  if(Math.min(a.length,b.length)>=3&&Math.min(a.length,b.length)/L>=.6&&(a.startsWith(b)||b.startsWith(a)))return .65;
+  // below the bar: the raw similarity, for callers with a lower bar (two words heard as one)
+  return Math.max(0,r);
 }
 const OK=.6, LOOK=5;
 /* Walk the heard tokens against the expected words from the current position. A token may match the next word, two or
@@ -52,7 +53,7 @@ function align(rawTokens,exp,hints,start){
     // a near miss in the right place counts when the next heard word lines up with the next expected word
     if(core(t).length>=2&&lev(core(t),core(E[p].f))<=Math.max(1,Math.floor(Math.max(core(t).length,core(E[p].f).length)/2))&&(i+1>=tok.length||(p+1<E.length&&score(tok[i+1],E[p+1].f)>=OK))){st[p++]=1;pend=[];continue}
     // run together: «بسمالله»
-    if(p+1<E.length&&score(t,E[p].f+E[p+1].f)>=OK){st[p]=st[p+1]=1;p+=2;continue}
+    if(p+1<E.length){const two=E[p].f+E[p+1].f;if(score(t,two)>=(two.length>=6?.5:OK)){st[p]=st[p+1]=1;p+=2;continue}}
     if(p+2<E.length&&score(t,E[p].f+E[p+1].f+E[p+2].f)>=.7){st[p]=st[p+1]=st[p+2]=1;p+=3;continue}
     // split: «الرحمن» heard as «الرح من»
     if(i+1<tok.length&&score(t+tok[i+1],E[p].f)>=OK){st[p++]=1;i++;continue}
@@ -76,7 +77,7 @@ const LANGS=['ar-SA','ar-AE','ar-EG','ar-JO'];
 /* ---------- the precise engine: record the whole recitation, then transcribe it on the device with Whisper ----------
    Chosen in settings (localStorage ui_asrEngine = 'whisper'). Audio is recorded at the device's own rate and resampled
    to 16 kHz with an OfflineAudioContext (custom-rate AudioContexts with a microphone are unreliable in Safari). */
-const MODELS={base:'onnx-community/whisper-base',small:'onnx-community/whisper-small'};
+const MODELS={base:'onnx-community/whisper-base',small:'onnx-community/whisper-small',quran:'iqbalaesthetic/Basira'};
 const engine=()=>{try{return localStorage.getItem('ui_asrEngine')||'web'}catch(e){return 'web'}};
 const modelId=()=>{try{return MODELS[localStorage.getItem('ui_asrModel')]||MODELS.base}catch(e){return MODELS.base}};
 let worker=null, waiters=[], onProg=null;
@@ -108,7 +109,7 @@ const W={rec:null,stream:null,parts:[],
     const rec=this.rec; this.rec=null;
     await new Promise(r=>{rec.onstop=r;try{rec.stop()}catch(e){r()}});
     try{this.stream.getTracks().forEach(t=>t.stop())}catch(e){}
-    const blob=new Blob(this.parts,{type:rec.mimeType||'audio/mp4'});
+    const blob=new Blob(this.parts,{type:rec.mimeType||'audio/mp4'}); this.lastBlob=blob;
     const ac=new (window.AudioContext||window.webkitAudioContext)();
     const buf=await ac.decodeAudioData(await blob.arrayBuffer()); try{ac.close()}catch(e){}
     const off=new OfflineAudioContext(1,Math.max(1,Math.ceil(buf.duration*16000)),16000);
@@ -139,6 +140,10 @@ function precise(h){
         const text=await W.stop(p=>h.msg('بنزّل نموذج التعرّف '+arN(p)+'٪ (مرة وحدة بس)'));
         h.VS.finals=[...h.VS.prev,text].filter(Boolean); h.VS.interim=''; h.update();
         h.btn.disabled=false; h.stop(false);
+        // the reader can listen back to their own recitation, next to the marked text
+        const host=h.btn.closest('.stepbar,.voicebar'); if(host&&W.lastBlob){host.querySelectorAll('.ui-myrec').forEach(x=>x.remove());
+          const d=document.createElement('div');d.className='ui-myrec';const au=document.createElement('audio');au.controls=true;au.src=URL.createObjectURL(W.lastBlob);
+          const l=document.createElement('small');l.textContent='اسمع تسميعك:';d.append(l,au);host.append(d)}
         if(!text)h.msg('ما التقطت كلام. قرّب الجوال وجرّب مرة ثانية.');
       }catch(e){
         h.btn.disabled=false; h.VS.on=true; h.stop(true);

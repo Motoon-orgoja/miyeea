@@ -157,3 +157,6 @@ body.ui-playing .tabs{top:calc(env(safe-area-inset-top,0px) + 60px)}
 .ui-qans{background:var(--accent-soft);color:var(--ink)}
 .ui-qscore{font-size:34px;font-weight:800;text-align:center;color:var(--accent)}
 .ui-qmiss{font-size:13.5px;border-top:1px dashed var(--line);padding-top:6px}
+.ui-myrec{max-width:640px;margin:6px auto 0;display:flex;align-items:center;gap:8px}
+.ui-myrec small{flex:none;color:var(--muted);font-size:12px}
+.ui-myrec audio{flex:1;height:36px;min-width:0}
