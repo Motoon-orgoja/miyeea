@@ -29,7 +29,7 @@ edit('home.html', s => s.replace('<script src="home.js"></script>', `<script src
 edit('home.js', s => s.replace("const PAGE={", `const PAGE={${key}:'${page}',`));
 // texts sheet
 edit('ui.js', s => { const i = s.indexOf('const BOOKS=['), j = s.indexOf('\n];', i);
-  return s.slice(0, j) + `\n  {key:'${key}',lsk:'mutoon_${key}_v1',url:'${page}',t:'${title}',d:'${desc}'},` + s.slice(j) });
+  return s.slice(0, j) + `\n  {key:'${key}',c:'${process.argv[7]||''}',lsk:'mutoon_${key}_v1',url:'${page}',t:'${title}',d:'${desc}'},` + s.slice(j) });
 // offline cache
 edit('sw.js', s => s.replace("const FILES = ['./', ", `const FILES = ['./', '${page}', 'data/${key}.js', `));
 console.log('registered', key);

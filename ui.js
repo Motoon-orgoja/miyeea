@@ -18,12 +18,12 @@ apply();
 
 // every text the site teaches, in the order of the switcher
 const BOOKS=[
-  {key:'miyeea',lsk:'miyeea_progress_v1',url:'./',t:'الأرجوزة الميئية',d:'السيرة النبوية نظمًا · ١٠٠ بيت'},
-  {key:'munajat',lsk:'mutoon_munajat_v1:',url:'munajat.html',t:'منظومات المناجاة',d:'٨ قصائد في الأنس بالله'},
-  {key:'shatibiyya',lsk:'mutoon_shatibiyya_v1',url:'shatibiyya.html',t:'الشاطبية',d:'حرز الأماني في القراءات السبع'},
-  {key:'jazariyya',lsk:'mutoon_jazariyya_v1',url:'jazariyya.html',t:'المقدمة الجزرية',d:'أحكام التجويد · ١٠٩ أبيات'},
-  {key:'riyad',lsk:'mutoon_riyad91_v1',url:'riyad.html',t:'رياض الصالحين',d:'مختارات: باب الوعظ والاقتصاد فيه'},
-  {key:'qudouri',lsk:'mutoon_qudouri_v1',url:'qudouri.html',t:'مختصر القدوري',d:'الفقه الحنفي · ١١٨ بابًا'},
+  {key:'miyeea',c:'السيرة النبوية',lsk:'miyeea_progress_v1',url:'./',t:'الأرجوزة الميئية',d:'السيرة النبوية نظمًا · ١٠٠ بيت'},
+  {key:'munajat',c:'الرقائق والأذكار',lsk:'mutoon_munajat_v1:',url:'munajat.html',t:'منظومات المناجاة',d:'٨ قصائد في الأنس بالله'},
+  {key:'shatibiyya',c:'القراءات والتجويد',lsk:'mutoon_shatibiyya_v1',url:'shatibiyya.html',t:'الشاطبية',d:'حرز الأماني في القراءات السبع'},
+  {key:'jazariyya',c:'القراءات والتجويد',lsk:'mutoon_jazariyya_v1',url:'jazariyya.html',t:'المقدمة الجزرية',d:'أحكام التجويد · ١٠٩ أبيات'},
+  {key:'riyad',c:'الحديث',lsk:'mutoon_riyad91_v1',url:'riyad.html',t:'رياض الصالحين',d:'مختارات: باب الوعظ والاقتصاد فيه'},
+  {key:'qudouri',c:'الفقه',lsk:'mutoon_qudouri_v1',url:'qudouri.html',t:'مختصر القدوري',d:'الفقه الحنفي · ١١٨ بابًا'},
 ];
 
 /* ---------- small helpers ---------- */
@@ -151,7 +151,10 @@ function setPaused(key,on){P.paused=(P.paused||[]).filter(k=>k!==key);if(on)P.pa
 function openBooks(){
   const b=sheet('المتون');
   b.append(el('p','ui-hint','المتون اللي بتحفظها هلأ بتطلع بـ«وردي اليوم». أوقف اللي مش شغّال عليه، وتقدمك فيه بيضل محفوظ.'));
-  BOOKS.forEach(x=>{
+  // grouped by field (سيرة، حديث، فقه…), in the order the fields first appear
+  const fields=[...new Set(BOOKS.map(x=>x.c||''))];
+  fields.flatMap(c=>BOOKS.filter(x=>(x.c||'')===c)).forEach((x,k,arr)=>{
+    if(x.c&&(k===0||arr[k-1].c!==x.c))b.append(el('div','ui-lbl',x.c))
     const row=el('div','ui-book'+(x.key===CUR?' cur':'')+(isPaused(x.key)?' paused':''));
     const a=el('a','ui-book-link');a.href=x.url;a.append(el('b','',x.t),el('small','',x.d));row.append(a);
     if(started(x.key)){const t=el('button','ui-switch'+(isPaused(x.key)?'':' on'));t.type='button';t.setAttribute('role','switch');
