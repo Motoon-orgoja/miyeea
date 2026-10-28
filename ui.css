@@ -150,3 +150,10 @@ html,body,button,a,.w,.v,input,select,label{touch-action:manipulation}
 body.ui-playing .wrap{padding-top:64px}
 body.ui-playing .tabs{top:calc(env(safe-area-inset-top,0px) + 60px)}
 @media (max-width:380px){.ui-player [data-a="back"]{display:none}}
+/* «اختبرني» */
+.ui-quiz{display:flex;flex-direction:column;gap:12px}
+.ui-qask{font-weight:700;color:var(--accent)}
+.ui-qprompt,.ui-qans{font-family:var(--verse);font-size:calc(21px*var(--vs));line-height:1.9;background:var(--bg);border-radius:14px;padding:12px 14px}
+.ui-qans{background:var(--accent-soft);color:var(--ink)}
+.ui-qscore{font-size:34px;font-weight:800;text-align:center;color:var(--accent)}
+.ui-qmiss{font-size:13.5px;border-top:1px dashed var(--line);padding-top:6px}

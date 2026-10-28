@@ -44,6 +44,11 @@ a.btn{text-decoration:none;text-align:center}
 .heat i.on{background:var(--accent)}
 .heat i.now{outline:2px solid var(--gold);outline-offset:-2px}
 .empty{color:var(--muted);font-size:13px}
+.hero{display:flex;flex-direction:column;gap:2px;padding:18px 20px;border-radius:20px;background:linear-gradient(135deg,var(--accent),#0d5f44);color:#fff;text-decoration:none;box-shadow:0 8px 24px rgba(11,122,85,.25)}
+.hero small{opacity:.85;font-size:12.5px;font-weight:600}
+.hero b{font-size:20px;line-height:1.5}
+.hero span{opacity:.9;font-size:13.5px}
+.hero i{font-style:normal;align-self:flex-end;margin-top:8px;background:rgba(255,255,255,.18);padding:8px 16px;border-radius:12px;font-weight:700}
 </style>
 </head>
 <body>
@@ -54,6 +59,7 @@ a.btn{text-decoration:none;text-align:center}
     <p id="dayLbl"></p>
   </header>
 
+  <a class="hero" id="hero" hidden></a>
   <section class="card">
     <div class="chapstat" id="todaySum"></div>
     <div id="todayList"></div>

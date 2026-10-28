@@ -283,6 +283,35 @@ function openListen(){
   b.append(el('p','ui-hint','التسجيلات منشورة على أرشيف الإنترنت ويوتيوب بأسماء أصحابها، والموقع بيشغّلها من هناك. اسمع قبل الاعتماد على أي إنشاد.'));
 }
 
+/* ---------- «اختبرني»: the teacher's spot check ----------
+   The page passes questions [{label, prompt, answer}] built from what the reader has memorised. One at a time, in a
+   random order: the prompt shows (the start of a verse, a whole verse, or the opening words of a passage), the reader
+   recites the continuation, reveals it and says whether they had it. A tally shows at the end. */
+function quiz(items,title){
+  if(!items.length){toast('لسا ما في محفوظ كافي للاختبار');return}
+  const order=items.map((x,k)=>[Math.random(),k]).sort((a,b)=>a[0]-b[0]).map(x=>items[x[1]]).slice(0,Math.min(10,items.length));
+  let i=0,ok=0,miss=[];
+  const b=sheet(title||'اختبرني');
+  const box=el('div','ui-quiz'); b.append(box);
+  function show(){
+    box.replaceChildren();
+    if(i>=order.length){
+      box.append(el('div','ui-qscore',`${ar(ok)} من ${ar(order.length)}`),el('p','ui-hint',ok===order.length?'ما شاء الله، كلها صح 🤍':'راجع اللي فاتك:'));
+      miss.forEach(q=>box.append(el('div','ui-qmiss',q.label)));
+      const again=el('button','btn primary','اختبار جديد'); again.onclick=()=>quiz(items,title); box.append(again); return}
+    const q=order[i];
+    box.append(el('div','ui-lbl',`سؤال ${ar(i+1)} من ${ar(order.length)} · ${q.label}`),el('div','ui-qask',q.ask||'كمّل من حفظك:'));
+    const p=el('div','ui-qprompt'); p.textContent=q.prompt; box.append(p);
+    const ans=el('div','ui-qans'); ans.textContent=q.answer; ans.hidden=true; box.append(ans);
+    const reveal=el('button','btn primary','اكشف الجواب'); box.append(reveal);
+    const grade=el('div','grades'); grade.hidden=true; grade.style.gridTemplateColumns='1fr 1fr';
+    const yes=el('button','btn primary','حفظته ✓'), no=el('button','btn bad','غلطت ✗');
+    yes.onclick=()=>{ok++;i++;show()}; no.onclick=()=>{miss.push(q);i++;show()}; grade.append(no,yes); box.append(grade);
+    reveal.onclick=()=>{ans.hidden=false;reveal.hidden=true;grade.hidden=false};
+  }
+  show();
+}
+
 /* ---------- floating counter ----------
    The page marks its repetition counter with data-fab. When that counter scrolls out of view (while reading the verses
    further down), a round copy floats at the bottom corner, above any bottom bar, and taps the real one. */
@@ -348,5 +377,5 @@ function fadeBar(onChange){
   paint(); addEventListener('prefs',h); w.append(minus,lbl,plus); return w;
 }
 
-window.UI={play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,BOOKS};
+window.UI={quiz,play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,BOOKS};
 })();

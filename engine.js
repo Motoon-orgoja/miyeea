@@ -336,6 +336,14 @@ function renderWardCtl(){
   if(UNDO.length)b('↶ تراجع عن «'+UNDO[UNDO.length-1].label+'»',undo);
 }
 $('friFrom1').addEventListener('click',()=>{friMode='all';render()});
+// «اختبرني»: random spot checks over everything memorised: finish a verse, or say the verse after a given one
+$('friWeak').insertAdjacentHTML('afterend','<button class="btn gold" id="quizBtn">🎯 اختبرني</button>');
+$('quizBtn').addEventListener('click',()=>{
+  const known=new Set(); for(let i=1;i<=Math.min(N,S.mem);i++)known.add(i); (S.oldB||[]).forEach(c=>{for(let i=c.a;i<=c.b;i++)known.add(i)});
+  const q=[]; known.forEach(i=>{const v=V[i-1];
+    q.push({label:'البيت '+ar(i),ask:'كمّل الشطر الثاني:',prompt:v[0]+' …',answer:v[0]+'   '+v[1]});
+    if(known.has(i+1))q.push({label:'بعد البيت '+ar(i),ask:'شو البيت اللي بعده؟',prompt:v[0]+'   '+v[1],answer:V[i][0]+'   '+V[i][1]})});
+  UI.quiz(q,'اختبرني · '+P.title)});
 $('friWeek').addEventListener('click',()=>{friMode='week';render()});
 $('friWeak').addEventListener('click',()=>{if(VS.on)vStop(true);friMode='weak';vReset();render()});
 function weakVerses(){return Object.keys(S.mist||{}).map(Number).filter(i=>S.mist[i]>0&&i<=Math.max(S.mem,S.end)).sort((a,b)=>a-b)}

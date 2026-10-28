@@ -79,6 +79,11 @@ active.forEach(r=>{
 });
 $('todaySum').textContent=!started.length?'لسا ما بلّشت بأي متن. اختر متن من تحت وابدأ فيه.':!active.length?'كل متونك موقوفة. فعّل اللي بدك تحفظه من تحت.':open?`باقي عليك ${ar(open)} ${open===1?'مهمة':'مهام'} اليوم.`:'ما شاء الله، خلصت ورد اليوم بكل المتون 🤍';
 
+/* the next step: the first unfinished task, one tap away */
+const nextUp=active.map(r=>({r,t:r.tasks.find(x=>!x.done)})).find(x=>x.t);
+if(nextUp){const h=$('hero');h.hidden=false;h.href=PAGE[nextUp.r.b.key];
+  h.append(el('small','','الخطوة الجاية'),el('b','',nextUp.t.t),el('span','',nextUp.r.b.title+(nextUp.t.sub?' · '+nextUp.t.sub:'')),el('i','','ابدأ ←'))}
+
 /* paused texts: one tap brings each back to the ward */
 if(held.length){const box=el('div','held');box.append(el('div','eyebrow','متون موقوفة · ما بتطلع بالورد'));
   held.forEach(r=>{const row=el('div','ui-book paused');const a=el('a','ui-book-link');a.href=PAGE[r.b.key];a.append(el('b','',r.b.title),el('small','',ar(r.done)+' من '+ar(r.total)));

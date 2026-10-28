@@ -2,7 +2,7 @@
    BOOK.chapters: [{id, title, units:[{id, label, segs:[[kind, text]], gloss?}]}]. Each chapter is learned unit by unit,
    then reviewed as one block. Unit ids are unique across the book. */
 const BOOK=window.BOOK, CH=BOOK.chapters, CHI=Object.fromEntries(CH.map(c=>[c.id,c])), MULTI=CH.length>1;
-const UI=Object.fromEntries(CH.flatMap(c=>c.units.map(u=>[u.id,u])));
+const UI=Object.fromEntries(CH.flatMap(c=>c.units.map(u=>[u.id,u]))), UI_=UI;
 let CUR=CH[0].id, U=CH[0].units; // the chapter being learned and its units
 document.title='حفظ '+BOOK.title;
 document.querySelector('header h1').textContent=BOOK.title; document.querySelector('header p').textContent=BOOK.sub;
@@ -261,6 +261,10 @@ function wardActions(kind,ch){
   if(S.blocks[CUR]&&!due.includes(CUR))row.append(actBtn('🔁 راجع الباب كامل اليوم',()=>{S.blockAhead[CUR]=today();save()}));
   if(kind)row.append(actBtn('⏭ أجّل هاد لبكرة',()=>postpone(kind,ch)));
   if(kind==='block')row.append(actBtn('↩︎ نسيته، رجّعه للحفظ',()=>{if(confirm('بدك ترجع تحفظ «'+CHI[ch].title+'» فقرة فقرة من جديد؟'))relearn(ch)}));
+  // «اختبرني»: the opening words of a memorised passage, and the reader goes on
+  const learnedAll=Object.keys(S.cards).filter(id=>UI_[id]);
+  if(learnedAll.length){const qb=document.createElement('button');qb.className='btn gold';qb.textContent='🎯 اختبرني';qb.addEventListener('click',()=>{
+    window.UI.quiz(learnedAll.map(id=>{const u=UI_[id],txt=u.segs.map(x=>x[1]).join(' '),w=txt.split(' ');return {label:u.label,prompt:w.slice(0,Math.min(6,Math.ceil(w.length/3))).join(' ')+' …',answer:txt}}),'اختبرني · '+BOOK.title)});row.append(qb)}
   if(UNDO.length){const u=document.createElement('button');u.className='btn';u.textContent='↶ تراجع عن «'+UNDO[UNDO.length-1].label+'»';u.addEventListener('click',undo);row.append(u)}
   if(!row.childElementCount)return document.createTextNode('');
   box.append(row); return box;
