@@ -24,6 +24,8 @@ const BOOKS=[
   {key:'jazariyya',c:'القراءات والتجويد',lsk:'mutoon_jazariyya_v1',url:'jazariyya.html',t:'المقدمة الجزرية',d:'أحكام التجويد · ١٠٩ أبيات'},
   {key:'riyad',c:'الحديث',lsk:'mutoon_riyad91_v1',url:'riyad.html',t:'رياض الصالحين',d:'مختارات: باب الوعظ والاقتصاد فيه'},
   {key:'qudouri',c:'الفقه',lsk:'mutoon_qudouri_v1',url:'qudouri.html',t:'مختصر القدوري',d:'الفقه الحنفي · ١١٨ بابًا'},
+  {key:'tuhfa',c:'القراءات والتجويد',lsk:'mutoon_tuhfa_v1',url:'tuhfa.html',t:'تحفة الأطفال',d:'تجويد للمبتدئين · ٦١ بيتًا'},
+  {key:'bayquniyya',c:'مصطلح الحديث',lsk:'mutoon_bayquniyya_v1',url:'bayquniyya.html',t:'المنظومة البيقونية',d:'مصطلح الحديث · ٣٤ بيتًا'},
 ];
 
 /* ---------- small helpers ---------- */

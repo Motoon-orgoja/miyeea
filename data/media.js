@@ -67,6 +67,36 @@ window.MEDIA={
       {t:'شرح رياض الصالحين (يبدأ الباب في هذا الشريط)',by:'الشيخ محمد بن صالح العثيمين',url:f('Riyad_As-Salihin_al-othaymeen','50b.mp3')},
       {t:'شرح الباب (فيديو)',by:'الشيخ محمد بن صالح العثيمين',yt:'https://www.youtube.com/watch?v=vkq5NiNygrE'},
     ]},
+  tuhfa:{
+    verse:i=>i>=1&&i<=61?f('tuhfatul_athfal',pad(i,2)+'.mp3'):null, verseBy:'الشيخ عبد القادر العثمان',
+    recite:[
+      {t:'المتن كامل',by:'الشيخ أيمن رشدي سويد',url:f('qurani-tohfat-alatfal','tohfa_ayman_swaid.mp3')},
+      {t:'المتن كامل',by:'الشيخ سعد الغامدي',url:f('qurani-tohfat-alatfal','tohfa_saad_al_ghamdi.mp3')},
+      {t:'المتن كامل',by:'إشهاد',url:f('pziulcmk_c1oramn','تحفة الأطفال والغلمان.mp3')},
+    ],
+    sharh:[
+      {t:'شرح تحفة الأطفال (المقدمة)',by:'الشيخ محمد غندر',url:f('shar7-to7ft-ala6fal','001-moqadema.mp3')},
+      {t:'شرح تحفة الأطفال',by:'الشيخ عبد المحسن العباد البدر',list:[1,2,3].map(n=>f('islami-538','شرح تحفة الاطفال  للشيخ عبد المحسن البدر -'+n+'.mp3'))},
+    ]},
+  bayquniyya:{
+    verse:i=>i>=1&&i<=34?f('albayqoneyyah','Albayqoneyyah/albayqoneyyah-'+i+'.mp3'):null, verseBy:'مشروع حفّاظ السنة',
+    recite:[{t:'المتن كامل',by:'مشروع حفّاظ السنة',url:f('bayqoneyyah','bayqoneyyah-q2/bayqoneyyah.mp3')},{t:'المتن كامل',by:'أبو أحمد الشيظمي',url:f('shaydzmi1','baykouniah.mp3')}],
+    sharh:[{t:'شرح البيقونية',by:'الشيخ محمد بن صالح العثيمين',list:['01A','01B','02A','02B','03A','03B','04A','04B','05A','05B','06A','06B','07A','07B'].map(x=>f('Sharh_Bayqoniyah','Bayqoniyah_'+x+'.mp3'))}]},
+  nawawi:{
+    chapN:k=>f('40nawawiyat','40Nawawiyat'+k+'.mp3'), chapBy:'قراءة',
+    recite:[{t:'الأحاديث حديثًا حديثًا',by:'قراءة',...series('40nawawiyat','40Nawawiyat{n}.mp3',1,42,1)}],
+    sharh:[
+      {t:'شرح الأربعين النووية',by:'الشيخ عبد الرزاق البدر',...series('badr-sharh-al-arbain-al-nawawiyyah','{n}.mp3',1,36)},
+      {t:'شرح الأربعين النووية',by:'الشيخ محمد بن صالح العثيمين',...series('Char7-40.Nawawia-Othaimin-Up-By-MusleM','{n}.mp3',1,19)},
+      {t:'شرح الأربعين النووية',by:'الشيخ صالح آل الشيخ',...series('001_20210828_20210828','{n}.mp3',1,12,3)},
+    ]},
+  ajurrumiyya:{
+    recite:[{t:'المتن كامل',by:'ياسر سرحان الديب',url:f('agromiya','agromiya.mp3')},{t:'المتن كامل',by:'قراءة',url:f('AlAjrumiyyah','Al-Ajrumiyyah.mp3')}],
+    sharh:[
+      {t:'شرح الآجرومية',by:'الشيخ محمد بن صالح العثيمين',...series('alajuroumia_ibn_otheimeen','{n}.mp3',1,16)},
+      {t:'شرح الآجرومية',by:'الشيخ سليمان العيوني',...series('dawrat_matn_ajromiya','{n}.mp3',1,6)},
+      {t:'شرح الآجرومية',by:'الشيخ عبد الكريم الخضير',...series('Sharh_Al-Ajromiah','Al-Ajromiah_{n}.mp3',1,8)},
+    ]},
   qudouri:{
     recite:[
       {t:'المتن كامل (حوالي ٦ ساعات)',by:'قراءة',url:f('23997','كتاب_مختصر_القدوري_المعروف_بالكتاب_في_الفقه_الحنفي_كاملا 23997.mp3')},
