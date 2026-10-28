@@ -2,7 +2,7 @@
    Shared by both engines. The browser's recognizer (Siri dictation on iPhone) writes modern spelling, drops or merges
    words and often confuses letters close in sound, so words are compared in a folded "sound" form and matched with a
    tolerant aligner. Nothing here judges harakat: the recognizer does not report them.
-   Status of each expected word: 0 not reached, 1 said, 2 skipped (passed over), 3 shown as a hint. */
+   Status of each expected word: 0 not reached, 1 said, 2 skipped (passed over), 3 shown as a hint, 4 before the start. */
 (function(){
 const H=/[ً-ٰٟۖ-ۭـ]/g;
 const toAscii=s=>String(s).replace(/[٠-٩]/g,c=>'٠١٢٣٤٥٦٧٨٩'.indexOf(c));
@@ -34,9 +34,10 @@ const OK=.6, LOOK=5;
    three words run together, or (with the following token) a word the recognizer split. A token matching a word a few
    places ahead skips the words between, but only when the match is strong, so one stray word does not jump ahead.
    Tokens that match nothing are ignored: noise, repetitions, or a word the reader said twice. */
-function align(rawTokens,exp,hints){
+function align(rawTokens,exp,hints,start){
   const tok=rawTokens.map(fold).filter(Boolean), E=exp.map(e=>({...e,f:fold(e.n)}));
-  const st=new Array(E.length).fill(0); let p=0, pend=[];
+  // words before the chosen starting point are left out of the recitation (status 4)
+  const st=new Array(E.length).fill(0); let p=Math.max(0,Math.min(start||0,E.length)), pend=[]; for(let j=0;j<p;j++)st[j]=4;
   const skipHints=()=>{while(p<E.length&&hints&&hints.has(p)){st[p]=3;p++}};
   for(let i=0;i<tok.length;i++){
     skipHints(); if(p>=E.length)break;

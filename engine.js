@@ -64,7 +64,7 @@ function verseRow(i,opts={}){
 }
 
 /* ---------- study modes ---------- */
-const MODES=[['full','كامل'],['step','بيت بيت'],['fade','إخفاء تدريجي'],['half','إخفاء الشطر٢'],['voice','تسميع بالصوت']];
+const MODES=[['full','كامل'],['step','بيت بيت'],['fade','إخفاء تدريجي'],['reveal','كلمة كلمة'],['half','إخفاء الشطر٢'],['voice','تسميع بالصوت']];
 const LISTS={today:'todayVerses',fri:'friVerses',all:'allVerses'};
 // a saved mode that no longer exists (the first-letter mode was dropped) falls back to the full text
 const okMode=m=>MODES.some(x=>x[0]===m)?m:'full';
@@ -78,9 +78,10 @@ document.querySelectorAll('.modes').forEach(box=>{
 });
 function applyMode(key){
   const list=$(LISTS[key]), m=mode[key];
-  list.classList.remove('m-full','m-step','m-hint','m-fade','m-half','m-voice'); list.classList.add('m-'+m);
+  list.classList.remove('m-full','m-step','m-hint','m-fade','m-reveal','m-half','m-voice'); list.classList.add('m-'+m);
   document.querySelectorAll(`.fadebox[data-list="${key}"]`).forEach(b=>b.hidden=m!=="fade");
   if(m==='fade')UI.fade(list,UI.fadeLevel());
+  if(m==='reveal'){if(key===active)UI.reveal.start(list)}else UI.reveal.stopIf(list);
   document.querySelectorAll(`.modes[data-list="${key}"] button`).forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.m===m)));
   const rows=[...list.querySelectorAll('.v')];
   rows.forEach((r,k)=>{r.classList.remove('open'); r.classList.toggle('veiled',m==='step'&&k>=step[key]); r.classList.toggle('next',m==='step'&&k===step[key])});
@@ -111,6 +112,8 @@ Object.entries(LISTS).forEach(([key,id])=>{
     if(m==='step'){const rows=[...$(id).querySelectorAll('.v')]; const k=rows.indexOf(r); if(k>=step[key])revealTo(key,k+1)}
     else if(m==='hint'||m==='half'){r.classList.toggle('open')}
     else if(m==='fade'){const w=e.target.closest('.w.fz'); if(w)w.classList.toggle('peek')}
+    else if(m==='voice'&&e.target.closest('.n')){const row=r,first=row.querySelector('.w'),k=vWords().indexOf(first);
+      if(k>=0){if(VS.on)vStop(true);VS.start=k;vReset();UI.toast('التسميع بيبلّش من البيت '+ar(row.dataset.i))}}
     else if(m==='voice'){const w=e.target.closest('.w'); if(w&&!w.classList.contains('said')){const ws=vWords(); const k=ws.indexOf(w); if(k>=0){VS.hints.add(k);vUpdate()}}}
   });
 });
@@ -119,7 +122,7 @@ Object.entries(LISTS).forEach(([key,id])=>{
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const STANDALONE=navigator.standalone===true||matchMedia('(display-mode: standalone)').matches;
-const VS={on:false,rec:null,finals:[],prev:[],lang:localStorage.getItem('ui_asrLang')||VOICE.LANGS[0],interim:'',hints:new Set(),media:null,stream:null,chunks:[],done:false};
+const VS={on:false,rec:null,finals:[],prev:[],lang:localStorage.getItem('ui_asrLang')||VOICE.LANGS[0],interim:'',hints:new Set(),start:0,media:null,stream:null,chunks:[],done:false};
 const toAscii=s=>s.replace(/[٠-٩]/g,c=>'٠١٢٣٤٥٦٧٨٩'.indexOf(c));
 function vWords(){return [...$(LISTS[active]).querySelectorAll('.v .w')]}
 const vExp=()=>vWords().map(w=>({n:w.textContent,num:w.classList.contains('num')}));
@@ -127,10 +130,10 @@ let lastRes={st:[],p:0};
 function vUpdate(){
   const ws=vWords(); if(!ws.length)return;
   const raw=(VS.finals.join(' ')+' '+VS.interim).trim();
-  const r=VOICE.align(raw.split(/\s+/).filter(Boolean),vExp(),VS.hints); lastRes=r;
-  ws.forEach((w,i)=>{w.classList.toggle('said',r.st[i]>0);w.classList.toggle('miss',r.st[i]===2);w.classList.toggle('hinted',r.st[i]===3);w.classList.toggle('cursor',VS.on&&i===r.p)});
+  const r=VOICE.align(raw.split(/\s+/).filter(Boolean),vExp(),VS.hints,VS.start); lastRes=r;
+  ws.forEach((w,i)=>{w.classList.toggle('said',r.st[i]>0);w.classList.toggle('pre',r.st[i]===4);w.classList.toggle('miss',r.st[i]===2);w.classList.toggle('hinted',r.st[i]===3);w.classList.toggle('cursor',VS.on&&i===r.p)});
   const said=r.st.filter(x=>x>0).length;
-  $('vCount').textContent=`${ar(said)} / ${ar(ws.length)} كلمة`+(r.st.includes(2)?` · فاتك ${ar(r.st.filter(x=>x===2).length)}`:'');
+  $('vCount').textContent=`${ar(r.st.filter(x=>x>0&&x<4).length)} / ${ar(ws.length-VS.start)} كلمة`+(r.st.includes(2)?` · فاتك ${ar(r.st.filter(x=>x===2).length)}`:'');
   $('vHeard').textContent=raw?('سمعت: '+raw.split(/\s+/).slice(-5).join(' ')):(VS.on?'بسمعك… ابدأ القراءة':'');
   const cur=ws[r.p]; if(VS.on&&cur&&cur.getBoundingClientRect().bottom>innerHeight-170)cur.scrollIntoView({block:'center',behavior:'smooth'});
   if(VS.on&&r.p>=ws.length)vStop(false);
@@ -153,7 +156,7 @@ async function vStart(){
 }
 // One recognizer per session; Safari ends sessions often, so each end starts a fresh one
 function vRecStart(){
-  const r=new SR(); VS.rec=r; r.lang=VS.lang; r.continuous=true; r.interimResults=true; r.maxAlternatives=3;
+  const r=new SR(); VS.rec=r; try{VS.lang=localStorage.getItem('ui_asrLang')||VS.lang}catch(_){} r.lang=VS.lang; r.continuous=true; r.interimResults=true; r.maxAlternatives=3;
   let txt='';
   r.onresult=e=>{if(VS.rec!==r)return;
     // rebuild the whole session from e.results: iOS repeats or grows earlier results instead of using resultIndex.
@@ -166,6 +169,8 @@ function vRecStart(){
       else parts.push({t,f:x.isFinal})}
     parts.forEach(p=>{if(p.f)fin+=p.t+' ';else it+=p.t+' '});
     txt=(fin+it).trim(); VS.finals=[...VS.prev,fin.trim()].filter(Boolean); VS.interim=it; vUpdate()};
+  // the mic button pulses while the recognizer hears speech
+  r.onspeechstart=()=>$('vMic').classList.add('hear'); r.onspeechend=()=>$('vMic').classList.remove('hear');
   r.onerror=e=>{if(VS.rec!==r)return;
     if(e.error==='language-not-supported'){const i=VOICE.LANGS.indexOf(VS.lang);if(i<VOICE.LANGS.length-1){VS.lang=VOICE.LANGS[i+1];try{localStorage.setItem('ui_asrLang',VS.lang)}catch(_){}}return}
     if(e.error==='not-allowed'||e.error==='service-not-allowed'){
@@ -477,7 +482,8 @@ $('friSave').addEventListener('click',()=>{
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',String(x===b)));
   ['today','fri','all','expl'].forEach(v=>$('v-'+v).hidden=v!==b.dataset.v);
-  if(VS.on)vStop(true); active=b.dataset.v; vReset(); updateBar();
+  UI.reveal.stop(); if(LISTS[b.dataset.v]&&mode[b.dataset.v]==='reveal')UI.reveal.start($(LISTS[b.dataset.v]));
+  if(VS.on)vStop(true); active=b.dataset.v; VS.start=0; vReset(); updateBar();
 }));
 render();
 // screen: 'main' | 'setup' | 'welcome'; the two full-page cards replace the main view
@@ -486,7 +492,7 @@ function showScreen(sc,canCancel){
   $('setup').hidden=sc!=='setup'; $('welcome').hidden=sc!=='welcome'; $('oldMem').hidden=sc!=='old';
   ['mainProg','mainTabs','foot'].forEach(id=>$(id).hidden=!main); $('poemBar').hidden=!main||!MULTI; if(!main)$('poemsCard').hidden=true;
   if(main){document.querySelector('.tabs button[aria-selected="true"]').click()}
-  else{['v-today','v-fri','v-all','v-expl','backup','stepbar','voicebar'].forEach(id=>$(id).hidden=true);if(VS.on)vStop(true);scrollTo(0,0)}
+  else{UI.reveal.stop();['v-today','v-fri','v-all','v-expl','backup','stepbar','voicebar'].forEach(id=>$(id).hidden=true);if(VS.on)vStop(true);scrollTo(0,0)}
   $('cancelSetup').hidden=!canCancel;
 }
 const showSetup=(on,canCancel)=>showScreen(on?'setup':'main',canCancel);

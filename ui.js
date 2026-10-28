@@ -97,6 +97,10 @@ function openSettings(){
   b.append(field('حجم خط المتن',rng(.8,1.6,.05,'vs',pct)),prev,field('حجم خط الأزرار والشرح',rng(.9,1.3,.05,'us',pct)));
   b.append(field('كثرة المراجعة',seg('كثرة المراجعة',[[0.85,'أقل'],[0.9,'متوازنة'],[0.95,'أكثر']],P.ret,v=>{P.ret=v;save()}),
     'مواعيد مراجعة الأبواب والمقاطع بتنحسب بخوارزمية FSRS حسب تقييمك لحالك. «أكثر» بتقرّب المواعيد وبتثبّت أكثر، و«أقل» بتبعّدها وبتوفّر وقت. التغيير بيأثر على المراجعات الجاية.'));
+  // speech recognition language: Modern Standard Arabic suits classical texts best, but devices differ
+  let asr=''; try{asr=localStorage.getItem('ui_asrLang')||''}catch(e){}
+  b.append(field('لغة التعرّف على الصوت',seg('لغة التعرّف',[['','تلقائي'],['ar-SA','فصحى (السعودية)'],['ar-EG','مصر'],['ar-JO','الأردن']],asr,v=>{try{v?localStorage.setItem('ui_asrLang',v):localStorage.removeItem('ui_asrLang')}catch(e){}toast('بيتطبّق من التسميع الجاي')}),
+    'إذا التسميع ما بيلتقط كلامك منيح، جرّب لغة ثانية. التلقائي بيبلّش بالفصحى.'));
   const wk=el('label','ui-check'); const cb=el('input'); cb.type='checkbox'; cb.checked=P.wake; cb.onchange=()=>{P.wake=cb.checked;save();P.wake?wake():sleep()};
   wk.append(cb,document.createTextNode(' خلّي الشاشة شغّالة وأنا بحفظ'));
   b.append(field('الشاشة',wk,'wakeLock' in navigator?'بتمنع الجوال يطفّي الشاشة وإنت بتقرأ أو بتسمّع.':'متصفحك ما بيدعم هالخاصية.'));
@@ -159,6 +163,45 @@ function mountBar(){
   const set=el('button','ui-ico');set.type='button';set.setAttribute('aria-label','الإعدادات');set.textContent='⚙︎';set.onclick=openSettings;
   bar.append(home,books,set); nav.replaceWith(bar);
 }
+/* ---------- self-recitation, word by word («كلمة كلمة») ----------
+   Every word starts hidden. The reader recites from memory and reveals the next word to check it, or a whole verse /
+   passage at once; «غلطت» marks the last revealed word as a slip (gold, for this session only). Tapping a hidden word
+   reveals everything up to it. Works offline and needs no microphone. The page calls start(root) in this mode. */
+const RV={root:null,ws:[],i:0,slips:new Set(),bar:null};
+function rvBar(){
+  if(RV.bar)return RV.bar;
+  const b=el('div','stepbar ui-rbar'); b.hidden=true;
+  b.innerHTML='<div class="in"><button class="btn" data-a="reset">من جديد</button><button class="btn gold" data-a="slip">غلطت</button><div class="vstat"><small data-k="count"></small><small data-k="hint" class="note"></small></div><button class="btn" data-a="line">البيت كامل</button><button class="btn primary big" data-a="next">الكلمة الجاية</button></div>';
+  b.addEventListener('click',e=>{const a=e.target.closest('[data-a]');if(!a)return;({next:rvNext,line:rvLine,slip:rvSlip,reset:rvReset})[a.dataset.a]()});
+  document.body.append(b); RV.bar=b; return b;
+}
+const rvUnitOf=w=>w.closest('.v,.unit')||w.parentElement;
+function rvPaint(){
+  RV.ws.forEach((w,k)=>{w.classList.toggle('rv',k<RV.i);w.classList.toggle('slip',RV.slips.has(k));w.classList.toggle('cursor',k===RV.i)});
+  const b=rvBar(), done=RV.i>=RV.ws.length;
+  b.querySelector('[data-k="count"]').textContent=`${ar(RV.i)} / ${ar(RV.ws.length)} كلمة`+(RV.slips.size?` · غلطات ${ar(RV.slips.size)}`:'');
+  b.querySelector('[data-k="hint"]').textContent=done?(RV.slips.size?'خلصت، راجع الكلمات الذهبية وسمّع مرة ثانية':'ما شاء الله، سمّعته كامل بدون غلط 🤍'):'سمّع الكلمة من حفظك، وبعدين اكشفها';
+  b.querySelector('[data-a="next"]').disabled=done; b.querySelector('[data-a="line"]').disabled=done;
+  const cur=RV.ws[RV.i]; if(cur){const r=cur.getBoundingClientRect(),h=b.getBoundingClientRect().height||90;if(r.bottom>innerHeight-h-30||r.top<80)cur.scrollIntoView({block:'center',behavior:'smooth'})}
+}
+function rvNext(){if(RV.i<RV.ws.length){RV.i++;rvPaint()}}
+// the rest of the current verse (or passage) at once
+function rvLine(){const w=RV.ws[RV.i];if(!w)return;const u=rvUnitOf(w);while(RV.i<RV.ws.length&&rvUnitOf(RV.ws[RV.i])===u)RV.i++;rvPaint()}
+function rvSlip(){if(RV.i>0){const k=RV.i-1;RV.slips.has(k)?RV.slips.delete(k):RV.slips.add(k);rvPaint()}}
+function rvReset(){RV.i=0;RV.slips.clear();rvPaint();RV.ws[0]&&RV.ws[0].scrollIntoView({block:'center',behavior:'smooth'})}
+function rvClick(e){const w=e.target.closest('.w');if(!w||!RV.root)return;const k=RV.ws.indexOf(w);if(k>=RV.i){RV.i=k+1;rvPaint()}}
+function rvKey(e){if(!RV.root||/input|textarea|select/i.test(e.target.tagName))return;if(e.key===' '||e.key==='Enter'){e.preventDefault();rvNext()}}
+const reveal={
+  start(root){if(!root)return;if(RV.root&&RV.root!==root)reveal.stop();
+    RV.root=root; RV.ws=[...root.querySelectorAll('.w')]; RV.i=0; RV.slips=new Set();
+    root.classList.add('m-reveal'); root.addEventListener('click',rvClick); addEventListener('keydown',rvKey);
+    rvBar().hidden=false; rvPaint()},
+  stop(){if(!RV.root)return; RV.root.classList.remove('m-reveal'); RV.root.removeEventListener('click',rvClick); removeEventListener('keydown',rvKey);
+    RV.ws.forEach(w=>w.classList.remove('rv','slip','cursor')); RV.root=null; RV.ws=[]; if(RV.bar)RV.bar.hidden=true},
+  // stop when the given element is (or holds, or sits inside) the active root
+  stopIf(x){if(RV.root&&x&&(x===RV.root||x.contains(RV.root)||RV.root.contains(x)))reveal.stop()},
+  active:()=>!!RV.root
+};
 /* ---------- floating counter ----------
    The page marks its repetition counter with data-fab. When that counter scrolls out of view (while reading the verses
    further down), a round copy floats at the bottom corner, above any bottom bar, and taps the real one. */
@@ -171,7 +214,7 @@ function mountFab(){
     let off=false; if(shown){const r=t.getBoundingClientRect();off=r.bottom<60||r.top>innerHeight-40}
     fab.hidden=!(shown&&off); if(fab.hidden)return;
     fab.innerHTML=t.innerHTML; fab.classList.toggle('full',t.classList.contains('full')||Number(t.dataset.fabFull)>0);
-    let h=0; document.querySelectorAll('.stepbar,.voicebar').forEach(b=>{if(!b.hidden&&getComputedStyle(b).display!=='none')h=Math.max(h,b.getBoundingClientRect().height)});
+    let h=0; document.querySelectorAll('.stepbar,.voicebar,.ui-rbar').forEach(b=>{if(!b.hidden&&getComputedStyle(b).display!=='none')h=Math.max(h,b.getBoundingClientRect().height)});
     fab.style.bottom=`calc(${Math.round(h)+16}px + env(safe-area-inset-bottom,0px))`;
   };
   const later=()=>{if(!raf)raf=setTimeout(update,60)};
@@ -224,5 +267,5 @@ function fadeBar(onChange){
   paint(); addEventListener('prefs',h); w.append(minus,lbl,plus); return w;
 }
 
-window.UI={toast,fade,fadeBar,fadeLevel:()=>P.fade,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,BOOKS};
+window.UI={toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,BOOKS};
 })();

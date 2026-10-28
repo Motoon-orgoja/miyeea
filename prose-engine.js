@@ -158,17 +158,20 @@ function unitEl(u,opts={}){
 }
 
 /* ---------- study modes ---------- */
-const MODES=[['full','كامل'],['fade','إخفاء تدريجي'],['hide','مخفي'],['voice','تسميع بالصوت']];
+const MODES=[['full','كامل'],['fade','إخفاء تدريجي'],['reveal','كلمة كلمة'],['hide','مخفي'],['voice','تسميع بالصوت']];
 let mode={today:'full',all:'full'};
 function modeBar(key,box,onChange){
   box.replaceChildren();
   MODES.forEach(([m,l])=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.setAttribute('aria-pressed',String(mode[key]===m));
-    b.addEventListener('click',()=>{if(VS.on)vStop(true);mode[key]=m;onChange()});box.append(b)});
+    b.addEventListener('click',()=>{if(VS.on)vStop(true);window.UI.reveal.stop();mode[key]=m;onChange()});box.append(b)});
   // the fading mode adds its level control under the buttons
   if(mode[key]==='fade'){const fb=window.UI.fadeBar(onChange);fb.style.gridColumn='1/-1';box.append(fb)}
 }
-function applyMode(el,m){el.classList.remove('m-full','m-hint','m-fade','m-hide','m-voice','open');el.classList.add('m-'+m);if(m==='fade')window.UI.fade(el,window.UI.fadeLevel())}
+function applyMode(el,m){el.classList.remove('m-full','m-hint','m-fade','m-reveal','m-hide','m-voice','open');el.classList.add('m-'+m);if(m==='fade')window.UI.fade(el,window.UI.fadeLevel())}
 document.addEventListener('click',e=>{
+  // in voice mode, tapping a passage's heading starts the recitation there
+  const hd=e.target.closest('.uhead'); if(hd&&hd.closest('.m-voice')){const first=hd.closest('.unit').querySelector('.w'),k=vWords().indexOf(first);
+    if(k>=0){if(VS.on)vStop(true);VS.start=k;vReset();window.UI.toast('التسميع بيبلّش من «'+hd.firstChild.textContent+'»')}return}
   const w=e.target.closest('.w'); if(!w)return;
   if(w.classList.contains('fz')&&w.closest('.m-fade')){w.classList.toggle('peek');return}
   const host=w.closest('.m-hide,.m-voice'); if(!host)return;
@@ -207,6 +210,8 @@ function renderToday(){
   const el=kind==='new'?unitEl(u,{gloss:true}):blockEl(ids); applyMode(el,mode.today); voiceHost=el;
   modeBar('today',modes,renderToday);
   box.append(tag,modes,el);
+  // word-by-word self-recitation runs on the card shown, while the today tab is open
+  if(mode.today==='reveal'&&active==='today')window.UI.reveal.start(el);
   if(kind==='new'){
     const n=S.reps[u.id]||0;
     const c=document.createElement('div'); c.className='counter';
@@ -275,6 +280,7 @@ function renderAll(){
     const sh=sharhEl(u.id); if(sh)el.append(sh);
     list.append(el)});
   if(active==='all')voiceHost=list;
+  if(mode.all==='reveal'&&active==='all')window.UI.reveal.start(list);
   modeBar('all',document.querySelector('.modes[data-list="all"]'),renderAll);
   const lg=$('dayLog'); lg.replaceChildren();
   const days=Object.keys(S.log).sort().reverse();
@@ -320,17 +326,17 @@ if(MULTI){
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const STANDALONE=navigator.standalone===true||matchMedia('(display-mode: standalone)').matches;
-const VS={on:false,rec:null,finals:[],prev:[],lang:localStorage.getItem('ui_asrLang')||VOICE.LANGS[0],interim:'',hints:new Set()};
+const VS={on:false,rec:null,finals:[],prev:[],lang:localStorage.getItem('ui_asrLang')||VOICE.LANGS[0],interim:'',hints:new Set(),start:0};
 const vWords=()=>voiceHost?[...voiceHost.querySelectorAll('.w')].filter(w=>VOICE.norm(w.textContent)):[];
 const vExp=()=>vWords().map(w=>({n:w.textContent}));
 let lastRes={st:[],p:0};
 function vUpdate(){
   const ws=vWords(); if(!ws.length)return;
   const raw=(VS.finals.join(' ')+' '+VS.interim).trim();
-  const r=VOICE.align(raw.split(/\s+/).filter(Boolean),vExp(),VS.hints); lastRes=r;
-  ws.forEach((w,i)=>{w.classList.toggle('said',r.st[i]>0);w.classList.toggle('miss',r.st[i]===2);w.classList.toggle('hinted',r.st[i]===3);w.classList.toggle('cursor',VS.on&&i===r.p)});
+  const r=VOICE.align(raw.split(/\s+/).filter(Boolean),vExp(),VS.hints,VS.start); lastRes=r;
+  ws.forEach((w,i)=>{w.classList.toggle('said',r.st[i]>0);w.classList.toggle('pre',r.st[i]===4);w.classList.toggle('miss',r.st[i]===2);w.classList.toggle('hinted',r.st[i]===3);w.classList.toggle('cursor',VS.on&&i===r.p)});
   const said=r.st.filter(x=>x>0).length, bad=r.st.filter(x=>x===2).length;
-  $('vCount').textContent=`${ar(said)} / ${ar(ws.length)} كلمة`+(bad?` · ${ar(bad)} غلط`:'');
+  $('vCount').textContent=`${ar(r.st.filter(x=>x>0&&x<4).length)} / ${ar(ws.length-VS.start)} كلمة`+(bad?` · فاتك ${ar(bad)}`:'');
   $('vHeard').textContent=raw?('سمعت: '+raw.split(/\s+/).slice(-5).join(' ')):(VS.on?'بسمعك… ابدأ القراءة':'');
   const cur=ws[r.p]; if(VS.on&&cur&&cur.getBoundingClientRect().bottom>innerHeight-170)cur.scrollIntoView({block:'center',behavior:'smooth'});
   if(VS.on&&r.p>=ws.length)vStop(false);
@@ -350,7 +356,7 @@ function vStart(){
 }
 // one recognizer per session; Safari ends sessions often, so each end starts a fresh one
 function vRecStart(){
-  const r=new SR(); VS.rec=r; r.lang=VS.lang; r.continuous=true; r.interimResults=true; r.maxAlternatives=3;
+  const r=new SR(); VS.rec=r; try{VS.lang=localStorage.getItem('ui_asrLang')||VS.lang}catch(_){} r.lang=VS.lang; r.continuous=true; r.interimResults=true; r.maxAlternatives=3;
   let txt='';
   r.onresult=e=>{if(VS.rec!==r)return;
     // rebuild the whole session from e.results: iOS repeats or grows earlier results instead of using resultIndex.
@@ -363,6 +369,8 @@ function vRecStart(){
       else parts.push({t,f:x.isFinal})}
     parts.forEach(p=>{if(p.f)fin+=p.t+' ';else it+=p.t+' '});
     txt=(fin+it).trim(); VS.finals=[...VS.prev,fin.trim()].filter(Boolean); VS.interim=it; vUpdate()};
+  // the mic button pulses while the recognizer hears speech
+  r.onspeechstart=()=>$('vMic').classList.add('hear'); r.onspeechend=()=>$('vMic').classList.remove('hear');
   r.onerror=e=>{if(VS.rec!==r)return;
     if(e.error==='language-not-supported'){const i=VOICE.LANGS.indexOf(VS.lang);if(i<VOICE.LANGS.length-1){VS.lang=VOICE.LANGS[i+1];try{localStorage.setItem('ui_asrLang',VS.lang)}catch(_){}}return}
     if(e.error==='not-allowed'||e.error==='service-not-allowed'){
@@ -414,10 +422,11 @@ let active='today';
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',String(x===b)));
   active=b.dataset.v; ['today','all','log'].forEach(v=>$('v-'+v).hidden=v!==active);
+  window.UI.reveal.stop(); if(active!=='log'&&mode[active]==='reveal')window.UI.reveal.start(active==='all'?$('allList'):$('cardBox').querySelector('.unit,.block'));
   if(VS.on)vStop(true); voiceHost=active==='all'?$('allList'):$('cardBox').querySelector('.unit'); updateVoicebar();
 }));
 function showScreen(sc,canCancel){
-  const main=sc==='main';
+  const main=sc==='main'; if(!main)window.UI.reveal.stop();
   $('setup').hidden=sc!=='setup'; $('welcome').hidden=sc!=='welcome'; $('oldMem').hidden=sc!=='old';
   ['mainTabs','foot'].forEach(id=>$(id).hidden=!main); if(MULTI){$('chapBar').hidden=!main;if(!main)$('chapCard').hidden=true}
   ['today','all','log'].forEach(v=>$('v-'+v).hidden=!main||v!==active);

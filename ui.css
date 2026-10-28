@@ -117,3 +117,19 @@ html,body,button,a,.w,.v,input,select,label{touch-action:manipulation}
 .ui-switch.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .ui-new{flex:none;font-size:calc(12px*var(--us));color:var(--accent);font-weight:700}
 .held{display:flex;flex-direction:column;gap:8px;border-top:1px dashed var(--line);padding-top:12px}
+/* word-by-word self-recitation */
+.m-reveal .w:not(.rv){background:var(--veil);border-radius:5px;cursor:pointer}
+.m-reveal .w:not(.rv),.m-reveal .w:not(.rv) *{color:transparent!important;text-decoration:none!important}
+.m-reveal .w.rv{animation:pop .25s ease-out}
+.m-reveal .w.slip{color:var(--gold)!important;background:var(--gold-soft);border-radius:5px}
+.m-reveal .w.slip *{color:var(--gold)!important}
+.m-reveal .w.cursor{outline:2px dashed var(--accent);outline-offset:1px}
+.ui-rbar .in{flex-wrap:wrap;max-width:640px;margin:0 auto;display:flex;gap:8px;align-items:center}
+.ui-rbar .vstat{flex:1 1 120px;min-width:0;display:flex;flex-direction:column;line-height:1.4}
+.ui-rbar .big{flex:1 1 100%;font-size:17px;min-height:52px}
+@keyframes pop{from{transform:scale(.85);opacity:.3}to{transform:none;opacity:1}}
+/* voice recitation: words before the chosen start stay plain and dim; the mic pulses while it hears speech */
+.m-voice .w.pre,.m-voice .w.pre *{color:var(--muted)!important;background:transparent!important}
+.m-voice .n,.m-voice .uhead{cursor:pointer}
+#vMic.live.hear{animation:hear 1s ease-in-out infinite}
+@keyframes hear{0%,100%{box-shadow:0 0 0 0 rgba(194,53,43,.45)}50%{box-shadow:0 0 0 9px rgba(194,53,43,0)}}
