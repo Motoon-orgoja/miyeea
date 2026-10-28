@@ -14,7 +14,7 @@ async function load(model, force) {
     device = gpu ? 'webgpu' : 'wasm';
     const progress_callback = p => { if (p.status === 'progress') self.postMessage({ type: 'progress', file: p.file, loaded: p.loaded, total: p.total }); };
     try {
-      asr = await pipeline('automatic-speech-recognition', model, { device, dtype: gpu ? { encoder_model: 'fp16', decoder_model_merged: 'q4' } : 'q8', progress_callback });
+      asr = await pipeline('automatic-speech-recognition', model, { device, dtype: gpu ? { encoder_model: 'fp32', decoder_model_merged: 'q4' } : 'q8', progress_callback });
     } catch (e) {
       // a GPU that fails to compile the model still has the CPU path
       if (device !== 'webgpu') throw e;
