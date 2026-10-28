@@ -218,7 +218,7 @@ function renderToday(){
     const t=document.createElement('button'); t.className='tap'+(n>=S.goal?' full':''); t.dataset.fab=''; t.innerHTML=`${ar(n)}<small>من ${ar(S.goal)}</small>`;
     t.addEventListener('click',()=>{S.reps[u.id]=(S.reps[u.id]||0)+1;save();renderToday()});
     const side=document.createElement('div'); side.style.flex='1';
-    side.innerHTML='<p class="note" style="margin:0 0 8px">اقرأه كامل، واضغط الدائرة بعد كل قراءة. جرّب «أول حرف» و«مخفي» لما تحس إنه بلّش يثبت.</p>';
+    side.innerHTML='<p class="note" style="margin:0 0 8px">اقرأه كامل، واضغط الدائرة بعد كل قراءة. جرّب «إخفاء تدريجي» و«كلمة كلمة» لما تحس إنه بلّش يثبت.</p>';
     const done=document.createElement('button'); done.className='btn primary'; done.textContent='حفظته ✓'; done.disabled=n<Math.min(3,S.goal);
     done.addEventListener('click',()=>{if(VS.on)vStop(true);mode._seen='';snap('حفظت '+u.label);learn(u.id);renderAll();undoToast('حفظته ✓')});
     side.append(done); c.append(t,side); box.append(c);
@@ -383,6 +383,7 @@ function vRecStart(){
   try{r.start();return true}catch(e){return false}
 }
 function vStop(silent){
+  if(silent&&VOICE.W.recording())VOICE.W.cancel();
   if(!VS.on)return;
   VS.on=false; try{VS.rec&&VS.rec.stop()}catch(_){}
   if(VS.interim){VS.finals.push(VS.interim);VS.interim=''}
@@ -393,7 +394,9 @@ function vStop(silent){
 
   vMsg(badW.length?`فاتك ${ar(badW.length)} ${badW.length<=10?'كلمات':'كلمة'}، طلعت بلون مختلف. سمّع مرة ثانية من «من جديد».`:r.p>=ws.length?'ما شاء الله، سمّعته كامل بدون غلط 🤍':`وقفت عند الكلمة ${ar(r.p+1)} من ${ar(ws.length)}، بدون أغلاط لحد هون.`);
 }
-$('vMic').addEventListener('click',()=>{VS.on?vStop(false):vStart()});
+// the precise engine (Whisper on the device) records first and corrects after; the default listens live
+const PREC=VOICE.precise({VS,msg:vMsg,update:vUpdate,stop:vStop,btn:$('vMic')});
+$('vMic').addEventListener('click',()=>{const w=VOICE.engine()==='whisper';VS.on?(w&&VOICE.W.recording()?PREC.finish():vStop(false)):(w?(lastRes.p>=vWords().length&&vReset(),PREC.start()):vStart())});
 $('vReset').addEventListener('click',()=>{if(VS.on)vStop(true);vReset()});
 $('vHint').addEventListener('click',()=>{const ws=vWords();if(lastRes.p<ws.length){VS.hints.add(lastRes.p);vUpdate()}});
 

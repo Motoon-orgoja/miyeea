@@ -1,0 +1,75 @@
+// Recitations and explanations for each text, streamed from where they are published (archive.org, YouTube); nothing is
+// copied into the site. Every archive.org address below was checked against the item's file list. «verse» gives one
+// file per verse (for listen-and-repeat), «series» a numbered set of lessons. Rights: see each item's page.
+(function(){
+const IA='https://archive.org/download/';
+const f=(item,file)=>IA+item+'/'+encodeURIComponent(file);
+const pad=(n,w)=>String(n).padStart(w,'0');
+const series=(item,pat,from,to,w)=>({item,list:Array.from({length:to-from+1},(_,k)=>f(item,pat.replace('{n}',pad(from+k,w||2))))});
+window.MEDIA={
+  miyeea:{
+    verse:i=>i>=1&&i<=100?f('orjoza-meeya','OrjozaMeeya-'+i+'.mp3'):null, verseBy:'مشروع حفّاظ السنة',
+    recite:[
+      {t:'المتن كامل (قراءة متقنة)',by:'ضمن شرح الشيخ عبد الرزاق البدر',url:f('Sharh_Urjuzah_al-Me3yah','00.mp3')},
+      {t:'المتن كامل',by:'أداء صالح مامان',url:f('abd_396','الأرجوزة المـيـئيـة فـي ذكر حال أشرف البرية  أداء صالح.mp3')},
+      {t:'المتن كامل',by:'مشروع حفّاظ السنة',url:f('orjoza-meeya','OrjozaMeeya.mp3')},
+    ],
+    sharh:[
+      {t:'شرح الأرجوزة الميئية',by:'الشيخ عبد الرزاق البدر',...series('Sharh_Urjuzah_al-Me3yah','{n}.mp3',1,5)},
+      {t:'شرح الأرجوزة الميئية',by:'الشيخ محمد بن خدة',...series('Arjouza','{n}_arjouza.mp3',1,26)},
+      {t:'شرح الأرجوزة الميئية',by:'الشيخ عبد الغني يخلف',...series('Cheikh-Yekhlef__Alorjozah-al-miiyyah','Yekhlef__Alorjozah-al-miiyyah__{n}.mp3',1,58)},
+      {t:'شرح الشيخ عبد الرزاق البدر (فيديو)',by:'يوتيوب',yt:'https://www.youtube.com/playlist?list=PLUtxhBXriVhPrT4GLNVmhQtgdb-QET2yg'},
+    ]},
+  munajat:{
+    poems:{
+      suhayli:{recite:[{t:'يا من يرى ما في الضمير ويسمع',by:'إنشاد (اسمعه قبل الاعتماد عليه)',url:f('NADERA','يا من يرى ما في الضمير.mp3')}]},
+      shafii:{recite:[{t:'قلبي برحمتك اللهم ذو أنس',by:'إنشاد (اسمعه قبل الاعتماد عليه)',url:f('NADERA','قلبي برحمتك اللهم ذو انس.mp3')}]},
+      munfarija:{recite:[{t:'المنفرجة',by:'أداء زكرياء الإدريسي',url:f('Forumbou_gmail_20190224','المنفرجة - أداء زكرياء الإدريسي.mp3')},{t:'القصيدة المنفرجة',by:'قراءة',url:f('saidarab8_yahoo','القصيدة المنفرجة.mp3')}],
+        sharh:[{t:'شرح المنفرجة',by:'الشيخ عمار بن طوق المري (فيديو)',yt:'https://www.youtube.com/watch?v=a-gD_A5vJ74'},{t:'شرح المنفرجة',by:'الشيخ يسري جبر (فيديو)',yt:'https://www.youtube.com/watch?v=o82KlSd543I'},{t:'شرح المنفرجة',by:'الشيخ محمد الروكي (فيديو)',yt:'https://www.youtube.com/watch?v=2Tty2kynNOA'}]},
+      abunuwas:{recite:[{t:'يا رب إن عظمت ذنوبي كثرة',by:'محمد أمين الترمذي',url:f('demmouche_20150226_2025','يا رب إن عظمت ذنوبي كثرة .mp3')}]},
+      mimiyya:{recite:[{t:'الميمية كاملة',by:'سعيد شعلان',url:f('MimiaofIbnQayyim','mimia.mp3')}],
+        sharh:[{t:'شرح الميمية',by:'الشيخ محمد بن صالح العثيمين',...series('Sharh_almimiah','{n}a.mp3',1,4,1)}]},
+    }},
+  shatibiyya:{
+    recite:[
+      {t:'المتن كامل',by:'الشيخ أيمن رشدي سويد',url:f('sh-ayman-sowaid-matn-ashshatebiih','00.mp3')},
+      {t:'المتن بابًا بابًا',by:'الشيخ أيمن رشدي سويد',...series('sh-ayman-sowaid-matn-ashshatebiih','{n}.mp3',1,78)},
+      {t:'المتن بابًا بابًا',by:'الشيخ مشاري العفاسي',...series('Chatibia_uP_bY_mUSLEm','{n}_uP_bY_mUSLEm.mp3',1,78)},
+    ],
+    sharh:[
+      {t:'شرح الشاطبية',by:'الشيخ عبد الباسط هاشم',...series('SHATBIAH','{n}.mp3',1,63,3)},
+      {t:'شرح الشاطبية',by:'الشيخ سيد لاشين أبو الفرح',...series('Shattebia_Lachine_uP_bY_mUSLEm','{n}_uP_bY_mUSLEm.mp3',1,40,3)},
+      {t:'شرح الشاطبية (فيديو)',by:'الشيخ محمد عصام القضاة',yt:'https://www.youtube.com/playlist?list=PLlX1sKIV4qu8GILcKhyRyRvs2_N-H-ICv'},
+    ]},
+  jazariyya:{
+    recite:[
+      {t:'المتن كامل',by:'الشيخ أيمن رشدي سويد',url:f('sh-ayman-sowaid-matn-aljazareiiah','00.mp3')},
+      {t:'المتن بابًا بابًا',by:'الشيخ أيمن رشدي سويد',...series('sh-ayman-sowaid-matn-aljazareiiah','{n}.mp3',1,18),
+        names:['المقدمة','مقدمة المنظومة','باب مخارج الحروف','باب الصفات','باب التجويد','باب التفخيم والترقيق','باب الراءات','باب اللامات','باب الضاد والظاء','باب التحذيرات','باب الميم والنون المشددتين','باب حكم التنوين والنون الساكنة','باب المد والقصر','باب معرفة الوقوف','باب المقطوع والموصول','باب التاءات','باب همز الوصل','الخاتمة']},
+      {t:'المتن كامل',by:'الشيخ سعد الغامدي',url:f('20230819_20230819_1347','001  1  متن الجزرية بصوت الشيخ سعد الغامدي.mp3')},
+    ],
+    sharh:[
+      {t:'شرح الجزرية',by:'الشيخ وليد المنيسي',...series('minisi-jazariah','{n}.mp3',1,11)},
+      {t:'الإتقان لتلاوة القرآن (فيديو)',by:'الشيخ أيمن سويد',yt:'https://www.youtube.com/playlist?list=PL5CF688ECD20085C4'},
+    ]},
+  riyad:{
+    recite:[
+      {t:'باب الوعظ والاقتصاد فيه',by:'حمد الدريهم',url:f('Riad_Alsalheen__AlDuraihim','091.mp3')},
+      {t:'باب الوعظ والاقتصاد فيه',by:'قراءة',url:f('Riyad-Saliheen_Book-audio-mp3','0091.mp3')},
+    ],
+    sharh:[
+      {t:'شرح باب الوعظ والاقتصاد فيه',by:'الشيخ عبد الرزاق البدر',url:f('Sharh_Riyad_as-Salihin_al-Badr','155.mp3')},
+      {t:'شرح رياض الصالحين (يبدأ الباب في هذا الشريط)',by:'الشيخ محمد بن صالح العثيمين',url:f('Riyad_As-Salihin_al-othaymeen','50b.mp3')},
+      {t:'شرح الباب (فيديو)',by:'الشيخ محمد بن صالح العثيمين',yt:'https://www.youtube.com/watch?v=vkq5NiNygrE'},
+    ]},
+  qudouri:{
+    recite:[
+      {t:'المتن كامل (حوالي ٦ ساعات)',by:'قراءة',url:f('23997','كتاب_مختصر_القدوري_المعروف_بالكتاب_في_الفقه_الحنفي_كاملا 23997.mp3')},
+      {t:'قراءة متن الكتاب',by:'على أجزاء',...series('jnnatalfirdos_gmail_01_201601','{n}.mp3',1,7)},
+    ],
+    sharh:[
+      {t:'شرح مختصر القدوري',by:'الشيخ خالد المشيقح',...series('Qudori-sharh','{n}.mp3',1,45,3)},
+      {t:'شرح مختصر القدوري (فيديو)',by:'الشيخ صلاح أبو الحاج',yt:'https://www.youtube.com/playlist?list=PLH77aiq9U4WNFIPGBC8B-Yt1FtB7oUmjs'},
+    ]},
+};
+})();

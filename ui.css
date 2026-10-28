@@ -133,3 +133,20 @@ html,body,button,a,.w,.v,input,select,label{touch-action:manipulation}
 .m-voice .n,.m-voice .uhead{cursor:pointer}
 #vMic.live.hear{animation:hear 1s ease-in-out infinite}
 @keyframes hear{0%,100%{box-shadow:0 0 0 0 rgba(194,53,43,.45)}50%{box-shadow:0 0 0 9px rgba(194,53,43,0)}}
+/* listening: track rows in the sheet, and the slim player bar fixed at the top */
+.ui-track{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+.ui-tinfo{flex:1;display:flex;flex-direction:column;min-width:0}
+.ui-tinfo b{font-size:calc(14.5px*var(--us))}
+.ui-tinfo small{color:var(--muted);font-size:calc(12px*var(--us))}
+.ui-track select{width:auto;max-width:42%;flex:none;font-size:14px}
+.ui-track .btn{flex:none;min-width:48px}
+.ui-player{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;align-items:center;gap:6px;padding:calc(6px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 6px max(12px,env(safe-area-inset-left,0px));background:var(--surface);border-bottom:1px solid var(--line);box-shadow:var(--shadow)}
+.ui-player button{flex:none;min-width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:700 13px var(--ui);cursor:pointer;padding:0 8px}
+.ui-player button.on{background:var(--gold-soft);color:var(--gold);border-color:var(--gold-soft)}
+.ui-player .ui-pp{background:var(--accent);border-color:var(--accent);color:#fff;font-size:16px}
+.ui-pinfo{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3}
+.ui-pinfo b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ui-pinfo small{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.ui-playing .wrap{padding-top:64px}
+body.ui-playing .tabs{top:calc(env(safe-area-inset-top,0px) + 60px)}
+@media (max-width:380px){.ui-player [data-a="back"]{display:none}}

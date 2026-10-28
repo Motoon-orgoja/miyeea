@@ -18,6 +18,7 @@ const ORDER=(()=>{const ids=B.poems.map(p=>p.id);const o=store.get('order',ids).
 let CUR=store.get('cur',ORDER[0]); if(!B.poems.some(p=>p.id===CUR))CUR=ORDER[0];
 const P=B.poems.find(p=>p.id===CUR), V=P.verses, N=V.length, SECS=P.secs||{1:P.title};
 const poemOf=id=>B.poems.find(p=>p.id===id);
+document.body.dataset.poem=CUR; // which poem's recordings the listen sheet offers
 function stateOf(id){try{const v=localStorage.getItem(lskOf(id));return v?JSON.parse(v):null}catch(e){return null}}
 document.title='حفظ '+B.title;
 document.querySelector('header h1').textContent=B.title; document.querySelector('header p').textContent=B.sub;
@@ -183,6 +184,7 @@ function vRecStart(){
   try{r.start();return true}catch(e){return false}
 }
 function vStop(silent){
+  if(silent&&VOICE.W.recording())VOICE.W.cancel();
   if(!VS.on&&!VS.media)return;
   VS.on=false; try{VS.rec&&VS.rec.stop()}catch(_){}
   if(VS.interim){VS.finals.push(VS.interim);VS.interim=''}
@@ -214,7 +216,9 @@ function vStop(silent){
     try{m.stop()}catch(_){}
   }
 }
-$('vMic').addEventListener('click',()=>{VS.on?vStop(false):vStart()});
+// the precise engine (Whisper on the device) records first and corrects after; the default listens live
+const PREC=VOICE.precise({VS,msg:vMsg,update:vUpdate,stop:vStop,btn:$('vMic')});
+$('vMic').addEventListener('click',()=>{const w=VOICE.engine()==='whisper';VS.on?(w&&VOICE.W.recording()?PREC.finish():vStop(false)):(w?(lastRes.p>=vWords().length&&vReset(),PREC.start()):vStart())});
 $('vReset').addEventListener('click',()=>{if(VS.on)vStop(true);vReset()});
 $('vHint').addEventListener('click',()=>{const ws=vWords();if(lastRes.p<ws.length){VS.hints.add(lastRes.p);vUpdate()}});
 const numIn=v=>parseInt(toAscii(String(v)),10);
@@ -325,6 +329,9 @@ function renderWardCtl(){
   if(S.done&&S.undoDone&&S.undoDone.d===S.day)b('↩︎ ما حفظته، رجّع الورد',()=>act('رجّعت ورد اليوم',()=>{S.mem=S.undoDone.mem;S.done=false;S.log=S.log.filter(x=>x.d!==S.day);delete S.undoDone}),'gold');
   if(S.end<N)b('➕ بيت زيادة اليوم',()=>act('زدت بيت على ورد اليوم',()=>{S.end=Math.min(N,S.end+1);S.done=false;S.grow={d:S.day,n:grown()+1}}));
   if(S.end>1&&S.end>S.start-1)b('➖ بيت أقل',()=>act('نقّصت بيت من ورد اليوم',()=>{S.end=Math.max(1,S.end-1);S.mem=Math.min(S.mem,S.end);if(grown())S.grow.n--}));
+  // listen-and-repeat over today's ward when the text has one recording per verse
+  const m=UI.mediaFor(B.key); if(m&&m.verse){const it=[];for(let i=from();i<=S.end;i++){const u=m.verse(i);if(u)it.push({url:u,label:'البيت '+ar(i)})}
+    if(it.length)b('🎧 استمع للورد',()=>UI.playQueue(it,'ورد اليوم '+ar(from())+'–'+ar(S.end)),'primary')}
   if(S.reps>0)b('↺ صفّر العدّاد',()=>act('صفّرت العدّاد',()=>{S.reps=0}));
   if(UNDO.length)b('↶ تراجع عن «'+UNDO[UNDO.length-1].label+'»',undo);
 }

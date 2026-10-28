@@ -101,6 +101,16 @@ function openSettings(){
   let asr=''; try{asr=localStorage.getItem('ui_asrLang')||''}catch(e){}
   b.append(field('لغة التعرّف على الصوت',seg('لغة التعرّف',[['','تلقائي'],['ar-SA','فصحى (السعودية)'],['ar-EG','مصر'],['ar-JO','الأردن']],asr,v=>{try{v?localStorage.setItem('ui_asrLang',v):localStorage.removeItem('ui_asrLang')}catch(e){}toast('بيتطبّق من التسميع الجاي')}),
     'إذا التسميع ما بيلتقط كلامك منيح، جرّب لغة ثانية. التلقائي بيبلّش بالفصحى.'));
+  // recognition engine: live browser recognition, or Whisper on the device (more precise, corrects after you finish)
+  const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);v===null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+  const eng=el('div','ui-col'), dl=el('button','btn'), st=el('div','ui-hint');
+  const modelSeg=seg('حجم النموذج',[['base','عادي · ٧٧ م.ب'],['small','أدق · ٢٥٠ م.ب']],ls('ui_asrModel')||'base',v=>{ls('ui_asrModel',v);paintDl()});
+  function paintDl(){const on=(ls('ui_asrEngine')||'web')==='whisper';modelSeg.hidden=dl.hidden=!on;st.textContent=on?(window.VOICE&&VOICE.W.ready()?'النموذج نازل على جهازك وجاهز ✓':'بينزل مرة وحدة، وبعدها بيشتغل بدون نت. «أدق» للكمبيوتر والجوالات الحديثة.'):'بيسمعك مباشرة وبيعلّم الكلمات وإنت بتقرأ. بيحتاج نت.'}
+  dl.textContent='⬇️ نزّل النموذج هلأ'; dl.onclick=async()=>{if(!window.VOICE){toast('افتح صفحة متن لتنزّل النموذج');return}dl.disabled=true;
+    try{await VOICE.W.prepare(p=>{st.textContent='بينزل… '+ar(p)+'٪'});toast('النموذج جاهز ✓')}catch(e){toast('ما زبط التنزيل: '+e.message)}dl.disabled=false;paintDl()};
+  eng.append(seg('محرّك التسميع',[['web','تعرّف المتصفح'],['whisper','التعرّف الدقيق']],ls('ui_asrEngine')||'web',v=>{ls('ui_asrEngine',v==='web'?null:v);paintDl()}),modelSeg,dl,st);
+  b.append(field('محرّك التسميع بالصوت',eng,'«التعرّف الدقيق» (Whisper) بيسجّل تسميعك كامل، ولما تخلص بيحلّله على جهازك وبيورجيك وين غلطت. أبطأ شوي بس أدق بكثير، وبيشتغل حتى بدون نت.'));
+  paintDl();
   const wk=el('label','ui-check'); const cb=el('input'); cb.type='checkbox'; cb.checked=P.wake; cb.onchange=()=>{P.wake=cb.checked;save();P.wake?wake():sleep()};
   wk.append(cb,document.createTextNode(' خلّي الشاشة شغّالة وأنا بحفظ'));
   b.append(field('الشاشة',wk,'wakeLock' in navigator?'بتمنع الجوال يطفّي الشاشة وإنت بتقرأ أو بتسمّع.':'متصفحك ما بيدعم هالخاصية.'));
@@ -161,7 +171,10 @@ function mountBar(){
   const cb=BOOKS.find(b=>b.key===CUR); books.innerHTML='<span aria-hidden="true">📚</span> '+(cb?cb.t:'المتون')+' <span class="ui-caret" aria-hidden="true">▾</span>';
   books.onclick=openBooks;
   const set=el('button','ui-ico');set.type='button';set.setAttribute('aria-label','الإعدادات');set.textContent='⚙︎';set.onclick=openSettings;
-  bar.append(home,books,set); nav.replaceWith(bar);
+  // a listen button when the text has recordings (data/media.js)
+  const lis=el('button','ui-ico');lis.type='button';lis.setAttribute('aria-label','استمع');lis.textContent='🎧';lis.onclick=openListen;
+  lis.hidden=!(window.MEDIA&&window.MEDIA[CUR]);
+  bar.append(home,books,lis,set); nav.replaceWith(bar);
 }
 /* ---------- self-recitation, word by word («كلمة كلمة») ----------
    Every word starts hidden. The reader recites from memory and reveals the next word to check it, or a whole verse /
@@ -202,6 +215,74 @@ const reveal={
   stopIf(x){if(RV.root&&x&&(x===RV.root||x.contains(RV.root)||RV.root.contains(x)))reveal.stop()},
   active:()=>!!RV.root
 };
+/* ---------- listening: recitations, explanations, and listen-and-repeat ----------
+   window.MEDIA (data/media.js) lists streams per text. One audio element serves the whole page; a slim player bar at the
+   top shows what plays, with speed, loop over a chosen stretch (A→B), and a close button. A queue plays a list of
+   verses, each repeated N times (talqin). */
+const AU={a:null,bar:null,queue:[],qi:0,rep:1,ri:0,A:null,B:null,title:''};
+function audioEl(){
+  if(AU.a)return AU.a; const a=new Audio(); a.preload='none'; AU.a=a;
+  a.addEventListener('timeupdate',()=>{if(AU.A!=null&&AU.B!=null&&a.currentTime>=AU.B)a.currentTime=AU.A;paintBar()});
+  a.addEventListener('play',()=>paintBar()); a.addEventListener('pause',()=>paintBar());
+  a.addEventListener('waiting',()=>paintBar('بيحمّل…')); a.addEventListener('playing',()=>paintBar());
+  a.addEventListener('error',()=>paintBar('ما قدرت أشغّل الملف، تأكد من النت'));
+  a.addEventListener('ended',()=>{
+    if(AU.queue.length){AU.ri++; if(AU.ri>=AU.rep){AU.ri=0;AU.qi++} if(AU.qi<AU.queue.length){playItem();return} AU.queue=[]; toast('خلص الاستماع للورد 🤍')}
+    paintBar()});
+  return a;
+}
+const fmt=t=>{if(!isFinite(t))return '';t=Math.floor(t);return ar(Math.floor(t/60))+':'+ar(String(t%60).padStart(2,'0'))};
+function playerBar(){
+  if(AU.bar)return AU.bar;
+  const b=el('div','ui-player'); b.hidden=true;
+  b.innerHTML='<button class="ui-pp" data-a="pp" aria-label="شغّل أو وقّف">▶</button><div class="ui-pinfo"><b data-k="t"></b><small data-k="s"></small></div>'+
+    '<button data-a="back" aria-label="رجوع ١٠ ثواني">↺١٠</button><button data-a="rate" aria-label="السرعة">١×</button><button data-a="ab" aria-label="كرّر مقطع">من…لـ</button><button data-a="x" aria-label="سكّر">✕</button>';
+  b.addEventListener('click',e=>{const k=e.target.closest('[data-a]');if(!k)return;const a=audioEl();
+    ({pp:()=>a.paused?a.play().catch(()=>{}):a.pause(),
+      back:()=>{a.currentTime=Math.max(0,a.currentTime-10)},
+      rate:()=>{const R=[0.75,1,1.25,1.5];a.playbackRate=R[(R.indexOf(a.playbackRate)+1)%R.length];P.speed=a.playbackRate;save()},
+      ab:()=>{if(AU.A==null){AU.A=a.currentTime;toast('حدّدت البداية، اضغط مرة ثانية عند النهاية')}else if(AU.B==null){AU.B=Math.max(AU.A+1,a.currentTime);a.currentTime=AU.A;toast('بيكرر المقطع لحد ما تضغط مرة ثالثة')}else{AU.A=AU.B=null;toast('وقّف تكرار المقطع')}},
+      x:()=>{a.pause();AU.queue=[];b.hidden=true;document.body.classList.remove('ui-playing')}})[k.dataset.a]();paintBar()});
+  document.body.append(b); AU.bar=b; return b;
+}
+function paintBar(note){
+  const b=playerBar(), a=audioEl(); if(b.hidden)return;
+  b.querySelector('[data-a="pp"]').textContent=a.paused?'▶':'⏸';
+  b.querySelector('[data-a="rate"]').textContent=ar(String(a.playbackRate).replace('.','٫'))+'×';
+  b.querySelector('[data-a="ab"]').classList.toggle('on',AU.A!=null);
+  b.querySelector('[data-k="t"]').textContent=AU.title;
+  const it=AU.queue[AU.qi], q=AU.queue.length&&it?` · ${it.label||''}${AU.rep>1?' ('+ar(AU.ri+1)+'/'+ar(AU.rep)+')':''}`:'';
+  b.querySelector('[data-k="s"]').textContent=typeof note==='string'?note:(fmt(a.currentTime)+(a.duration?' / '+fmt(a.duration):'')+q);
+}
+function play(url,title){
+  const a=audioEl(); AU.queue=[]; AU.title=title||''; AU.A=AU.B=null; a.src=url; a.playbackRate=P.speed||1;
+  playerBar().hidden=false; document.body.classList.add('ui-playing'); a.play().catch(()=>paintBar('اضغط ▶ للتشغيل')); paintBar('بيحمّل…');
+}
+function playItem(){const it=AU.queue[AU.qi];if(!it)return;const a=audioEl();a.src=it.url;a.playbackRate=P.speed||1;a.play().catch(()=>paintBar('اضغط ▶ للتشغيل'));paintBar()}
+// listen-and-repeat: items [{url,label}], each played `rep` times
+function playQueue(items,title,rep){
+  if(!items.length)return; AU.queue=items; AU.qi=0; AU.ri=0; AU.rep=Math.max(1,rep||P.rep||1); AU.title=title; AU.A=AU.B=null;
+  playerBar().hidden=false; document.body.classList.add('ui-playing'); playItem();
+}
+function mediaFor(key){const m=window.MEDIA&&window.MEDIA[key];if(!m)return null;
+  if(m.poems){const id=document.body.dataset.poem;return m.poems[id]||null}return m}
+function openListen(){
+  const m=mediaFor(CUR); const b=sheet('استمع');
+  if(!m){b.append(el('p','ui-hint','ما لقينا تسجيلات موثوقة لهالقصيدة لسا. جرّب قصيدة ثانية من «القصائد والترتيب».'));return}
+  const row=it=>{
+    const r=el('div','ui-track'); const info=el('div','ui-tinfo'); info.append(el('b','',it.t),el('small','',it.by||'')); r.append(info);
+    if(it.yt){const a=el('a','btn','يوتيوب ↗');a.href=it.yt;a.target='_blank';a.rel='noopener';r.append(a)}
+    else if(it.list){const sel=el('select');it.list.forEach((u,k)=>{const o=el('option','',it.names?it.names[k]:'الدرس '+ar(k+1));o.value=u;sel.append(o)});
+      const p=el('button','btn primary','▶');p.setAttribute('aria-label','شغّل');p.onclick=()=>{play(sel.value,it.t+' · '+sel.selectedOptions[0].textContent);closeSheet()};r.append(sel,p)}
+    else{const p=el('button','btn primary','▶');p.setAttribute('aria-label','شغّل');p.onclick=()=>{play(it.url,it.t+' · '+(it.by||''));closeSheet()};r.append(p)}
+    return r};
+  if(m.verse){b.append(field('الاستماع والترديد (تلقين)',seg('مرات التكرار',[[1,'مرة'],[2,'مرتين'],[3,'٣ مرات'],[5,'٥ مرات']],P.rep||1,v=>{P.rep=v;save()}),
+    'من «ورد اليوم» اضغط «🎧 استمع للورد»: بيقرأ أبيات وردك بيت بيت بصوت '+m.verseBy+'، وبيكرر كل بيت هالعدد.'))}
+  if(m.recite&&m.recite.length){b.append(el('div','ui-lbl','التلاوة والأداء'));m.recite.forEach(it=>b.append(row(it)))}
+  if(m.sharh&&m.sharh.length){b.append(el('div','ui-lbl','الشروح'));m.sharh.forEach(it=>b.append(row(it)))}
+  b.append(el('p','ui-hint','التسجيلات منشورة على أرشيف الإنترنت ويوتيوب بأسماء أصحابها، والموقع بيشغّلها من هناك. اسمع قبل الاعتماد على أي إنشاد.'));
+}
+
 /* ---------- floating counter ----------
    The page marks its repetition counter with data-fab. When that counter scrolls out of view (while reading the verses
    further down), a round copy floats at the bottom corner, above any bottom bar, and taps the real one. */
@@ -267,5 +348,5 @@ function fadeBar(onChange){
   paint(); addEventListener('prefs',h); w.append(minus,lbl,plus); return w;
 }
 
-window.UI={toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,BOOKS};
+window.UI={play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,BOOKS};
 })();
