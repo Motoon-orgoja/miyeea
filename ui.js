@@ -214,10 +214,10 @@ function rvReset(){RV.i=0;RV.slips.clear();rvPaint();RV.ws[0]&&RV.ws[0].scrollIn
 function rvClick(e){const w=e.target.closest('.w');if(!w||!RV.root)return;const k=RV.ws.indexOf(w);if(k>=RV.i){RV.i=k+1;rvPaint()}}
 function rvKey(e){if(!RV.root||/input|textarea|select/i.test(e.target.tagName))return;if(e.key===' '||e.key==='Enter'){e.preventDefault();rvNext()}}
 const reveal={
-  start(root){if(!root)return;if(RV.root&&RV.root!==root)reveal.stop();
+  start(root,line){if(!root)return;if(RV.root&&RV.root!==root)reveal.stop();
     RV.root=root; RV.ws=[...root.querySelectorAll('.w')]; RV.i=0; RV.slips=new Set();
     root.classList.add('m-reveal'); root.addEventListener('click',rvClick); addEventListener('keydown',rvKey);
-    rvBar().hidden=false; rvPaint()},
+    const bar=rvBar(); bar.querySelector('[data-a="line"]').textContent=line||'البيت كامل'; bar.hidden=false; rvPaint()},
   stop(){if(!RV.root)return; RV.root.classList.remove('m-reveal'); RV.root.removeEventListener('click',rvClick); removeEventListener('keydown',rvKey);
     RV.ws.forEach(w=>w.classList.remove('rv','slip','cursor')); RV.root=null; RV.ws=[]; if(RV.bar)RV.bar.hidden=true},
   // stop when the given element is (or holds, or sits inside) the active root

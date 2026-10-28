@@ -211,7 +211,7 @@ function renderToday(){
   modeBar('today',modes,renderToday);
   box.append(tag,modes,el);
   // word-by-word self-recitation runs on the card shown, while the today tab is open
-  if(mode.today==='reveal'&&active==='today')window.UI.reveal.start(el);
+  if(mode.today==='reveal'&&active==='today')window.UI.reveal.start(el,'الفقرة كاملة');
   if(kind==='new'){
     const n=S.reps[u.id]||0;
     const c=document.createElement('div'); c.className='counter';
@@ -286,7 +286,7 @@ function renderAll(){
     const sh=sharhEl(u.id); if(sh)el.append(sh);
     list.append(el)});
   if(active==='all')voiceHost=list;
-  if(mode.all==='reveal'&&active==='all')window.UI.reveal.start(list);
+  if(mode.all==='reveal'&&active==='all')window.UI.reveal.start(list,'الفقرة كاملة');
   modeBar('all',document.querySelector('.modes[data-list="all"]'),renderAll);
   const lg=$('dayLog'); lg.replaceChildren();
   const days=Object.keys(S.log).sort().reverse();
@@ -431,7 +431,7 @@ let active='today';
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',String(x===b)));
   active=b.dataset.v; ['today','all','log'].forEach(v=>$('v-'+v).hidden=v!==active);
-  window.UI.reveal.stop(); if(active!=='log'&&mode[active]==='reveal')window.UI.reveal.start(active==='all'?$('allList'):$('cardBox').querySelector('.unit,.block'));
+  window.UI.reveal.stop(); if(active!=='log'&&mode[active]==='reveal')window.UI.reveal.start(active==='all'?$('allList'):$('cardBox').querySelector('.unit,.block'),'الفقرة كاملة');
   if(VS.on)vStop(true); voiceHost=active==='all'?$('allList'):$('cardBox').querySelector('.unit'); updateVoicebar();
 }));
 function showScreen(sc,canCancel){
