@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0B7A55">
+<title>حفظ الأربعون النووية</title>
+<link rel="preload" href="fonts/Amiri-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/NotoKufiArabic-500_800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts.css">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="المتون">
+<link rel="stylesheet" href="prose.css">
+<link rel="stylesheet" href="ui.css">
+<script src="ui.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <nav class="books" aria-label="المتون"><a href="home.html" data-book="home">وردي اليوم</a><a href="./" data-book="miyeea">الميئية</a><a href="munajat.html" data-book="munajat">المناجاة</a><a href="shatibiyya.html" data-book="shatibiyya">الشاطبية</a><a href="jazariyya.html" data-book="jazariyya">الجزرية</a><a href="tuhfa.html" data-book="tuhfa">تحفة الأطفال</a><a href="riyad.html" data-book="riyad">رياض الصالحين</a><a href="nawawi.html" data-book="nawawi">الأربعون النووية</a><a href="bayquniyya.html" data-book="bayquniyya">المنظومة البيقونية</a><a href="qudouri.html" data-book="qudouri">القدوري</a><a href="ajurrumiyya.html" data-book="ajurrumiyya">متن الآجرومية</a></nav>
+    <h1>رياض الصالحين</h1>
+    <p></p>
+  </header>
+
+  <section id="chapBar" class="card poembar" hidden>
+    <div class="row" style="justify-content:space-between;align-items:center;flex-wrap:nowrap">
+      <div style="min-width:0"><div class="eyebrow">الباب الحالي</div><div class="ptitle" id="cTitle"></div><div class="note" id="cBy"></div></div>
+      <button class="btn" id="chapBtn" style="flex:none">الأبواب</button>
+    </div>
+  </section>
+  <section id="chapCard" class="card" hidden>
+    <div class="eyebrow">أبواب الكتاب · بتحفظ باب باب، وبتقدر تبدأ بأي باب</div>
+    <div id="chapList" class="plist"></div>
+    <button class="btn" id="closeChap">سكّر</button>
+  </section>
+
+  <section id="welcome" class="card guide" hidden>
+    <div class="eyebrow">أهلًا وسهلًا</div>
+    <div class="range">كيف بتحفظ المتن هون؟</div>
+    <p class="note" style="margin:0">كل حديث إله باب لحاله، والحديث الطويل مقسوم مقاطع. بتحفظ الباب فقرة فقرة بالترتيب، وكل يوم بتربط اللي حفظته ببعض. ولما تختم الباب، بيصير كتلة وحدة بتراجعها كاملة على مواعيد متباعدة بتتحدد حسب تقييمك لحالك (كل ما ثبت أكثر، بتتباعد مراجعته لحد شهرين)، وبتنتقل للباب الجاي.</p>
+    <ol>
+      <li><b>جديد اليوم:</b> فقرة جديدة (أو أكثر حسب إعداداتك). اقرأها، واضغط الدائرة بعد كل قراءة، ولما توصل للعدد اضغط «حفظته».</li>
+      <li><b>الربط:</b> بعد الجديد، بتسمّع كل اللي حفظته من الباب لحد هلأ مرة وحدة متصلة، وبتضغط «سمّعته».</li>
+      <li><b>مراجعة الأبواب:</b> كل باب ختمته بيرجعلك كامل بمواعيده، حتى وأنت بتحفظ باب جديد. سمّعه، اكشفه، وقيّم حالك: «نسيت» أو «صعب» أو «تمام».</li>
+      <li><b>الأبواب:</b> من زر «الأبواب» فوق بتشوف كتب المتن وأبوابه ووين وصلت بكل باب، وبتقدر تبدأ بأي باب.</li>
+      <li><b>طرق القراءة والتسميع:</b> «كامل»، و«إخفاء تدريجي» (بيخفي الكلمات شوي شوي)، و«كلمة كلمة» (بتسمّع من حفظك وبتكشف كل كلمة لتتأكد، بدون مايك)، و«مخفي» (اضغط أي كلمة لتشوفها)، و«تسميع بالصوت» (اضغط عنوان أي فقرة لتبلّش منها).</li>
+      <li><b>اختبرني واستمع:</b> «🎯 اختبرني» بيعطيك أول كلمات فقرة محفوظة وإنت بتكمّلها، و«🎧» فوق بيسمّعك المتن وشروحه.</li>
+      <li><b>إنت بتتحكّم بالورد:</b> «زيد محفوظ جديد» إذا عندك وقت، و«راجع الباب كامل اليوم»، و«أجّل لبكرة».</li>
+    </ol>
+    <p class="note" style="margin:0">تقدمك بينحفظ على جهازك بس. النص المشكول من موقع sunnah.com، مقابلًا كلمة كلمة بنسخة ويكي مصدر، مع تصحيح أخطاء ظاهرة. وكل تصحيح مسجّل بملفات المشروع.</p>
+    <button class="btn primary" id="welcomeGo">يلّا نبلّش</button>
+  </section>
+
+  <section id="setup" class="card" hidden>
+    <div class="eyebrow">الإعدادات</div>
+    <div class="range">خطة الحفظ</div>
+    <div class="plan">
+      <label><span class="eyebrow">محفوظ جديد كل يوم</span><input id="perIn" type="text" inputmode="numeric" value="1"></label>
+      <label><span class="eyebrow">مرات تكرار الجديد</span><input id="goalIn" type="text" inputmode="numeric" value="10"></label>
+    </div>
+    <label class="plan1" id="chapPick" hidden><span class="eyebrow">أي باب بدك تحفظ؟</span><select id="chapIn"></select></label>
+    <p class="note" id="setupUnitNote" style="margin:0">كل باب مقسوم فقرات، وبتحفظ فقرة فقرة. وبتقدر تغيّر الباب بأي وقت من زر «الأبواب».</p>
+    <details class="note"><summary style="cursor:pointer;color:var(--accent);font-weight:600">عندك نسخة احتياطية؟</summary>
+      <textarea id="importIn" rows="3" placeholder="الصق الكود هون" style="margin-top:6px"></textarea>
+      <button class="btn" id="importBtn" style="margin-top:6px">استرجع التقدم</button>
+    </details>
+    <button class="btn primary" id="saveSetup">احفظ</button>
+    <button class="btn" id="cancelSetup" hidden>رجوع</button>
+  </section>
+
+  <div class="tabs" role="tablist" id="mainTabs">
+    <button role="tab" aria-selected="true" data-v="today">اليوم</button>
+    <button role="tab" aria-selected="false" data-v="all">الباب</button>
+    <button role="tab" aria-selected="false" data-v="log">السجل</button>
+  </div>
+
+  <section id="v-today" class="card">
+    <div class="stats">
+      <div><b id="stNew">٠</b><small>جديد اليوم</small></div>
+      <div><b id="stDue">٠</b><small>مراجعة اليوم</small></div>
+      <div><b id="stMem">٠</b><small>محفوظ من <span id="stTotal"></span></small></div>
+    </div>
+    <div id="cardBox"></div>
+  </section>
+
+  <section id="v-all" class="card" hidden>
+    <div class="eyebrow">الباب الحالي · كل فقراته</div>
+    <div class="modes" data-list="all"></div>
+    <div class="list" id="allList"></div>
+  </section>
+
+  <section id="v-log" class="card" hidden>
+    <div class="eyebrow">سجل الأيام</div>
+    <div class="log" id="dayLog"></div>
+  </section>
+
+  <div class="foot" id="foot">
+    <button class="btn" id="setupBtn">📝 خطة الحفظ</button>
+    <button class="btn" id="exportBtn">نسخة احتياطية</button>
+    <button class="btn" id="helpBtn">طريقة الاستخدام</button>
+  </div>
+  <section class="card" id="backup" hidden>
+    <div class="eyebrow">نسخة احتياطية · انقل تقدمك لجهاز ثاني</div>
+    <p class="note" style="margin:0">انسخ الكود وخزّنه عندك. على الجهاز الثاني: «الإعدادات» ← «عندك نسخة احتياطية؟» والصقه.</p>
+    <textarea id="exportOut" rows="3" readonly></textarea>
+    <div class="row"><button class="btn primary" id="copyBtn">انسخ الكود</button><button class="btn" id="closeBackup">سكّر</button></div>
+  </section>
+</div>
+
+<div class="voicebar" id="voicebar" hidden>
+  <div class="in">
+    <button class="btn" id="vReset">من جديد</button>
+    <button class="btn" id="vHint">تلميح</button>
+    <div class="vstat"><small id="vCount"></small><small id="vHeard" class="heard"></small></div>
+    <button class="btn primary" id="vMic">🎤 ابدأ</button>
+    <small id="vMsg" class="note"></small>
+  </div>
+</div>
+
+<script src="data/nawawi.js"></script>
+<script src="data/media.js"></script>
+<script src="srs.js"></script>
+<script src="voice.js"></script>
+<script src="prose-engine.js"></script>
+</body>
+</html>

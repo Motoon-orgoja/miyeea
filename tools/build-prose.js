@@ -4,7 +4,8 @@
 // usage: node tools/build-prose.js <nawawi|ajurrumiyya> <json file>
 const fs = require('fs'), path = require('path');
 const [kind, src] = process.argv.slice(2);
-const J = JSON.parse(fs.readFileSync(src, 'utf8'));
+// sunnah.com writes a fatha on the article's wasl alif after a prefix («بِاَللَّهِ»); the alif carries nothing
+const J = JSON.parse(fs.readFileSync(src, 'utf8').replace(/([بوفكل][َِ])اَ(?=ل)/g, '$1ا'));
 const ar = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
 const words = t => t.split(/\s+/).filter(Boolean).length;
 // cut at sentence or clause ends (. ، ؛ : ؟ !) into pieces near `size` words
@@ -20,7 +21,8 @@ function chunks(text, size) {
 let BOOK;
 if (kind === 'nawawi') {
   const chapters = J.hadiths.map(h => {
-    const id = 'n' + h.n, pieces = chunks(h.matn.trim(), 35);
+    // a second narration printed with the hadith («وفي رواية…») follows its text
+    const id = 'n' + h.n, pieces = chunks((h.matn + (h.extra ? ' ' + h.extra : '')).trim(), 35);
     const units = pieces.map((m, k) => {
       const segs = []; if (k === 0 && h.rawi) segs.push(['rawi', h.rawi.trim()]); segs.push(['matn', m]);
       if (k === pieces.length - 1 && h.takh) segs.push(['takh', h.takh.trim()]);

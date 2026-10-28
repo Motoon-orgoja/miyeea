@@ -20,7 +20,7 @@ const P=B.poems.find(p=>p.id===CUR), V=P.verses, N=V.length, SECS=P.secs||{1:P.t
 const poemOf=id=>B.poems.find(p=>p.id===id);
 document.body.dataset.poem=CUR; // which poem's recordings the listen sheet offers
 function stateOf(id){try{const v=localStorage.getItem(lskOf(id));return v?JSON.parse(v):null}catch(e){return null}}
-document.title='حفظ '+B.title;
+document.title=B.title+' · حفظ المتون';
 document.querySelector('header h1').textContent=B.title; document.querySelector('header p').textContent=B.sub;
 document.querySelectorAll('.books a').forEach(a=>{if(a.dataset.book===B.key)a.setAttribute('aria-current','page')});
 

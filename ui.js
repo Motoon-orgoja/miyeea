@@ -26,6 +26,8 @@ const BOOKS=[
   {key:'qudouri',c:'الفقه',lsk:'mutoon_qudouri_v1',url:'qudouri.html',t:'مختصر القدوري',d:'الفقه الحنفي · ١١٨ بابًا'},
   {key:'tuhfa',c:'القراءات والتجويد',lsk:'mutoon_tuhfa_v1',url:'tuhfa.html',t:'تحفة الأطفال',d:'تجويد للمبتدئين · ٦١ بيتًا'},
   {key:'bayquniyya',c:'مصطلح الحديث',lsk:'mutoon_bayquniyya_v1',url:'bayquniyya.html',t:'المنظومة البيقونية',d:'مصطلح الحديث · ٣٤ بيتًا'},
+  {key:'nawawi',c:'الحديث',lsk:'mutoon_nawawi_v1',url:'nawawi.html',t:'الأربعون النووية',d:'أصول الدين في ٤٢ حديثًا'},
+  {key:'ajurrumiyya',c:'النحو',lsk:'mutoon_ajurrumiyya_v1',url:'ajurrumiyya.html',t:'متن الآجرومية',d:'مبادئ النحو'},
 ];
 
 /* ---------- small helpers ---------- */

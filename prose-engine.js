@@ -4,7 +4,7 @@
 const BOOK=window.BOOK, CH=BOOK.chapters, CHI=Object.fromEntries(CH.map(c=>[c.id,c])), MULTI=CH.length>1;
 const UI=Object.fromEntries(CH.flatMap(c=>c.units.map(u=>[u.id,u]))), UI_=UI;
 let CUR=CH[0].id, U=CH[0].units; // the chapter being learned and its units
-document.title='حفظ '+BOOK.title;
+document.title=BOOK.title+' · حفظ المتون';
 document.querySelector('header h1').textContent=BOOK.title; document.querySelector('header p').textContent=BOOK.sub;
 document.querySelectorAll('.books a').forEach(a=>{if(a.dataset.book===BOOK.key)a.setAttribute('aria-current','page')});
 
