@@ -1,0 +1,11 @@
+1066|1	فَلَّمَّا	typo: shadda on lam; output فَلَمَّا (in fixes)
+1105|1	لِلْصُّبْحِ	sukun on lam shamsiyya removed → لِلصُّبْحِ (in fixes)
+1138|1	آَخِرِ	fatha on alif-madda removed → آخِرِ
+1140|1	وَيُجْزِىء	hamza written ى+ء (should be يُجْزِئُ); letters kept, vocalized وَيُجْزِىءُ
+1142|0	هَانِىءٍ	hamza written ى+ء (should be هَانِئٍ); letters kept
+1120|1	امْرءًا	spelled امرءا (usual امْرَأً); vocalized امْرَءًا
+1142|2	مسلم. ­­­	trailing soft-hyphen characters (U+00AD) in input, kept
+1067|1	عَمْرو	uncertain case after «وَقِيلَ:» (حكاية رفع vs بدل مجرور); chose عَمْرِو بْنِ قَيْسٍ
+1131|1	نُوصِلَ	Muslim's wording is usually «أَنْ لَا تُوصَلَ صَلَاةٌ»; kept letters as نُوصِلَ صَلَاةً
+1097|1	عَشَرَةَ	changed to عَشْرَةَ (in fixes); same in 1111|1
+1072|1	العَتَمَةِ	c-item: chose الْعَتَمَةِ

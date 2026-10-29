@@ -7,7 +7,7 @@
 - `munajat.html`: منظومات المناجاة (٨ قصائد بترتيب بيختاره الحافظ).
 - `shatibiyya.html`: الشاطبية (حرز الأماني) مشكولة من المكتبة الشاملة.
 - `jazariyya.html`: المقدمة الجزرية، من النسخة اللي أرسلها الحافظ مع تصحيح ضبطها (`tools/jazariyya.txt` و`tools/build-jazariyya.js`).
-- `riyad.html`: مختارات من رياض الصالحين.
+- `riyad.html`: رياض الصالحين كاملًا (يُبنى بـ tools/build-riyad.js، والشروح في data/riyad-sharh/).
 - `qudouri.html`: مختصر القدوري، باب باب.
 
 ## البنية

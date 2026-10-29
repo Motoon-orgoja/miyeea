@@ -1,0 +1,10 @@
+970|1	أَحَدَهِمْ	input had kasra on ha after fatha; output أَحَدَهُمْ (object of يعني); أَحَدِهِمْ (genitive continuing كعقبة) also possible
+974b|0	النَبِيَّ	typo: missing shadda on nun
+985|1	يَطْرُقَّنَّ	typo: spurious shadda on qaf
+1030|1	أَدُّلُّكُمْ	typo: spurious shadda on dal
+999|1	ألم	huruf muqatta'a left unvocalized (no maddah sign allowed)
+983a|1	وَأَسْوَدٍ	changed to diptote وَأَسْوَدَ; some editions keep tanween
+1020d|0	يَقْرَبُكَ	kept input damma (ولا يقربُك); Bukhari editions often read ولا يقربَك coordinated with لن
+967c|0	فَتَىً	kept input spelling (tanween on ya); standard فَتًى
+977b|4	الفائَينِ	kept as in input (الْفَائَيْنِ)
+1022|1	فَاتِحَةُ	c-choice: kept damma (فاتحةُ الكتاب as khabar of mahdhuf); kasra (badal of نورين) also defensible

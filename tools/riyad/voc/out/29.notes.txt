@@ -1,0 +1,2 @@
+1896c|0	بِدِمَشْقَ فِهْرِسُ الْمَوْضُوعَاتِ	colophon looks truncated (date after «بدمشق» missing?) and the heading «فهرس الموضوعات» is run into the text; vocalized as written
+1895|1	تُضَامُونَ	also narrated تُضَامُّونَ; kept input reading

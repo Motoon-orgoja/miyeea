@@ -22,7 +22,7 @@ const BOOKS=[
   {key:'munajat',c:'الرقائق والأذكار',lsk:'mutoon_munajat_v1:',url:'munajat.html',t:'منظومات المناجاة',d:'٨ قصائد في الأنس بالله'},
   {key:'shatibiyya',c:'القراءات والتجويد',lsk:'mutoon_shatibiyya_v1',url:'shatibiyya.html',t:'الشاطبية',d:'حرز الأماني في القراءات السبع'},
   {key:'jazariyya',c:'القراءات والتجويد',lsk:'mutoon_jazariyya_v1',url:'jazariyya.html',t:'المقدمة الجزرية',d:'أحكام التجويد · ١٠٩ أبيات'},
-  {key:'riyad',c:'الحديث',lsk:'mutoon_riyad91_v1',url:'riyad.html',t:'رياض الصالحين',d:'مختارات: باب الوعظ والاقتصاد فيه'},
+  {key:'riyad',c:'الحديث',lsk:'mutoon_riyad91_v1',url:'riyad.html',t:'رياض الصالحين',d:'كامل: ٣٧٢ بابًا و١٨٩٦ حديثًا مشكولة، مع الشروح'},
   {key:'qudouri',c:'الفقه',lsk:'mutoon_qudouri_v1',url:'qudouri.html',t:'مختصر القدوري',d:'الفقه الحنفي · ١١٨ بابًا'},
   {key:'tuhfa',c:'القراءات والتجويد',lsk:'mutoon_tuhfa_v1',url:'tuhfa.html',t:'تحفة الأطفال',d:'تجويد للمبتدئين · ٦١ بيتًا'},
   {key:'bayquniyya',c:'مصطلح الحديث',lsk:'mutoon_bayquniyya_v1',url:'bayquniyya.html',t:'المنظومة البيقونية',d:'مصطلح الحديث · ٣٤ بيتًا'},

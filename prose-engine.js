@@ -9,7 +9,7 @@ document.querySelector('header h1').textContent=BOOK.title; document.querySelect
 document.querySelectorAll('.books a').forEach(a=>{if(a.dataset.book===BOOK.key)a.setAttribute('aria-current','page')});
 
 /* ---------- explanations ----------
-   Verbatim passages from classical commentaries (Dalil al-Falihin, Sharh Muslim, Fath al-Bari, tafsir), loaded from riyad91-sharh.js
+   Verbatim passages from classical commentaries (Dalil al-Falihin, Sharh Muslim, Fath al-Bari, tafsir), loaded per chapter from BOOK.sharhDir
    which tools/assemble-sharh.js builds. Shown under each hadith in the chapter tab; 701's three parts share one entry on the last part */
 const SHARH=window.SHARH||{};
 // a big book keeps its commentary in one file per chapter (BOOK.sharhDir/<chapter id>.json), fetched the first time the chapter is shown
@@ -202,7 +202,7 @@ function renderToday(){
     e.textContent=b?`ما شاء الله، «${CHI[CUR].title}» محفوظ 🤍 · مراجعته الجاية ${when(b.due)} (${stageTxt(b)})`:'خلصت ورد اليوم 🤍 · والجديد الجاي بكرة';
     box.append(e);
     if(nx){const go=document.createElement('button');go.className='btn primary';go.textContent='ابدأ الباب الجاي: «'+nx.title+'»';go.addEventListener('click',()=>{setCur(nx.id);save();renderAll()});box.append(go)}
-    if(MULTI&&allLearned()){const pick=document.createElement('button');pick.className='btn';pick.textContent='اختر باب ثاني';pick.addEventListener('click',()=>{renderChapters();$('chapCard').hidden=false;$('chapCard').scrollIntoView({block:'start',behavior:'smooth'})});box.append(pick)}
+    if(MULTI&&allLearned()){const pick=document.createElement('button');pick.className='btn';pick.textContent='اختر باب ثاني';pick.addEventListener('click',()=>{$('chapCard').hidden=false;renderChapters();$('chapCard').scrollIntoView({block:'start',behavior:'smooth'})});box.append(pick)}
     box.append(wardActions(null)); updateVoicebar(); return;
   }
   const u=kind==='new'?fresh[0]:null, ids=kind==='block'?unitsOf(bd.id).map(x=>x.id):learnedIds();
@@ -309,6 +309,8 @@ function renderChapters(){
   if(!MULTI)return;
   if($('setup').hidden&&$('welcome').hidden&&$('oldMem').hidden)$('chapBar').hidden=false;
   const c=CHI[CUR]; $('cTitle').textContent=c.title; $('cBy').textContent=(c.group?c.group+' · ':'')+ar(c.units.length)+' '+(BOOK.unitWord==='فقرة'?'فقرة':'وحدة')+' · '+chapterStatus(c);
+  // the list itself (hundreds of rows in a big book) is only built while it is open
+  if($('chapCard').hidden)return;
   // chapters grouped under their book («كتاب»), each group folds; the current one starts open
   const list=$('chapList'); list.replaceChildren(); let box=list, gname=null;
   CH.forEach(ch=>{
@@ -481,7 +483,7 @@ function jumpFromHash(){
   const id=decodeURIComponent(m[1]), ch=CH.find(c=>c.units.some(u=>u.id===id)); if(!ch||!$('setup').hidden||!$('welcome').hidden)return;
   if(ch.id!==CUR){
     // another chapter: open the chapter list at it, so the reader decides whether to switch
-    renderChapters(); $('chapCard').hidden=false;
+    $('chapCard').hidden=false; renderChapters();
     const row=[...$('chapList').querySelectorAll('.prow')].find(r=>r.querySelector('b').textContent===ch.title);
     if(row){const d=row.closest('details');if(d)d.open=true;row.scrollIntoView({block:'center'});row.classList.add('ui-flash');setTimeout(()=>row.classList.remove('ui-flash'),2600)}
     window.UI.toast('هالفقرة بـ«'+ch.title+'». اضغط «احفظه هلأ» لتنتقل له');return}

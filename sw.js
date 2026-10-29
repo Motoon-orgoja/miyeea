@@ -1,6 +1,6 @@
 // Bump VERSION whenever any cached file changes so phones pick up the new copy
-const VERSION = 'miyeea-v28';
-const FILES = ['./', 'i18n.js', 'i18n/en.js', 'i18n/fus.js', 'sync.js', 'ajurrumiyya.html', 'data/ajurrumiyya.js', 'nawawi.html', 'data/nawawi.js', 'bayquniyya.html', 'data/bayquniyya.js', 'tuhfa.html', 'data/tuhfa.js', 'data/media.js', 'whisper-worker.js', 'voice.js', 'fonts/Amiri-400.woff2', 'fonts/Amiri-700.woff2', 'fonts/NotoKufiArabic-400.woff2', 'fonts/NotoKufiArabic-500_800.woff2', 'srs.js', 'ui.js', 'ui.css', 'home.html', 'home.js', 'index.html', 'munajat.html', 'shatibiyya.html', 'jazariyya.html', 'data/jazariyya.js', 'qudouri.html', 'prose.css', 'prose-engine.js', 'data/riyad.js', 'data/shatibiyya.js', 'data/qudouri.js', 'app.css', 'engine.js', 'data/miyeea.js', 'data/munajat.js', 'data/munajat-expl.js', 'riyad.html', 'riyad91-sharh.js', 'fonts.css', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
+const VERSION = 'miyeea-v29';
+const FILES = ['./', 'i18n.js', 'i18n/en.js', 'i18n/fus.js', 'sync.js', 'ajurrumiyya.html', 'data/ajurrumiyya.js', 'nawawi.html', 'data/nawawi.js', 'bayquniyya.html', 'data/bayquniyya.js', 'tuhfa.html', 'data/tuhfa.js', 'data/media.js', 'whisper-worker.js', 'voice.js', 'fonts/Amiri-400.woff2', 'fonts/Amiri-700.woff2', 'fonts/NotoKufiArabic-400.woff2', 'fonts/NotoKufiArabic-500_800.woff2', 'srs.js', 'ui.js', 'ui.css', 'home.html', 'home.js', 'index.html', 'munajat.html', 'shatibiyya.html', 'jazariyya.html', 'data/jazariyya.js', 'qudouri.html', 'prose.css', 'prose-engine.js', 'data/riyad.js', 'data/shatibiyya.js', 'data/qudouri.js', 'app.css', 'engine.js', 'data/miyeea.js', 'data/munajat.js', 'data/munajat-expl.js', 'riyad.html', 'fonts.css', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
@@ -23,5 +23,7 @@ self.addEventListener('fetch', e => {
       .catch(() => caches.match(req, { ignoreSearch: true }).then(hit => hit || caches.match('index.html'))));
     return;
   }
-  e.respondWith(caches.match(req).then(hit => hit || fetch(req)));
+  // the commentary is too big to pre-cache: each chapter's file is kept once it has been opened
+  const keep = req.url.includes('/data/riyad-sharh/');
+  e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(res => { if (keep && res.ok) { const copy = res.clone(); caches.open(VERSION).then(c => c.put(req, copy)); } return res; })));
 });
