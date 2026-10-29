@@ -78,6 +78,15 @@ window.MEDIA={
       {t:'شرح تحفة الأطفال (المقدمة)',by:'الشيخ محمد غندر',url:f('shar7-to7ft-ala6fal','001-moqadema.mp3')},
       {t:'شرح تحفة الأطفال',by:'الشيخ عبد المحسن العباد البدر',list:[1,2,3].map(n=>f('islami-538','شرح تحفة الاطفال  للشيخ عبد المحسن البدر -'+n+'.mp3'))},
     ]},
+  zubad:{
+    recite:[
+      {t:'المتن كامل (تسجيل واحد، نحو ساعتين)',by:'قارئ غير مسمّى',url:f('golden_crown81_yahoo','صفوة الزبد في الفقه الشافعي.mp3')},
+      {t:'المتن كامل (٤ أجزاء)',by:'قارئ غير مسمّى',list:[1,2,3,4].map(n=>f('golden_crown81_yahoo','zubad'+n+'.mp3'))},
+    ],
+    sharh:[
+      {t:'فتح الصمد شرح صفوة الزبد',by:'الشيخ أحمد بن علي المقرمي',...series('Maqrami-zubad','{n}.mp3',1,16)},
+      {t:'شرح نظم الزبد',by:'الشيخ عبد الله القادري',...series('Zubad_Qadiry','{n}.mp3',1,61)},
+    ]},
   bayquniyya:{
     verse:i=>i>=1&&i<=34?f('albayqoneyyah','Albayqoneyyah/albayqoneyyah-'+i+'.mp3'):null, verseBy:'مشروع حفّاظ السنة',
     recite:[{t:'المتن كامل',by:'مشروع حفّاظ السنة',url:f('bayqoneyyah','bayqoneyyah-q2/bayqoneyyah.mp3')},{t:'المتن كامل',by:'أبو أحمد الشيظمي',url:f('shaydzmi1','baykouniah.mp3')}],
