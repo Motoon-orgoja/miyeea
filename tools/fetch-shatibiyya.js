@@ -9,7 +9,7 @@ async function page(p) {
   const d = await get('https://shamela.ws/book/7754/' + p);
   const t = d.slice(d.indexOf('class="nass')).replace(/^[^>]*>/, '').split('id="appended_pages"')[0];
   return t.split(/<p[ >]/).map(b => b.replace(/<a [\s\S]*?<\/a>/g, '').replace(/<[^>]+>/g, '').replace(/^[^>]*>/, '')
-    .replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').replace(/<div$/, '').trim()).filter(Boolean);
+    .replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim().replace(/\s*<div$/, '')).filter(Boolean);
 }
 const toInt = s => parseInt(s.replace(/[٠-٩]/g, c => '٠١٢٣٤٥٦٧٨٩'.indexOf(c)), 10);
 // the two verses this copy prints without the hemistich marker

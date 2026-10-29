@@ -14,7 +14,7 @@ for(let p=1;;p++){const f=path.join(CACHE,p+'.html');if(!fs.existsSync(f))break;
   }
   const sep=pp.findIndex(q=>/^ـ+$/.test(q.t));
   pp.forEach((q,k)=>{if(sep>=0&&k<sep)q.blk=1;if(sep===k)q.sep=1;paras.push(q)});
-  if(foot)paras.push({p,pn,sec,foot:foot.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,300)});
+  if(foot)paras.push({p,pn,sec,foot:foot.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()});
 }
 fs.writeFileSync(path.join(CACHE,'paras.json'),JSON.stringify(paras));
 fs.writeFileSync(path.join(CACHE,'dump.txt'),paras.map(q=>`[${q.p}/${q.pn}${q.blk?' M':''}${q.sep?' S':''}${q.foot?' F':''}] ${q.foot||q.t}`).join('\n'));

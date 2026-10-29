@@ -10,7 +10,9 @@ const pages=[];
 for(let p=1;;p++){const f=path.join(D,p+'.html');if(!fs.existsSync(f))break;const s=fs.readFileSync(f,'utf8');
   const m=s.match(/<div class="nass[^"]*" data-page-id="(\d+)" data-page-num="(\d+)">([\s\S]*?)<div id="appended_pages/);if(!m)continue;
   let body=m[3].replace(/<hr>[\s\S]*$/,'');// editor's hamesh
-  const ps=[...body.matchAll(/<p(?: [^>]*)?>([\s\S]*?)<\/p>/g)].filter(x=>!/class="hamesh"/.test(x[0])).map(x=>para(x[1])).filter(Boolean);
+  let ps=[...body.matchAll(/<p(?: [^>]*)?>([\s\S]*?)<\/p>/g)].filter(x=>!/class="hamesh"/.test(x[0])).map(x=>para(x[1])).filter(Boolean);
+  // fixes of the digital text: the «ــ» rule glued to a paragraph (page 30), a mistyped note number «(٢٩» for «(٣)» (page 110)
+  ps=ps.flatMap(t=>/\S\s*ـ+$/.test(t)?[t.replace(/\s*ـ+$/,''),'ــ']:[t]).map(t=>t.replace(/^\(٢٩ /,'⟦3⟧ '));
   const k=ps.findIndex(t=>/^ـ+$/.test(t));
   const pg={id:+m[1],num:+m[2],matn:k<0?[]:ps.slice(0,k).filter(t=>!/^\.{5,}$/.test(t)),hashiya:k<0?ps:ps.slice(k+1),rule:k>=0};
   pages.push(pg);}

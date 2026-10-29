@@ -282,8 +282,8 @@ if(!P.sharh)fetch('data/sharh/'+(MULTI?B.key+'-'+CUR:B.key)+'.json').then(r=>r.o
   if(!j||!j.v)return;
   P.sharh=[null].concat(j.v.map(x=>x&&x.t)); P.sharhRef=j.v;
   P.sharhSrc={name:j.name+(j.author?'، ل'+j.author:'')+(j.death?' (ت '+j.death+')':''),url:j.url};
-  renderPoemInfo(); render();
-}).catch(()=>{});
+  renderPoemInfo(); lastSig.all=null; render();
+}).catch(e=>console.warn('sharh',e));
 function render(){
   const f=from(), e=S.end, memEnd=S.mem;
   $('barM').style.width=(memEnd/N*100)+'%';
