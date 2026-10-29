@@ -1,0 +1,8 @@
+name = "mutoon-sync"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+# create it once with: npx wrangler kv namespace create SYNC   — then paste the id here
+[[kv_namespaces]]
+binding = "SYNC"
+id = "REPLACE_WITH_KV_ID"

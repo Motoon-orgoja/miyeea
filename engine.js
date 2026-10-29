@@ -5,7 +5,7 @@ const WDAY=()=>S.wday??5; // weekly recitation day, -1 = none
 
 const ar=n=>String(n).replace(/\d/g,d=>"٠١٢٣٤٥٦٧٨٩"[d]);
 const today=()=>{try{return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Amman'}).format(new Date())}catch(e){return new Date().toISOString().slice(0,10)}};
-const dayName=d=>{try{return new Intl.DateTimeFormat('ar-JO',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'}).format(new Date(d+'T12:00:00Z'))}catch(e){return d}};
+const dayName=d=>{try{return new Intl.DateTimeFormat(window.LANG==='en'?'en-GB':'ar-JO',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'}).format(new Date(d+'T12:00:00Z'))}catch(e){return d}};
 const $=id=>document.getElementById(id);
 const store={get(k,d){try{const v=localStorage.getItem(B.prefix+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(B.prefix+k,JSON.stringify(v))}catch(e){}}};
 
@@ -613,3 +613,14 @@ function renderExpl(){
     list.append(c)});
 }
 renderPoemInfo(); renderPoems(); renderExpl();
+/* ---------- arriving from search: #v=<verse>[&p=<poem>] opens the whole poem at that verse ---------- */
+function jumpFromHash(){
+  const m=location.hash.match(/^#v=(\d+)(?:&p=([^&]+))?/); if(!m)return;
+  history.replaceState(null,'',location.pathname+location.search);
+  if(m[2]&&decodeURIComponent(m[2])!==CUR){UI.toast('هالبيت بقصيدة ثانية، اختارها من «القصائد»');return}
+  if(!$('setup').hidden||!$('welcome').hidden)return;
+  document.querySelector('.tabs button[data-v="all"]').click();
+  const row=document.querySelector('#allVerses .v[data-i="'+m[1]+'"]'); if(!row)return;
+  row.scrollIntoView({block:'center'}); row.classList.add('ui-flash'); setTimeout(()=>row.classList.remove('ui-flash'),2600);
+}
+jumpFromHash(); addEventListener('hashchange',jumpFromHash);

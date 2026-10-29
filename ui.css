@@ -168,3 +168,16 @@ body.ui-playing .tabs{top:calc(env(safe-area-inset-top,0px) + 60px)}
 .ui-sim+.ui-sim{border-top:1px dashed var(--line);padding-top:6px}
 .ui-sec{margin:8px 0 -6px;font-size:calc(14px*var(--us));color:var(--accent);border-bottom:1px solid var(--line);padding-bottom:6px}
 .ui-sheet-b > .ui-sec:first-child{margin-top:0}
+/* search */
+.ui-search{width:100%;box-sizing:border-box;font:inherit;font-size:calc(17px*var(--us,1));padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);margin-bottom:10px}
+.ui-results{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+a.ui-hit{display:block;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+a.ui-hit small{color:var(--muted);font-size:calc(12px*var(--us,1))}
+.ui-hit-t{margin:4px 0 0;font-family:Amiri,serif;font-size:calc(19px*var(--vs,1));line-height:1.8}
+.ui-hit-t mark{background:color-mix(in srgb,var(--gold) 35%,transparent);color:inherit;border-radius:4px;padding:0 2px}
+.ui-flash{animation:uiflash 2.6s ease-out}
+@keyframes uiflash{0%,40%{background:color-mix(in srgb,var(--gold) 28%,transparent)}100%{background:transparent}}
+.ui-code{font:700 calc(20px*var(--us)) ui-monospace,monospace;letter-spacing:1px;direction:ltr;text-align:center;padding:10px;border-radius:12px;background:var(--surface);border:1px dashed var(--line);user-select:all}
+/* English interface: the layout runs left to right, the Arabic texts keep their own direction */
+:root[dir=ltr] .bayt,:root[dir=ltr] .utext,:root[dir=ltr] .gloss,:root[dir=ltr] .sharh,:root[dir=ltr] .ecard,:root[dir=ltr] .ui-hit-t,:root[dir=ltr] .ui-preview,:root[dir=ltr] .ptitle,:root[dir=ltr] #cTitle{direction:rtl;text-align:right}
+:root[dir=ltr] body{direction:ltr}

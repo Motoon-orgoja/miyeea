@@ -5,7 +5,7 @@
    (toast, sheet) that the engines may use through window.UI. */
 (function(){
 const PK='mutoon_prefs';
-const DEF={theme:'auto',vs:1,us:1,wake:true,remind:'20:00',fade:2,ret:0.9,paused:[]};
+const DEF={lang:'ar',theme:'auto',vs:1,us:1,wake:true,remind:'20:00',fade:2,ret:0.9,paused:[]};
 let P; try{P={...DEF,...JSON.parse(localStorage.getItem(PK)||'{}')}}catch(e){P={...DEF}}
 const root=document.documentElement;
 function apply(){
@@ -67,10 +67,6 @@ document.addEventListener('visibilitychange',wake);
 addEventListener('pointerdown',wake,{passive:true});
 
 /* ---------- backup of every text at once ---------- */
-const toCode=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
-const fromCode=c=>JSON.parse(decodeURIComponent(escape(atob(c.replace(/\s+/g,'')))));
-function exportAll(){const data={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);data[k]=localStorage.getItem(k)}return toCode({app:'mutoon-all',v:1,at:new Date().toISOString(),data})}
-function importAll(code){const o=fromCode(code);if(o.app!=='mutoon-all'||!o.data)throw new Error('bad');Object.entries(o.data).forEach(([k,v])=>localStorage.setItem(k,v));return Object.keys(o.data).length}
 
 /* ---------- daily reminder as a calendar event (works on iPhone without a server) ---------- */
 function reminderICS(time){
@@ -93,6 +89,7 @@ function seg(name,opts,val,on){
 function field(label,ctrl,hint){const f=el('div','ui-field');f.append(el('div','ui-lbl',label),ctrl);if(hint)f.append(el('div','ui-hint',hint));return f}
 function openSettings(){
   const b=sheet('الإعدادات');
+  b.append(field('لغة الواجهة',seg('لغة الواجهة',[['ar','عامية'],['fus','فصحى'],['en','English']],P.lang||'ar',v=>{P.lang=v;save();setTimeout(()=>location.reload(),150)}),'المتون نفسها بتضل بالعربي.'));
   b.append(el('h3','ui-sec','القراءة والمظهر'));
   b.append(field('المظهر',seg('المظهر',[['auto','حسب الجهاز'],['light','فاتح'],['dark','غامق']],P.theme,v=>{P.theme=v;save()})));
   const prev=el('div','ui-preview','وَالْأَخْذُ بِالتَّجْوِيدِ حَتْمٌ لَازِمُ');
@@ -127,22 +124,55 @@ function openSettings(){
   const rb=el('button','btn','📅 أضف تذكير يومي للتقويم');
   rb.onclick=()=>{const blob=new Blob([reminderICS(ti.value||'20:00')],{type:'text/calendar'});const a=el('a');a.href=URL.createObjectURL(blob);a.download='تذكير-الحفظ.ics';document.body.append(a);a.click();a.remove();toast('افتح الملف واضغط «إضافة للتقويم»')};
   rw.append(ti,rb); b.append(field('تذكير يومي',rw,'بينزل ملف تقويم بموعد يومي بالوقت اللي بتختاره، وبيذكّرك بإشعار من تقويم الجوال.'));
-  // backup
+  // devices: linked sync when the server is set up, and a transfer code/file that merges (sync.js)
+  if(window.SYNC&&SYNC.available)b.append(field('مزامنة الأجهزة',syncBox(),'بتربط جوالك وآيبادك وكمبيوترك بنفس الرمز، والتقدم بيتحدّث لحاله. المزامنة مشفّرة: الخادم ما بيقدر يقرأ تقدمك.'));
   const bk=el('div','ui-col');
   const out=el('textarea'); out.rows=3; out.readOnly=true; out.placeholder='كود النسخة الاحتياطية بيطلع هون';
   const eb=el('button','btn primary','انسخ نسخة احتياطية لكل المتون');
-  eb.onclick=async()=>{out.value=exportAll();try{localStorage.setItem('ui_lastBackup',String(Date.now()))}catch(e){}try{await navigator.clipboard.writeText(out.value);toast('انتسخ الكود ✓ خزّنه بالملاحظات')}catch(e){out.select();toast('حدّد الكود وانسخه')}};
+  const mark=()=>{try{localStorage.setItem('ui_lastBackup',String(Date.now()))}catch(e){}};
+  eb.onclick=async()=>{out.value=await SYNC.exportCode();mark();try{await navigator.clipboard.writeText(out.value);toast('انتسخ الكود ✓ خزّنه بالملاحظات')}catch(e){out.select();toast('حدّد الكود وانسخه')}};
   const inp=el('textarea'); inp.rows=3; inp.placeholder='الصق كود نسخة احتياطية هون لترجّع كل تقدمك';
   const ib=el('button','btn','استرجع');
-  ib.onclick=()=>{try{const o=fromCode(inp.value);if(o.app!=='mutoon-all'||!o.data)throw 0;if(!confirm('رح يرجّع التقدم من الكود ويستبدل تقدمك الحالي بالمتون اللي فيه. متأكد؟'))return;importAll(inp.value);toast('رجع التقدم ✓');setTimeout(()=>location.reload(),600)}catch(e){toast('الكود مش صحيح')}};
+  // a new code merges (the newer progress of each text wins); an old one replaces, so it asks first
+  async function restore(t){
+    let o; try{o=await SYNC.readCode(t);if(o.app!=='mutoon-all'||!o.data)throw 0}catch(e){toast('الكود مش صحيح');return}
+    if(!o.meta&&!confirm('رح يرجّع التقدم من النسخة ويستبدل تقدمك الحالي بالمتون اللي فيها. متأكد؟'))return;
+    const r=await SYNC.importCode(t); toast(r.n?'رجع التقدم ✓ ('+ar(r.n)+')':'ما في شي أحدث من اللي عندك'); if(r.n)setTimeout(()=>location.reload(),700);
+  }
+  ib.onclick=()=>restore(inp.value);
   // the same backup as a file, easier to keep in iCloud/Files than a pasted code
   const fileRow=el('div','ui-row'); const fb=el('button','btn','💾 نزّل ملف نسخة'); const lb=el('label','btn','📂 افتح ملف نسخة'); const fi=el('input'); fi.type='file'; fi.accept='.txt,.json,text/plain'; fi.hidden=true; lb.append(fi);
-  fb.onclick=()=>{const code=exportAll();try{localStorage.setItem('ui_lastBackup',String(Date.now()))}catch(e){}const a=el('a');a.href=URL.createObjectURL(new Blob([code],{type:'text/plain'}));a.download='نسخة-حفظ-المتون-'+new Date().toISOString().slice(0,10)+'.txt';document.body.append(a);a.click();a.remove();toast('نزل الملف ✓ خزّنه بمكان آمن')};
-  fi.onchange=async()=>{const f=fi.files[0];if(!f)return;try{const t=(await f.text()).trim();const o=fromCode(t);if(o.app!=='mutoon-all'||!o.data)throw 0;if(!confirm('رح يرجّع التقدم من الملف ويستبدل تقدمك الحالي بالمتون اللي فيه. متأكد؟'))return;importAll(t);toast('رجع التقدم ✓');setTimeout(()=>location.reload(),600)}catch(e){toast('الملف مش نسخة صحيحة')}};
+  fb.onclick=async()=>{const code=await SYNC.exportCode();mark();const a=el('a');a.href=URL.createObjectURL(new Blob([code],{type:'text/plain'}));a.download='نسخة-حفظ-المتون-'+new Date().toISOString().slice(0,10)+'.txt';document.body.append(a);a.click();a.remove();toast('نزل الملف ✓ خزّنه بمكان آمن')};
+  fi.onchange=async()=>{const f=fi.files[0];if(f)restore((await f.text()).trim())};
   fileRow.append(fb,lb);
   bk.append(eb,out,fileRow,inp,ib);
-  b.append(field('النسخة الاحتياطية',bk,'كود واحد فيه تقدمك بكل المتون، بتنقله لجهاز ثاني أو بتخزنه احتياط.'));
-  b.append(el('p','ui-hint','تقدمك محفوظ على هالجهاز بس. الموقع بيشتغل بدون نت بعد أول فتحة.'));
+  b.append(field('نقل التقدم والنسخة الاحتياطية',bk,'كود واحد فيه تقدمك بكل المتون. على الجهاز الثاني الصقه هون: بيدمج التقدمين، وبياخذ الأحدث بكل متن، فما بيضيع شي.'));
+  b.append(el('p','ui-hint',window.SYNC&&SYNC.linked()?'تقدمك محفوظ على هالجهاز وبيتزامن مع أجهزتك المربوطة. الموقع بيشتغل بدون نت بعد أول فتحة.':'تقدمك محفوظ على هالجهاز بس. الموقع بيشتغل بدون نت بعد أول فتحة.'));
+}
+/* ---------- linked devices (sync.js) ---------- */
+function syncBox(){
+  const w=el('div','ui-col');
+  function paint(){
+    w.replaceChildren();
+    if(SYNC.linked()){
+      const code=el('div','ui-code',SYNC.code()); code.setAttribute('data-noi18n','');
+      const last=SYNC.last(), st=el('div','ui-hint',last?'آخر مزامنة: '+new Date(last).toLocaleString(LANG==='en'?'en':'ar'):'لسا ما تزامن');
+      const now=el('button','btn primary','🔄 زامن هلأ'); now.onclick=async()=>{now.disabled=true;try{const n=await SYNC.sync();toast(n?'وصل تقدم جديد ✓':'كل شي محدّث ✓');if(n)setTimeout(()=>location.reload(),600)}catch(e){toast('ما زبطت المزامنة، تأكد من النت')}now.disabled=false;paint()};
+      const cp=el('button','btn','📋 انسخ الرمز'); cp.onclick=async()=>{try{await navigator.clipboard.writeText(SYNC.code());toast('انتسخ الرمز ✓')}catch(e){toast(SYNC.code())}};
+      const un=el('button','btn','افصل هالجهاز'); un.onclick=()=>{if(confirm('بدك تفصل هالجهاز عن المزامنة؟ تقدمك عليه بيضل.')){SYNC.unlink();paint()}};
+      const row=el('div','ui-row'); row.append(now,cp);
+      w.append(el('div','ui-lbl','رمز أجهزتك (اكتبه على الجهاز الثاني):'),code,st,row,un);
+      return;
+    }
+    const mk=el('button','btn primary','✨ ابدأ المزامنة على هالجهاز');
+    mk.onclick=async()=>{mk.disabled=true;try{await SYNC.link(SYNC.newSecret());toast('اشتغلت المزامنة ✓ اكتب الرمز على جهازك الثاني')}catch(e){SYNC.unlink();toast('ما زبط، تأكد من النت')}paint()};
+    const inp=el('input','ui-search'); inp.placeholder='عندك رمز من جهاز ثاني؟ اكتبه هون'; inp.autocapitalize='characters'; inp.spellcheck=false;
+    const go=el('button','btn','اربط'); go.onclick=async()=>{const c=inp.value.replace(/[^A-Za-z0-9]/g,'');if(c.length<20){toast('الرمز ناقص');return}go.disabled=true;
+      try{const n=await SYNC.link(c);toast('انربط ✓');if(n)setTimeout(()=>location.reload(),600)}catch(e){SYNC.unlink();toast('ما زبط الربط، تأكد من الرمز والنت')}go.disabled=false;paint()};
+    const row=el('div','ui-row'); row.append(inp,go);
+    w.append(mk,row);
+  }
+  paint(); return w;
 }
 /* ---------- the texts the reader is working on now ----------
    A text counts once it has progress; the reader can pause any of them, and paused texts leave the daily ward
@@ -175,6 +205,64 @@ function pausedBanner(){
   const row=el('div','ui-row'); row.append(go); n.append(row); bar.after(n);
 }
 
+/* ---------- search across every text ----------
+   Each text's data file is fetched on first search and read in its own scope (so the page's own BOOK stays untouched).
+   Matching ignores harakat, tatweel and the usual spelling variants of alif, ya and ta marbuta, so «الصلاه» finds «الصَّلَاةِ».
+   A hit opens its text at that verse (#v=) or passage (#u=). */
+const FOLD=[[/[ً-ٰٟۖ-ۭـ]/g,''],[/[أإآٱ]/g,'ا'],[/ى/g,'ي'],[/ة/g,'ه'],[/ؤ/g,'و'],[/ئ/g,'ي'],[/ﷺ/g,'صلى الله عليه وسلم']];
+const fold1=c=>FOLD.reduce((t,[a,b])=>t.replace(a,b),c);
+// folded text plus, for every folded character, where it came from in the original
+function foldMap(s){let out='',map=[];for(let i=0;i<s.length;i++){const f=fold1(s[i]);for(const ch of f){out+=ch;map.push(i)}}return {f:out,map}}
+const dataUrl=b=>'data/'+b.key+'.js';
+const IDX={};
+async function loadIndex(b){
+  if(IDX[b.key])return IDX[b.key];
+  const code=await (await fetch(dataUrl(b))).text(), w={};
+  new Function('window',code)(w); const B=w.BOOK, items=[];
+  if(B.poems)B.poems.forEach(p=>{let sec='';p.verses.forEach((v,i)=>{if(p.secs&&p.secs[i+1])sec=p.secs[i+1];
+    items.push({t:v.join(' ۞ '),where:(B.poems.length>1?p.title+' · ':'')+(sec&&sec!==p.title?sec+' · ':'')+'البيت '+ar(i+1),href:b.url+'#v='+(i+1)+(B.poems.length>1?'&p='+encodeURIComponent(p.id):'')})})});
+  else (B.chapters||[]).forEach(c=>c.units.forEach(u=>items.push({t:u.segs.map(x=>x[1]).join(' '),where:c.title+' · '+u.label,href:b.url+'#u='+encodeURIComponent(u.id)})));
+  items.forEach(x=>{const m=foldMap(x.t);x.f=m.f;x.map=m.map});
+  return IDX[b.key]=items;
+}
+function snippet(x,a,len){
+  const s=x.map[a], e=x.map[Math.min(a+len-1,x.map.length-1)]+1, from=Math.max(0,s-60), to=Math.min(x.t.length,e+80);
+  const p=el('p','ui-hit-t');
+  p.append((from?'… ':'')+x.t.slice(from,s)); p.append(el('mark','',x.t.slice(s,e))); p.append(x.t.slice(e,to)+(to<x.t.length?' …':''));
+  return p;
+}
+function openSearch(){
+  const body=sheet('ابحث في المتون');
+  const inp=el('input','ui-search'); inp.type='search'; inp.placeholder='كلمة أو جملة… (بدون تشكيل)'; inp.setAttribute('aria-label','ابحث');
+  const scope=el('div','ui-row');
+  let only='';
+  const mine=CUR&&CUR!=='home'?CUR:'';
+  const segEl=seg('وين تبحث',[['','بكل المتون']].concat(mine?[[mine,'بهالمتن بس']]:[]),'',v=>{only=v;run()});
+  scope.append(segEl);
+  const out=el('div','ui-results');
+  body.append(inp,scope,out);
+  let tm=null,gen=0;
+  inp.oninput=()=>{clearTimeout(tm);tm=setTimeout(run,250)};
+  async function run(){
+    const q=fold1(inp.value.trim()).replace(/\s+/g,' '); const my=++gen;
+    if(q.length<2){out.replaceChildren(el('p','ui-hint','اكتب كلمتين أو ثلاث من البيت أو الحديث. البحث بيتجاهل التشكيل والهمزات.'));return}
+    out.replaceChildren(el('p','ui-hint','عم يدوّر…'));
+    const books=BOOKS.filter(b=>!only||b.key===only), frag=document.createDocumentFragment(); let n=0;
+    for(const b of books){
+      let items; try{items=await loadIndex(b)}catch(e){continue}
+      if(my!==gen)return;
+      const hits=[]; for(const x of items){const a=x.f.indexOf(q);if(a>=0){hits.push([x,a]);if(hits.length>=40)break}}
+      if(!hits.length)continue; n+=hits.length;
+      frag.append(el('div','ui-lbl',b.t+' ('+ar(hits.length)+(hits.length>=40?'+':'')+')'));
+      hits.forEach(([x,a])=>{const r=el('a','ui-hit');r.href=x.href;r.append(el('small','',x.where),snippet(x,a,q.length));
+        r.onclick=()=>{closeSheet();if(new URL(r.href,location.href).pathname===location.pathname){location.hash=r.hash;return false}};frag.append(r)});
+    }
+    if(my!==gen)return;
+    out.replaceChildren(n?frag:el('p','ui-hint','ما لقيت شي. جرّب كلمة أقصر أو بإملاء ثاني.'));
+  }
+  run(); setTimeout(()=>inp.focus(),60);
+}
+
 /* ---------- the app bar replaces each page's list of book links ---------- */
 let CUR='';
 function mountBar(){
@@ -190,7 +278,8 @@ function mountBar(){
   // a listen button when the text has recordings (data/media.js)
   const lis=el('button','ui-ico');lis.type='button';lis.setAttribute('aria-label','استمع');lis.textContent='🎧';lis.onclick=openListen;
   lis.hidden=!(window.MEDIA&&window.MEDIA[CUR]);
-  bar.append(home,books,lis,set); nav.replaceWith(bar);
+  const sr=el('button','ui-ico');sr.type='button';sr.setAttribute('aria-label','ابحث');sr.textContent='🔍';sr.onclick=openSearch;
+  bar.append(home,books,sr,lis,set); nav.replaceWith(bar);
 }
 /* ---------- self-recitation, word by word («كلمة كلمة») ----------
    Every word starts hidden. The reader recites from memory and reveals the next word to check it, or a whole verse /
@@ -416,5 +505,5 @@ function fadeBar(onChange){
   paint(); addEventListener('prefs',h); w.append(minus,lbl,plus); return w;
 }
 
-window.UI={similar,quiz,play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,BOOKS};
+window.UI={similar,quiz,play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,openSearch,BOOKS};
 })();

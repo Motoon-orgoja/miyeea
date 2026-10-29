@@ -12,6 +12,12 @@ document.querySelectorAll('.books a').forEach(a=>{if(a.dataset.book===BOOK.key)a
    Verbatim passages from classical commentaries (Dalil al-Falihin, Sharh Muslim, Fath al-Bari, tafsir), loaded from riyad91-sharh.js
    which tools/assemble-sharh.js builds. Shown under each hadith in the chapter tab; 701's three parts share one entry on the last part */
 const SHARH=window.SHARH||{};
+// a big book keeps its commentary in one file per chapter (BOOK.sharhDir/<chapter id>.json), fetched the first time the chapter is shown
+const SHLOAD={};
+function loadSharh(cid){
+  if(!BOOK.sharhDir||SHLOAD[cid])return; SHLOAD[cid]=1;
+  fetch(BOOK.sharhDir+cid+'.json').then(r=>r.ok?r.json():null).then(j=>{if(!j)return;Object.assign(SHARH,j);if(CUR===cid&&typeof renderAll==='function')renderAll()}).catch(()=>{SHLOAD[cid]=0});
+}
 // the commentaries put the text being explained in (…); show it bold so it stands out from the explanation
 function richText(p,txt){
   txt.split(/(\([^()]{1,400}\))/).forEach(part=>{
@@ -39,7 +45,7 @@ const numIn=v=>parseInt(toAscii(v),10);
 const today=()=>{try{return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Amman'}).format(new Date())}catch(e){return new Date().toISOString().slice(0,10)}};
 const addDays=(d,n)=>{const x=new Date(d+'T12:00:00Z');x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10)};
 const dayDiff=(a,b)=>Math.round((new Date(a+'T12:00:00Z')-new Date(b+'T12:00:00Z'))/864e5);
-const dayName=d=>{try{return new Intl.DateTimeFormat('ar-JO',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'}).format(new Date(d+'T12:00:00Z'))}catch(e){return d}};
+const dayName=d=>{try{return new Intl.DateTimeFormat(window.LANG==='en'?'en-GB':'ar-JO',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'}).format(new Date(d+'T12:00:00Z'))}catch(e){return d}};
 const when=d=>{const n=dayDiff(d,today());return n<=0?'اليوم':n===1?'بكرة':n===2?'بعد بكرة':`بعد ${ar(n)} ${n<=10?'أيام':'يوم'}`};
 
 /* ---------- learning, linking, block review ----------
@@ -274,7 +280,7 @@ function wardActions(kind,ch){
 }
 function renderAll(){
   renderToday();
-  const list=$('allList'); list.replaceChildren();
+  const list=$('allList'); list.replaceChildren(); loadSharh(CUR);
   const st=document.createElement('div'); st.className='chapstat';
   const b=S.blocks[CUR];
   st.textContent=b?`الباب محفوظ كامل ✓ · مراجعته: ${stageTxt(b)} · موعدها ${when(b.due)}`:`محفوظ ${ar(learnedIds().length)} من ${ar(U.length)} · لما تختم الباب بيصير مراجعة كاملة له ككتلة وحدة`;
@@ -468,3 +474,19 @@ const saved=load();
 if(saved){S={...S,...migrate(saved)};setCur(S.cur);CH.forEach(c=>ensureBlock(c.id));renderAll();showScreen('main')}
 else{setCur(CH[0].id);renderAll();$('welcomeGo').textContent='يلّا نبلّش';showScreen('welcome')}
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
+/* ---------- arriving from search: #u=<unit id> shows that passage in its chapter ---------- */
+function jumpFromHash(){
+  const m=location.hash.match(/^#u=([^&]+)/); if(!m)return;
+  history.replaceState(null,'',location.pathname+location.search);
+  const id=decodeURIComponent(m[1]), ch=CH.find(c=>c.units.some(u=>u.id===id)); if(!ch||!$('setup').hidden||!$('welcome').hidden)return;
+  if(ch.id!==CUR){
+    // another chapter: open the chapter list at it, so the reader decides whether to switch
+    renderChapters(); $('chapCard').hidden=false;
+    const row=[...$('chapList').querySelectorAll('.prow')].find(r=>r.querySelector('b').textContent===ch.title);
+    if(row){const d=row.closest('details');if(d)d.open=true;row.scrollIntoView({block:'center'});row.classList.add('ui-flash');setTimeout(()=>row.classList.remove('ui-flash'),2600)}
+    window.UI.toast('هالفقرة بـ«'+ch.title+'». اضغط «احفظه هلأ» لتنتقل له');return}
+  document.querySelector('.tabs button[data-v="all"]').click();
+  const el=$('allList').querySelector('.unit[data-id="'+CSS.escape(id)+'"]'); if(!el)return;
+  el.scrollIntoView({block:'center'}); el.classList.add('ui-flash'); setTimeout(()=>el.classList.remove('ui-flash'),2600);
+}
+jumpFromHash(); addEventListener('hashchange',jumpFromHash);
