@@ -274,14 +274,19 @@ function vSharh(i){
   const sm=document.createElement('summary'); sm.textContent='شرح البيت'; d.append(sm);
   const e=P.sharhRef&&P.sharhRef[i-1];
   String(P.sharh[i]).split(/\n\n+/).forEach(par=>{const p=document.createElement('p');
-    par.split(/(\([^()]{1,300}\))/).forEach(x=>{if(/^\(.*\)$/.test(x)){const b=document.createElement('b');b.textContent=x;p.append(b)}else p.append(x)});d.append(p)});
+    // "# " subheading, "• " bullet, "حاشية (n):" footnote, "(n)" footnote mark
+    const m=par.match(/^(# |• )/); if(m){p.className=m[1]==='# '?'sh-h':'sh-li';if(m[1]==='# ')par=par.slice(2)}
+    else if(/^حاشية \(/.test(par))p.className='sh-fn';
+    par.split(/(\([^()]{1,300}\))/).forEach(x=>{if(/^\([٠-٩0-9]+\)$/.test(x)){const s=document.createElement('sup');s.textContent=x;p.append(s)}
+      else if(/^\(.*\)$/.test(x)){const b=document.createElement('b');b.textContent=x;p.append(b)}else p.append(x)});d.append(p)});
   if(e&&e.url){const a=document.createElement('a');a.className='ref';a.href=e.url;a.target='_blank';a.rel='noopener';a.textContent=P.sharhSrc.name+(e.ref?' · '+e.ref:'')+' ↗';d.append(a)}
+  else if(P.sharhSrc){const a=document.createElement('p');a.className='sh-fn';a.textContent=P.sharhSrc.name+(e&&e.ref?' · '+e.ref:'');d.append(a)}
   return d;
 }
 if(!P.sharh)fetch('data/sharh/'+(MULTI?B.key+'-'+CUR:B.key)+'.json').then(r=>r.ok?r.json():null).then(j=>{
   if(!j||!j.v)return;
   P.sharh=[null].concat(j.v.map(x=>x&&x.t)); P.sharhRef=j.v;
-  P.sharhSrc={name:j.name+(j.author?'، ل'+j.author:'')+(j.death?' (ت '+j.death+')':''),url:j.url};
+  P.sharhSrc={name:j.name+(j.author?(/^د\./.test(j.author)?'، ':'، ل')+j.author:'')+(j.death?' (ت '+j.death+')':''),url:j.url};
   renderPoemInfo(); lastSig.all=null; render();
 }).catch(e=>console.warn('sharh',e));
 function render(){
@@ -599,9 +604,9 @@ function renderPoemInfo(){
   const box=$('poemInfo'); if(!P.nazim&&!P.gharib&&!P.sharh)return; box.hidden=false; box.replaceChildren();
   const sm=document.createElement('summary'); sm.textContent='عن القصيدة وغريب كلماتها'; box.append(sm);
   const add=(tag,txt,cls)=>{const e=document.createElement(tag);if(cls)e.className=cls;e.textContent=txt;box.append(e);return e};
-  const link=(p,txt,url)=>{const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';a.textContent=txt+' ↗';p.append(a)};
-  add('p','الناظم: '+P.nazim+(P.death?' ('+P.death+')':'')+(P.meter?' · البحر: '+P.meter:''));
-  if(P.srcUrl)link(add('p','مصدر النص: '),P.source,P.srcUrl); else add('p','مصدر النص: '+P.source);
+  const link=(p,txt,url)=>{if(!url){p.append(txt);return}const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';a.textContent=txt+' ↗';p.append(a)};
+  if(P.nazim)add('p','الناظم: '+P.nazim+(P.death?' ('+P.death+')':'')+(P.meter?' · البحر: '+P.meter:''));
+  if(P.srcUrl)link(add('p','مصدر النص: '),P.source,P.srcUrl); else if(P.source)add('p','مصدر النص: '+P.source);
   if(P.note)add('p',P.note,'note');
   if(P.gharib&&P.gharib.length){add('h4','غريب الكلمات');
     const ul=document.createElement('ul');P.gharib.forEach(g=>{const li=document.createElement('li');const b=document.createElement('b');b.textContent=g.w+': ';li.append(b,g.t);ul.append(li)});box.append(ul);
