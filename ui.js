@@ -533,6 +533,37 @@ function fade(root,level){
   ws.forEach((w,i)=>{const h=Math.imul(i+1,2654435761)>>>0, cut=level>=FADE_N?1:level/FADE_N;
     w.classList.toggle('fz',w.classList.contains('wk')?level>0:(h%1000)/1000<cut); w.classList.remove('peek')});
 }
+/* the floating «الكلمة الجاية» of graded fading: shows while a faded text is on screen and peeks at its hidden words in
+   reading order, like the button of «كلمة كلمة»; tapping a hidden word still peeks at that one word */
+function mountFadeFab(){
+  const b=el('div','stepbar ui-rbar ui-fbar'); b.hidden=true;
+  b.innerHTML='<div class="in"><div class="vstat"><small data-k="count"></small></div><button class="btn primary big" data-a="next">الكلمة الجاية</button><button class="btn" data-a="line">الفقرة كاملة</button><button class="btn" data-a="reset">اخفِ من جديد</button></div>';
+  document.body.append(b);
+  const roots=()=>[...document.querySelectorAll('.m-fade')].filter(r=>r.offsetParent!==null&&!r.classList.contains('m-reveal'));
+  const hidden=()=>roots().flatMap(r=>[...r.querySelectorAll('.w.fz:not(.peek)')]);
+  const unitOf=w=>w.closest('.v,.unit')||w.parentElement;
+  let raf=0;
+  const paint=()=>{raf=0;
+    const all=roots().flatMap(r=>[...r.querySelectorAll('.w.fz')]), left=all.filter(w=>!w.classList.contains('peek'));
+    // only write what changed: the observer below watches the body, this bar included
+    const set=(x,k,v)=>{if(x[k]!==v)x[k]=v};
+    set(b,'hidden',!all.length||!!document.getElementById('uiSheet')||reveal.active()); if(b.hidden)return;
+    set(b.querySelector('[data-k="count"]'),'textContent',`كشفت ${ar(all.length-left.length)} من ${ar(all.length)}`);
+    set(b.querySelector('[data-a="next"]'),'disabled',!left.length); set(b.querySelector('[data-a="line"]'),'disabled',!left.length);
+    set(b.querySelector('[data-a="line"]'),'textContent',left[0]&&left[0].closest('.v')?'البيت كامل':'الفقرة كاملة');
+  };
+  const later=()=>{if(!raf)raf=setTimeout(paint,60)};
+  const show=w=>{if(!w)return;const r=w.getBoundingClientRect(),h=b.getBoundingClientRect().height||150;if(r.bottom>innerHeight-h-20||r.top<80)w.scrollIntoView({block:'center',behavior:'smooth'})};
+  b.addEventListener('click',e=>{const a=e.target.closest('[data-a]');if(!a)return;const ws=hidden();
+    if(a.dataset.a==='next'&&ws[0]){ws[0].classList.add('peek');show(ws[1]||ws[0])}
+    else if(a.dataset.a==='line'&&ws[0]){const u=unitOf(ws[0]);ws.filter(w=>unitOf(w)===u).forEach(w=>w.classList.add('peek'));show(hidden()[0])}
+    else if(a.dataset.a==='reset'){roots().forEach(r=>r.querySelectorAll('.w.peek').forEach(w=>w.classList.remove('peek')));show(hidden()[0])}
+    paint()});
+  addEventListener('scroll',later,{passive:true});
+  new MutationObserver(later).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class']});
+  later();
+}
+ready(mountFadeFab);
 function fadeBar(onChange){
   const w=el('div','ui-fade'); const lv=()=>P.fade;
   const lbl=el('span','ui-fade-l'); const set=v=>{P.fade=Math.max(1,Math.min(FADE_N,v));save();paint();onChange(P.fade)};
