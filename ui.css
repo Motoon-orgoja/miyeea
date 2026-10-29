@@ -184,3 +184,32 @@ a.ui-hit small{color:var(--muted);font-size:calc(12px*var(--us,1))}
 :root[dir=ltr] body{direction:ltr}
 .ui-vmode{font-size:12px;padding:6px 10px;flex:0 0 auto;white-space:nowrap}
 .ui-myrec .btn{flex:none;font-size:12px;padding:6px 10px;min-width:44px}
+/* highlights and notes (annot.js): a marker band under the word, so it also shows on hidden words without revealing them */
+.w.hl-y{background-image:linear-gradient(transparent 55%,rgba(255,206,40,.55) 55%)!important}
+.w.hl-g{background-image:linear-gradient(transparent 55%,rgba(80,200,110,.45) 55%)!important}
+.w.hl-b{background-image:linear-gradient(transparent 55%,rgba(90,160,255,.45) 55%)!important}
+.w.hl-p{background-image:linear-gradient(transparent 55%,rgba(175,120,240,.45) 55%)!important}
+.w.hl-nt{border-bottom:2px dotted var(--gold)}
+.ann-on .w{cursor:pointer}
+.w.ann-sel{outline:2px solid var(--accent);outline-offset:1px;border-radius:4px}
+.ann-chip{display:inline-block;margin:6px 0 0;padding:3px 10px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:inherit;font-size:12px;cursor:pointer}
+.v>.ann-chip{grid-column:1/-1;justify-self:start}
+.ann-btn{position:fixed;left:14px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:44;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--surface);box-shadow:0 4px 14px rgba(0,0,0,.15);font-size:20px;cursor:pointer;display:grid;place-items:center}
+.ann-on .ann-btn{display:none}
+.ann-bar{position:fixed;left:0;right:0;bottom:0;z-index:45;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 20px rgba(0,0,0,.12);padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px))}
+.ann-bar .ann-hint{max-width:640px;margin:0 auto 6px;font-size:12px;color:var(--muted);text-align:center}
+.ann-row{max-width:640px;margin:0 auto;display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center}
+.ann-row .btn{font-size:13px;padding:7px 10px}
+.ann-c{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);cursor:pointer;background-color:var(--surface);background-size:100% 100%}
+.ann-c.hl-y{background:rgba(255,206,40,.75)}.ann-c.hl-g{background:rgba(80,200,110,.65)}.ann-c.hl-b{background:rgba(90,160,255,.65)}.ann-c.hl-p{background:rgba(175,120,240,.65)}
+.ann-on .stepbar,.ann-on .voicebar{display:none}
+.ann-on{padding-bottom:120px}
+.ann-q{font-family:var(--verse-font,'Amiri',serif);font-size:18px;color:var(--ink);margin:2px 0 8px}
+.ann-t,.ann-f{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--bg,var(--surface));color:var(--ink);margin:4px 0 8px}
+.ann-pad canvas{width:100%;max-width:420px;aspect-ratio:300/170;display:block;margin:4px auto 6px;border:1px dashed var(--line);border-radius:12px;touch-action:none;background:var(--surface)}
+.ann-note{border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:0 0 8px}
+.ann-note.click{cursor:pointer}
+.ann-note small{color:var(--muted);font-size:11px}
+.ann-note .ann-where{display:block;color:var(--accent);margin-bottom:2px}
+.ann-tx{margin:2px 0 4px;white-space:normal}
+.ann-ink{width:100%;max-width:420px;display:block;margin:4px 0;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}

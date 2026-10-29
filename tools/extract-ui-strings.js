@@ -3,7 +3,7 @@
 const fs=require('fs'),path=require('path'),root=path.join(__dirname,'..');
 const AR=/[؀-ۿ]/, out=new Map();
 const add=(s,ctx)=>{s=s.replace(/\s+/g,' ').trim();if(!AR.test(s))return;if(!out.has(s))out.set(s,ctx)};
-for(const f of ['ui.js','engine.js','prose-engine.js','home.js','voice.js','srs.js']){
+for(const f of ['ui.js','engine.js','prose-engine.js','home.js','voice.js','srs.js','annot.js']){
   const lines=fs.readFileSync(path.join(root,f),'utf8').split('\n');
   lines.forEach((l,i)=>{
     if(/^\s*(\/\/|\/\*|\*)/.test(l))return;
