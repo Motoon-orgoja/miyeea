@@ -181,7 +181,7 @@ function unitEl(u,opts={}){
 }
 
 /* ---------- study modes ---------- */
-const MODES=[['full','كامل'],['fade','إخفاء تدريجي'],['reveal','كلمة كلمة'],['hide','مخفي'],['voice','تسميع بالصوت']];
+const MODES=[['full','كامل'],['fade','إخفاء تدريجي'],['reveal','مخفي'],['voice','تسميع بالصوت']];
 let mode={today:'full',all:'full'};
 function modeBar(key,box,onChange){
   box.replaceChildren();
@@ -239,7 +239,7 @@ function renderToday(){
   const modes=document.createElement('div'); modes.className='modes';
   // a new unit opens in full text, recitations open hidden; the user can switch after that
   const key=kind+(u?u.id:bd?bd.id:CUR);
-  if(mode._seen!==key){mode.today=kind==='new'?'full':'hide';mode._seen=key}
+  if(mode._seen!==key){mode.today=kind==='new'?'full':'reveal';mode._seen=key}
   const el=kind==='new'?unitEl(u,{gloss:true}):blockEl(ids); applyMode(el,mode.today); voiceHost=el;
   modeBar('today',modes,renderToday);
   box.append(tag,modes,el);
@@ -251,13 +251,13 @@ function renderToday(){
     const t=document.createElement('button'); t.className='tap'+(n>=S.goal?' full':''); t.dataset.fab=''; t.innerHTML=`${ar(n)}<small>من ${ar(S.goal)}</small>`;
     t.addEventListener('click',()=>{S.reps[u.id]=(S.reps[u.id]||0)+1;save();renderToday()});
     const side=document.createElement('div'); side.style.flex='1';
-    side.innerHTML='<p class="note" style="margin:0 0 8px">اقرأه كامل، واضغط الدائرة بعد كل قراءة. جرّب «إخفاء تدريجي» و«كلمة كلمة» لما تحس إنه بلّش يثبت.</p>';
+    side.innerHTML='<p class="note" style="margin:0 0 8px">اقرأه كامل، واضغط الدائرة بعد كل قراءة. جرّب «إخفاء تدريجي» و«مخفي» لما تحس إنه بلّش يثبت.</p>';
     const done=document.createElement('button'); done.className='btn primary'; done.textContent='حفظته ✓'; done.disabled=n<Math.min(3,S.goal);
     done.addEventListener('click',()=>{if(VS.on)vStop(true);mode._seen='';snap('حفظت '+u.label);learn(u.id);renderAll();undoToast('حفظته ✓')});
     side.append(done); c.append(t,side); box.append(c);
   }else{
     const show=document.createElement('button'); show.className='btn'; show.textContent='اكشف النص';
-    show.addEventListener('click',()=>{if(VS.on)vStop(true);el.classList.add('open');applyMode(el,'full')});
+    show.addEventListener('click',()=>{if(VS.on)vStop(true);window.UI.reveal.stop();el.classList.add('open');applyMode(el,'full')});
     const hint=document.createElement('p'); hint.className='note'; hint.style.margin='0';
     if(kind==='link'){
       hint.textContent='سمّع كل اللي حفظته من أول الباب لآخر '+W+' حفظته، مرة وحدة متصلة، بصوتك أو بقلبك. هاد بيربط المحفوظ ببعضه.';
