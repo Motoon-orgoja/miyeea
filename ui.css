@@ -125,6 +125,14 @@ html,body,button,a,.w,.v,input,select,label{touch-action:manipulation}
 .m-reveal .w.slip{color:var(--gold)!important;background:var(--gold-soft);border-radius:5px}
 .m-reveal .w.slip *{color:var(--gold)!important}
 .m-reveal .w.cursor{outline:2px dashed var(--accent);outline-offset:1px}
+/* fixed to the bottom on every page (the prose pages have no .stepbar style of their own) */
+.ui-rbar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -4px 16px rgba(0,0,0,.08);
+  padding-block:8px calc(8px + env(safe-area-inset-bottom,0px));padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+.ui-rbar .vstat small{font-size:12px;color:var(--muted)}
+body:has(.ui-rbar:not([hidden])){padding-bottom:190px}
+body:has(.ui-rbar:not([hidden])) .ann-btn{bottom:calc(190px + env(safe-area-inset-bottom,0px))}
+.ui-rbar .in>.btn:not(.big){padding:8px 10px;min-height:40px}
+@media (max-width:520px){.ui-rbar [data-k="hint"]{display:none}.ui-rbar .vstat{flex:1 1 0}}
 .ui-rbar .in{flex-wrap:wrap;max-width:640px;margin:0 auto;display:flex;gap:8px;align-items:center}
 .ui-rbar .vstat{flex:1 1 120px;min-width:0;display:flex;flex-direction:column;line-height:1.4}
 .ui-rbar .big{flex:1 1 100%;font-size:17px;min-height:52px}
