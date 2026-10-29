@@ -33,7 +33,14 @@ self.onmessage = async ({ data }) => {
       const p = await load(data.model, data.device);
       // the Quran fine-tune (Basira) is Arabic-only and its config refuses a language/task
       const opts = /Basira/.test(data.model || '') ? { chunk_length_s: 30, stride_length_s: 5 } : { language: 'arabic', task: 'transcribe', chunk_length_s: 30, stride_length_s: 5 };
-      const out = await p(data.audio, opts);
+      let out;
+      try { out = await p(data.audio, opts); }
+      catch (e) {
+        // a GPU that loads the model but fails while running it: run again on the CPU
+        if (device !== 'webgpu') throw e;
+        asr = null; loading = null;
+        out = await (await load(data.model, 'wasm'))(data.audio, opts);
+      }
       self.postMessage({ type: 'result', text: (out && out.text || '').trim() });
     }
   } catch (e) {

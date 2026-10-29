@@ -66,11 +66,28 @@ function migrate(o){const c0=CH[0].id;
   delete o.ahead; return o}
 function rollNew(){if(S.newDay!==today()){S.newDay=today();S.newCount=0}}
 function logToday(k){const t=today();S.log[t]=S.log[t]||{n:0,r:0};S.log[t][k]++}
-const unitsOf=ch=>CHI[ch].units;
+/* tracks (books with BOOK.tracks, i.e. Riyad as-Salihin): how much of the book is memorised.
+   full: every verse and hadith with its narrator line and takhrij; matn: the hadiths only, the narrator line and the takhrij
+   shown for reading but not memorised; first: like matn, each chapter's first hadith only (all its parts), to go through the
+   whole book once. Progress is kept per unit, so switching tracks loses nothing. */
+const TRACKS=BOOK.tracks?[['full','كامل'],['matn','متن الأحاديث'],['first','حديث من كل باب']]:null;
+const track=()=>TRACKS&&S.track||'full';
+const hnum=u=>parseInt(u.id,10);
+function inTrack(c,t){if(t==='full')return c.units; const h=c.units.filter(u=>u.kind==='hadith'); if(t!=='first')return h; return h.filter(u=>hnum(u)===hnum(h[0]))}
+const TC={};
+const unitsOf=ch=>{const t=track();return TC[t+'|'+ch]||(TC[t+'|'+ch]=inTrack(CHI[ch],t))};
+// segments memorised in this track (the others are drawn as plain text)
+const memSeg=k=>track()==='full'||k==='matn';
+// units, and a rough time to finish, for each track
+function trackInfo(t){let n=0,left=0;CH.forEach(c=>inTrack(c,t).forEach(u=>{n++;if(!S.cards[u.id])left++}));return {n,left,days:Math.ceil(left/Math.max(1,S.per))}}
+const span=d=>d<=45?ar(d)+' يوم':d<=540?'حوالي '+ar(Math.round(d/30))+' شهر':'حوالي '+ar(Math.round(d/36.5)/10).replace('.','٫')+' سنة';
 const learnedIds=(ch=CUR)=>unitsOf(ch).filter(u=>S.cards[u.id]).map(u=>u.id);
 const allLearned=(ch=CUR)=>unitsOf(ch).every(u=>S.cards[u.id]);
-function ensureBlock(ch){if(allLearned(ch)&&!S.blocks[ch])S.blocks[ch]=SRS.fresh(today())}
-function setCur(id){if(!CHI[id])id=CH[0].id;CUR=id;U=unitsOf(id);S.cur=id}
+function ensureBlock(ch){if(unitsOf(ch).length&&allLearned(ch)&&!S.blocks[ch])S.blocks[ch]=SRS.fresh(today())}
+function setCur(id){if(!CHI[id])id=CH[0].id;
+  // a chapter with nothing to memorise in this track (only verses, or the preface) hands over to the next one
+  if(!unitsOf(id).length){const i=CH.findIndex(c=>c.id===id),nx=[...CH.slice(i+1),...CH.slice(0,i)].find(c=>unitsOf(c.id).length&&!allLearned(c.id))||CH.find(c=>unitsOf(c.id).length);if(nx)id=nx.id}
+  CUR=id;U=unitsOf(id);S.cur=id}
 // the next chapter after the current one that is not finished yet
 const nextChapter=()=>{const i=CH.findIndex(c=>c.id===CUR);return [...CH.slice(i+1),...CH.slice(0,i)].find(c=>!allLearned(c.id))};
 function gradeBlock(ch,g){
@@ -105,12 +122,12 @@ function spread(dues,n,cap){
 function oldRow(ch){
   const row=document.createElement('div'); row.className='prow';
   const info=document.createElement('div'); info.className='pmeta'; const t=document.createElement('b'); t.textContent=ch.title;
-  const by=document.createElement('small'); by.textContent=ar(ch.units.length)+' · '+chapterStatus(ch); info.append(t,by); row.append(info);
+  const by=document.createElement('small'); by.textContent=ar(unitsOf(ch.id).length)+' · '+chapterStatus(ch); info.append(t,by); row.append(info);
   if(allLearned(ch.id)){const x=document.createElement('span');x.className='pill new';x.textContent='محفوظ ✓';row.append(x);return row}
   const sel=document.createElement('select'); sel.className='oldsel'; sel.dataset.ch=ch.id; const n=learnedIds(ch.id).length;
   const opt=(v,l)=>{const o=document.createElement('option');o.value=v;o.textContent=l;sel.append(o)};
   opt('',n?'زي ما هو':'مش حافظه'); opt('all','حافظه كامل');
-  ch.units.slice(n,-1).forEach((u,k)=>opt(String(n+k+1),'لحد: '+u.label));
+  unitsOf(ch.id).slice(n,-1).forEach((u,k)=>opt(String(n+k+1),'لحد: '+u.label));
   row.append(sel); return row;
 }
 function openOld(first){
@@ -157,7 +174,7 @@ function unitEl(u,opts={}){
   const l=document.createElement('span'); l.textContent=u.label; h.append(l);
   if(opts.status){const c=S.cards[u.id]; const p=document.createElement('span'); p.className='pill'+(c?'':' new'); p.textContent=c?'محفوظ ✓':'لسا ما بلّشته'; h.append(p)}
   const t=document.createElement('div'); t.className='utext';
-  u.segs.forEach(([k,txt],i)=>{t.append(words(txt,'seg-'+k)); if(i<u.segs.length-1)t.append(document.createTextNode(' '))});
+  u.segs.forEach(([k,txt],i)=>{if(memSeg(k))t.append(words(txt,'seg-'+k));else{const o=document.createElement('span');o.className='seg seg-'+k+' seg-off';o.textContent=txt;t.append(o)} if(i<u.segs.length-1)t.append(document.createTextNode(' '))});
   d.append(h,t);
   if(u.gloss&&opts.gloss!==false){const g=document.createElement('div');g.className='gloss';g.innerHTML='معاني: '+u.gloss.map(([a,b])=>`<b>${a}</b>: ${b}`).join(' · ');d.append(g)}
   return d;
@@ -257,6 +274,8 @@ function undo(){const u=UNDO.pop();if(!u)return;S=JSON.parse(u.s);setCur(S.cur);
 const undoToast=label=>window.UI.toast(label,{label:'تراجع',fn:undo});
 function doneLink(){S.link[CUR]=today();logToday('r');save()}
 const goToday=()=>document.querySelector('.tabs button[data-v="today"]').click();
+// report a mistake in a unit (no undo step and no redraw: it only opens the report sheet)
+function repBtn(u){const b=document.createElement('button');b.className='btn';b.textContent='⚑ بلّغ';b.addEventListener('click',()=>window.UI.report({book:BOOK.key,title:BOOK.title+' · '+CHI[CUR].title,id:u.id,label:u.label,text:u.segs.map(x=>x[1]).join(' ')}));return b}
 function actBtn(txt,fn){const b=document.createElement('button');b.className='btn';b.textContent=txt;b.addEventListener('click',()=>{snap(txt.replace(/^\S+\s/,''));if(VS.on)vStop(true);mode._seen='';fn();renderAll()});return b}
 function wardActions(kind,ch){
   const box=document.createElement('div'); box.className='ward';
@@ -285,10 +304,12 @@ function renderAll(){
   const b=S.blocks[CUR];
   st.textContent=b?`الباب محفوظ كامل ✓ · مراجعته: ${stageTxt(b)} · موعدها ${when(b.due)}`:`محفوظ ${ar(learnedIds().length)} من ${ar(U.length)} · لما تختم الباب بيصير مراجعة كاملة له ككتلة وحدة`;
   list.append(st);
-  U.forEach(u=>{const el=unitEl(u,{status:true});applyMode(el,mode.all);
+  CHI[CUR].units.forEach(u=>{if(!U.includes(u)){const el=unitEl(u,{status:false});el.classList.add('off');applyMode(el,mode.all);const ra=document.createElement('div');ra.className='row';ra.append(repBtn(u));el.append(ra);const sh=sharhEl(u.id);if(sh)el.append(sh);list.append(el);return}
+    const el=unitEl(u,{status:true});applyMode(el,mode.all);
     const c=S.cards[u.id], acts=document.createElement('div'); acts.className='row';
     if(!c)acts.append(actBtn('➕ احفظه اليوم',()=>{addNew(u.id);goToday()}));
     else acts.append(actBtn('↩︎ رجّعه للحفظ',()=>{delete S.cards[u.id];const ch=CH.find(x=>x.units.includes(u));if(ch){delete S.blocks[ch.id];delete S.blockAhead[ch.id]}save()}));
+    acts.append(repBtn(u));
     if(acts.childElementCount)el.append(acts);
     const sh=sharhEl(u.id); if(sh)el.append(sh);
     list.append(el)});
@@ -304,24 +325,25 @@ function renderAll(){
 }
 
 /* ---------- chapters: the current one, and a list to switch between them ---------- */
-function chapterStatus(c){const n=learnedIds(c.id).length,b=S.blocks[c.id];return b?'محفوظ ✓ · مراجعته '+when(b.due):n?`حافظ ${ar(n)} من ${ar(c.units.length)}`:'لسا ما بلّشته'}
+function chapterStatus(c){const n=learnedIds(c.id).length,b=S.blocks[c.id];if(!unitsOf(c.id).length)return 'للقراءة بهالمسار';return b?'محفوظ ✓ · مراجعته '+when(b.due):n?`حافظ ${ar(n)} من ${ar(unitsOf(c.id).length)}`:'لسا ما بلّشته'}
 function renderChapters(){
   if(!MULTI)return;
   if($('setup').hidden&&$('welcome').hidden&&$('oldMem').hidden)$('chapBar').hidden=false;
-  const c=CHI[CUR]; $('cTitle').textContent=c.title; $('cBy').textContent=(c.group?c.group+' · ':'')+ar(c.units.length)+' '+(BOOK.unitWord==='فقرة'?'فقرة':'وحدة')+' · '+chapterStatus(c);
+  const c=CHI[CUR]; $('cTitle').textContent=c.title; $('cBy').textContent=(c.group?c.group+' · ':'')+ar(unitsOf(c.id).length)+' '+(BOOK.unitWord==='فقرة'?'فقرة':'وحدة')+' · '+chapterStatus(c)+(track()!=='full'?' · مسار «'+TRACKS.find(x=>x[0]===track())[1]+'»':'');
   // the list itself (hundreds of rows in a big book) is only built while it is open
   if($('chapCard').hidden)return;
   // chapters grouped under their book («كتاب»), each group folds; the current one starts open
   const list=$('chapList'); list.replaceChildren(); let box=list, gname=null;
   CH.forEach(ch=>{
     if(ch.group&&ch.group!==gname){gname=ch.group; const d=document.createElement('details'); d.className='cgroup';
-      const mine=CH.filter(x=>x.group===gname), done=mine.filter(x=>allLearned(x.id)).length;
+      const mine=CH.filter(x=>x.group===gname), done=mine.filter(x=>unitsOf(x.id).length&&allLearned(x.id)).length;
       d.open=mine.some(x=>x.id===CUR); const sm=document.createElement('summary'); sm.textContent=gname+' ('+ar(mine.length)+(done?' · ختمت '+ar(done):'')+')';
       d.append(sm); list.append(d); box=d}
     const row=document.createElement('div'); row.className='prow'+(ch.id===CUR?' cur':'');
-    const info=document.createElement('div'); info.className='pmeta'; const t=document.createElement('b'); t.textContent=ch.title; const by=document.createElement('small'); by.textContent=ar(ch.units.length)+' · '+chapterStatus(ch); info.append(t,by);
+    const info=document.createElement('div'); info.className='pmeta'; const t=document.createElement('b'); t.textContent=ch.title; const by=document.createElement('small'); by.textContent=ar(unitsOf(ch.id).length)+' · '+chapterStatus(ch); info.append(t,by);
     const acts=document.createElement('div'); acts.className='pacts';
-    if(ch.id!==CUR){const go=document.createElement('button');go.className='btn';go.textContent='احفظه هلأ';go.addEventListener('click',()=>{setCur(ch.id);save();$('chapCard').hidden=true;renderAll();scrollTo(0,0)});acts.append(go)}
+    if(!unitsOf(ch.id).length){}
+    else if(ch.id!==CUR){const go=document.createElement('button');go.className='btn';go.textContent='احفظه هلأ';go.addEventListener('click',()=>{setCur(ch.id);save();$('chapCard').hidden=true;renderAll();scrollTo(0,0)});acts.append(go)}
     else{const x=document.createElement('span');x.className='pill new';x.textContent='الحالي';acts.append(x)}
     row.append(info,acts); box.append(row)});
 }
@@ -349,7 +371,7 @@ function vUpdate(){
   const ws=vWords(); if(!ws.length)return;
   const raw=(VS.finals.join(' ')+' '+VS.interim).trim();
   const r=VOICE.align(raw.split(/\s+/).filter(Boolean),vExp(),VS.hints,VS.start); lastRes=r;
-  ws.forEach((w,i)=>{w.classList.toggle('said',r.st[i]>0);w.classList.toggle('pre',r.st[i]===4);w.classList.toggle('miss',r.st[i]===2);w.classList.toggle('hinted',r.st[i]===3);w.classList.toggle('cursor',VS.on&&i===r.p)});
+  ws.forEach((w,i)=>{w.classList.toggle('said',r.st[i]>0);w.classList.toggle('pre',r.st[i]===4);w.classList.toggle('miss',r.st[i]===2);w.classList.toggle('hinted',r.st[i]===3);w.classList.toggle('cursor',VS.on&&i===r.p);w.classList.toggle('hk',!VS.on&&!!VS.hk&&VS.hk.has(i))});
   const said=r.st.filter(x=>x>0).length, bad=r.st.filter(x=>x===2).length;
   $('vCount').textContent=`${ar(r.st.filter(x=>x>0&&x<4).length)} / ${ar(ws.length-VS.start)} كلمة`+(bad?` · فاتك ${ar(bad)}`:'');
   $('vHeard').textContent=raw?('سمعت: '+raw.split(/\s+/).slice(-5).join(' ')):(VS.on?'بسمعك… ابدأ القراءة':'');
@@ -357,7 +379,7 @@ function vUpdate(){
   if(VS.on&&r.p>=ws.length)vStop(false);
 }
 const vMsg=s=>$('vMsg').textContent=s||'';
-function vReset(){VS.finals=[];VS.prev=[];VS.interim='';VS.hints.clear();vMsg('');lastRes={st:[],p:0};vUpdate()}
+function vReset(){VS.hk=null;VS.finals=[];VS.prev=[];VS.interim='';VS.hints.clear();vMsg('');lastRes={st:[],p:0};vUpdate()}
 function updateVoicebar(){
   const on=(active==='today'&&mode.today==='voice'&&voiceHost)||(active==='all'&&mode.all==='voice');
   $('voicebar').hidden=!on||!$('setup').hidden||!$('welcome').hidden||!$('oldMem').hidden; if(on){vReset()}
@@ -408,6 +430,7 @@ function vStop(silent){
   const badW=[]; r.st.forEach((s,i)=>{if((s===2||s===3)&&ws[i]){const u=ws[i].closest('.unit');badW.push(u.dataset.id+':'+[...u.querySelectorAll('.w')].indexOf(ws[i]))}});
 
   vMsg(badW.length?`فاتك ${ar(badW.length)} ${badW.length<=10?'كلمات':'كلمة'}، طلعت بلون مختلف. سمّع مرة ثانية من «من جديد».`:r.p>=ws.length?'ما شاء الله، سمّعته كامل بدون غلط 🤍':`وقفت عند الكلمة ${ar(r.p+1)} من ${ar(ws.length)}، بدون أغلاط لحد هون.`);
+  const hn=VOICE.harakNote(VS,vExp()); if(hn){vMsg($('vMsg').textContent+' · '+hn);vUpdate()}
 }
 // the precise engine (Whisper on the device) records first and corrects after; the default listens live
 const PREC=VOICE.precise({VS,msg:vMsg,update:vUpdate,stop:vStop,btn:$('vMic')});
@@ -451,16 +474,26 @@ function showScreen(sc,canCancel){
   $('backup').hidden=true; $('cancelSetup').hidden=!canCancel;
   if(VS.on)vStop(true); updateVoicebar(); if(!main)scrollTo(0,0);
 }
-$('setupBtn').addEventListener('click',()=>{$('perIn').value=S.per;$('goalIn').value=S.goal;fillChapPick();showScreen('setup',true)});
+// the track picker, on the settings screen of books that have tracks
+if(TRACKS){
+  document.querySelector('#setup .plan').insertAdjacentHTML('afterend','<label class="plan1"><span class="eyebrow">شو بدك تحفظ؟</span><select id="trackIn"></select></label><p class="note" id="trackNote" style="margin:0"></p>');
+  const paint=()=>{const t=$('trackIn').value,i=trackInfo(t),per=Math.max(1,Math.min(10,numIn($('perIn').value)||1)),d=Math.ceil(i.left/per);
+    $('trackNote').textContent=({full:'الآيات والأحاديث كاملة بالراوي والتخريج.',matn:'الأحاديث بس: الراوي والتخريج بيضلّوا ظاهرين للقراءة، وما بتنحفظ الآيات.',first:'أول حديث من كل باب (متن)، عشان تمرّ على الكتاب كله مرة، وبعدين بتكمّل الباقي.'})[t]+' '+ar(i.n)+' وحدة'+(i.left<i.n?'، باقيلك '+ar(i.left):'')+'. بـ'+ar(per)+' باليوم بتختم بعد '+span(d)+'.'};
+  $('trackIn').append(...TRACKS.map(([v,l])=>{const o=document.createElement('option');o.value=v;o.textContent=l;return o}));
+  $('trackIn').addEventListener('change',paint); $('perIn').addEventListener('input',paint);
+  window.paintTrack=()=>{$('trackIn').value=track();paint()};
+}
+$('setupBtn').addEventListener('click',()=>{$('perIn').value=S.per;$('goalIn').value=S.goal;fillChapPick();window.paintTrack&&paintTrack();showScreen('setup',true)});
 $('cancelSetup').addEventListener('click',()=>showScreen('main'));
 $('saveSetup').addEventListener('click',()=>{
   if(MULTI&&$('chapIn').value&&$('chapIn').value!==CUR)setCur($('chapIn').value);
+  if(TRACKS&&$('trackIn').value!==track()){S.track=$('trackIn').value;S.pick=[];setCur(CUR)}
   S.per=Math.max(1,Math.min(10,numIn($('perIn').value)||1)); S.goal=Math.max(1,Math.min(100,numIn($('goalIn').value)||10));
   // the first time through, ask about old memorisation before the first ward
   const first=!load(); save(); renderAll(); if(first)openOld(true); else showScreen('main');
 });
 $('helpBtn').addEventListener('click',()=>{$('welcomeGo').textContent='رجوع';showScreen('welcome')});
-$('welcomeGo').addEventListener('click',()=>{if(load())showScreen('main');else{$('perIn').value=S.per;$('goalIn').value=S.goal;fillChapPick();showScreen('setup')}});
+$('welcomeGo').addEventListener('click',()=>{if(load())showScreen('main');else{$('perIn').value=S.per;$('goalIn').value=S.goal;fillChapPick();window.paintTrack&&paintTrack();showScreen('setup')}});
 const toCode=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
 const fromCode=c=>JSON.parse(decodeURIComponent(escape(atob(c.replace(/\s+/g,'')))));
 $('exportBtn').addEventListener('click',()=>{$('exportOut').value=toCode({app:'mutoon',book:BOOK.key,v:2,S});$('backup').hidden=false;$('backup').scrollIntoView({block:'center',behavior:'smooth'})});

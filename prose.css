@@ -151,3 +151,6 @@ select{font:15px var(--ui);color:var(--ink);background:var(--bg);border:1px soli
 /* old memorisation list: a chapter per row with its choice */
 .prow .oldsel{width:auto;max-width:48%;flex:none;font-size:13px;padding:6px 8px}
 .plan select{font-size:15px}
+/* tracks: the parts read but not memorised */
+.seg-off{opacity:.6;font-size:.82em}
+.unit.off{opacity:.85}

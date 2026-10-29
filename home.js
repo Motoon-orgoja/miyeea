@@ -38,18 +38,20 @@ function poemBook(b){
 }
 
 // prose books: chapter reviews due, today's new units in the current chapter, and the daily linking recitation
+// the units memorised in the chosen track (see prose-engine.js: full / matn / first)
+function trackUnits(b,s,c){const t=b.tracks&&s&&s.track||'full';if(t==='full')return c.units;const h=c.units.filter(u=>u.kind==='hadith');return t==='first'?h.filter(u=>parseInt(u.id,10)===parseInt(h[0].id,10)):h}
 function proseBook(b){
   const s=get(b.lsk), W=b.unitWord||'حديث', r={b,started:!!s,tasks:[],days:new Set(),done:0,total:0,unit:W,chapters:b.chapters.length,finished:0};
-  b.chapters.forEach(c=>r.total+=c.units.length);
+  b.chapters.forEach(c=>r.total+=trackUnits(b,s,c).length);
   if(!s)return r;
   const cards=s.cards||{}, blocks=s.block?{[b.chapters[0].id]:s.block}:(s.blocks||{});
   const link=typeof s.link==='string'?{[b.chapters[0].id]:s.link}:(s.link||{}), ahead=typeof s.blockAhead==='string'?{[b.chapters[0].id]:s.blockAhead}:(s.blockAhead||{});
-  b.chapters.forEach(c=>{const n=c.units.filter(u=>cards[u.id]).length; r.done+=n; if(n===c.units.length)r.finished++});
+  b.chapters.forEach(c=>{const us=trackUnits(b,s,c),n=us.filter(u=>cards[u.id]).length; r.done+=n; if(us.length&&n===us.length)r.finished++});
   Object.entries(s.log||{}).forEach(([d,x])=>{if(x.n||x.r)r.days.add(d)});
   const cur=b.chapters.find(c=>c.id===s.cur)||b.chapters[0];
   const due=b.chapters.filter(c=>blocks[c.id]&&(blocks[c.id].due<=T||ahead[c.id]===T));
   if(due.length)r.tasks.push({k:'old',t:due.length===1?`مراجعة «${due[0].title}» كامل`:`مراجعة ${ar(due.length)} أبواب`,sub:due.length>1?due.slice(0,3).map(c=>c.title).join('، ')+(due.length>3?'…':''):'',done:false});
-  const learned=cur.units.filter(u=>cards[u.id]).length, left=cur.units.length-learned;
+  const cu=trackUnits(b,s,cur), learned=cu.filter(u=>cards[u.id]).length, left=cu.length-learned;
   const used=s.newDay===T?s.newCount:0, extra=s.extra&&s.extra.d===T?s.extra.n:0, fresh=Math.min(left,Math.max(0,(s.per||1)+extra-used));
   if(fresh)r.tasks.push({k:'new',t:`جديد: ${ar(fresh)} ${fresh===1?W:W==='فقرة'?'فقرات':'أحاديث'}`,sub:b.chapters.length>1?'من «'+cur.title+'»':'',done:false});
   else if(used&&left>=0)r.tasks.push({k:'new',t:'الجديد',sub:'حفظته ✓',done:true});

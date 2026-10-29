@@ -66,6 +66,46 @@ document.addEventListener('visibilitychange',wake);
 // browsers grant the lock only after a user gesture on some platforms
 addEventListener('pointerdown',wake,{passive:true});
 
+/* ---------- reporting a mistake in a text ----------
+   Reports are kept on the device (and travel with the progress, so linked devices share them) until they are sent:
+   through the phone's share sheet, or as a prefilled issue on the project's GitHub page. Nothing is sent by itself. */
+const RK='mutoon_reports', REPO='https://github.com/Motoon-orgoja/miyeea';
+const reports=()=>{try{return JSON.parse(localStorage.getItem(RK)||'[]')}catch(e){return []}};
+const setReports=a=>{try{a.length?localStorage.setItem(RK,JSON.stringify(a)):localStorage.removeItem(RK)}catch(e){}};
+const KINDS=[['harakat','حركة'],['word','كلمة أو حرف'],['sharh','الشرح'],['other','غيره']];
+function reportText(a){return 'بلاغات أخطاء · حفظ المتون\n\n'+a.map((r,i)=>(i+1)+'. '+r.title+' · '+r.label+' ('+r.id+')\nالنوع: '+(KINDS.find(k=>k[0]===r.kind)||KINDS[3])[1]+(r.word?'\nالكلمة: '+r.word:'')+'\nالملاحظة: '+r.note).join('\n\n')}
+async function sendReports(){
+  const a=reports(); if(!a.length){toast('ما في بلاغات محفوظة');return}
+  const text=reportText(a);
+  try{if(navigator.share){await navigator.share({title:'بلاغات أخطاء',text});toast('انبعتت ✓ امسحها لما تتأكد إنها وصلت');return}}catch(e){if(e&&e.name==='AbortError')return}
+  try{await navigator.clipboard.writeText(text);toast('انتسخت البلاغات ✓ الصقها وين ما بدك تبعتها')}catch(e){toast('ما قدرت أنسخها')}
+}
+function reportsBox(){
+  const box=el('div','ui-col'), a=reports();
+  box.append(el('div','ui-hint',a.length?'عندك '+ar(a.length)+' بلاغ محفوظ على جهازك، لسا ما انبعت.':'ما في بلاغات محفوظة.'));
+  if(a.length){const r=el('div','ui-row');
+    const s=el('button','btn primary','📤 ابعث البلاغات'); s.onclick=sendReports;
+    const g=el('a','btn','GitHub ↗'); g.target='_blank'; g.rel='noopener'; g.href=REPO+'/issues/new?title='+encodeURIComponent('بلاغات أخطاء ('+a.length+')')+'&body='+encodeURIComponent(reportText(a).slice(0,6000));
+    const c=el('button','btn','امسحها'); c.onclick=()=>{if(confirm('تمسح البلاغات المحفوظة؟ امسحها بس بعد ما تبعثها.')){setReports([]);box.replaceWith(reportsBox())}};
+    r.append(s,g,c); box.append(r)}
+  return box;
+}
+// u: {book, title, id, label, text}
+function report(u){
+  const b=sheet('بلّغ عن خطأ');
+  const pv=el('div','ui-preview',u.text); pv.dataset.noi18n=''; pv.style.textAlign='right';
+  b.append(el('div','ui-hint',u.title+' · '+u.label),pv);
+  let kind='harakat'; b.append(field('وين الخطأ؟',seg('نوع الخطأ',KINDS,kind,v=>kind=v)));
+  const w=el('input'); w.type='text'; w.placeholder='الكلمة (اختياري)'; w.dir='rtl';
+  const n=el('textarea'); n.rows=3; n.placeholder='شو الصح؟ ومن وين (إذا بتعرف)';
+  b.append(field('التفاصيل',(()=>{const c=el('div','ui-col');c.append(w,n);return c})()));
+  const ok=el('button','btn primary','حفظ البلاغ'); ok.onclick=()=>{
+    if(!n.value.trim()&&!w.value.trim()){n.focus();return}
+    const a=reports(); a.push({book:u.book,title:u.title,id:u.id,label:u.label,kind,word:w.value.trim(),note:n.value.trim(),at:new Date().toISOString().slice(0,10)}); setReports(a);
+    closeSheet(); toast('انحفظ البلاغ ✓ ابعثه من الإعدادات أو من هون',{label:'ابعث هلأ',fn:sendReports})};
+  b.append(ok, el('h3','ui-sec','البلاغات المحفوظة'), reportsBox());
+}
+
 /* ---------- backup of every text at once ---------- */
 
 /* ---------- daily reminder as a calendar event (works on iPhone without a server) ---------- */
@@ -108,12 +148,13 @@ function openSettings(){
   // recognition engine: live browser recognition, or Whisper on the device (more precise, corrects after you finish)
   const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);v===null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
   const eng=el('div','ui-col'), dl=el('button','btn'), st=el('div','ui-hint');
-  const modelSeg=seg('حجم النموذج',[['base','عادي · ٧٧ م.ب'],['quran','مدرّب على التلاوة · ١٠٠ م.ب'],['small','أدق · ٢٥٠ م.ب']],ls('ui_asrModel')||'base',v=>{ls('ui_asrModel',v);paintDl()});
-  function paintDl(){const on=(ls('ui_asrEngine')||'web')==='whisper';modelSeg.hidden=dl.hidden=!on;st.textContent=on?(window.VOICE&&VOICE.W.ready()?'النموذج نازل على جهازك وجاهز ✓':'بينزل مرة وحدة، وبعدها بيشتغل بدون نت. «أدق» للكمبيوتر والجوالات الحديثة.'):'بيسمعك مباشرة وبيعلّم الكلمات وإنت بتقرأ. بيحتاج نت.'}
+  const ios=window.VOICE?VOICE.IOS:/iP(hone|ad|od)/.test(navigator.userAgent), mopts=[['base','عادي · ٧٧ م.ب'],['quran','بيفحص الحركات · ١٠٠ م.ب']].concat(ios?[]:[['small','أدق · ٢٥٠ م.ب']]);
+  const modelSeg=seg('حجم النموذج',mopts,ios&&ls('ui_asrModel')==='small'?'base':(ls('ui_asrModel')||'base'),v=>{ls('ui_asrModel',v);paintDl()});
+  function paintDl(){const on=(ls('ui_asrEngine')||'web')==='whisper';modelSeg.hidden=dl.hidden=!on;st.textContent=on?(window.VOICE&&VOICE.W.ready()?'النموذج نازل على جهازك وجاهز ✓':(ios?'بينزل مرة وحدة، وبعدها بيشتغل بدون نت. النموذج الكبير مش متاح على الآيفون لأنه أكبر من ذاكرة سفاري.':'بينزل مرة وحدة، وبعدها بيشتغل بدون نت. «أدق» للكمبيوتر.')):'بيسمعك مباشرة وبيعلّم الكلمات وإنت بتقرأ. بيحتاج نت.'}
   dl.textContent='⬇️ نزّل النموذج هلأ'; dl.onclick=async()=>{if(!window.VOICE){toast('افتح صفحة متن لتنزّل النموذج');return}dl.disabled=true;
     try{await VOICE.W.prepare(p=>{st.textContent='بينزل… '+ar(p)+'٪'});toast('النموذج جاهز ✓')}catch(e){toast('ما زبط التنزيل: '+e.message)}dl.disabled=false;paintDl()};
   eng.append(seg('محرّك التسميع',[['web','تعرّف المتصفح'],['whisper','التعرّف الدقيق']],ls('ui_asrEngine')||'web',v=>{ls('ui_asrEngine',v==='web'?null:v);paintDl()}),modelSeg,dl,st);
-  b.append(field('محرّك التسميع بالصوت',eng,'«التعرّف الدقيق» (Whisper) بيسجّل تسميعك كامل، ولما تخلص بيحلّله على جهازك وبيورجيك وين غلطت. أبطأ شوي بس أدق بكثير، وبيشتغل حتى بدون نت.'));
+  b.append(field('محرّك التسميع بالصوت',eng,'«التعرّف الدقيق» (Whisper) بيسجّل تسميعك كامل، ولما تخلص بيحلّله على جهازك وبيورجيك وين غلطت. أبطأ شوي بس أدق بكثير، وبيشتغل حتى بدون نت. نموذج «بيفحص الحركات» (مدرّب على التلاوة) بيكتب الحركات كمان، فبينبّهك على الكلمات اللي قرأت حركتها غير المتن (تجريبي).'));
   paintDl();
   const wk=el('label','ui-check'); const cb=el('input'); cb.type='checkbox'; cb.checked=P.wake; cb.onchange=()=>{P.wake=cb.checked;save();P.wake?wake():sleep()};
   wk.append(cb,document.createTextNode(' خلّي الشاشة شغّالة وأنا بحفظ'));
@@ -147,6 +188,7 @@ function openSettings(){
   fileRow.append(fb,lb);
   bk.append(eb,out,fileRow,inp,ib);
   b.append(field('نقل التقدم والنسخة الاحتياطية',bk,'كود واحد فيه تقدمك بكل المتون. على الجهاز الثاني الصقه هون: بيدمج التقدمين، وبياخذ الأحدث بكل متن، فما بيضيع شي.'));
+  b.append(field('بلاغات الأخطاء',reportsBox(),'إذا شفت خطأ بحركة أو كلمة أو شرح، اضغط «⚑ بلّغ» تحته بتبويب «الباب». البلاغات بتنحفظ هون لحد ما تبعثها.'));
   b.append(el('p','ui-hint',window.SYNC&&SYNC.linked()?'تقدمك محفوظ على هالجهاز وبيتزامن مع أجهزتك المربوطة. الموقع بيشتغل بدون نت بعد أول فتحة.':'تقدمك محفوظ على هالجهاز بس. الموقع بيشتغل بدون نت بعد أول فتحة.'));
 }
 /* ---------- linked devices (sync.js) ---------- */
@@ -505,5 +547,5 @@ function fadeBar(onChange){
   paint(); addEventListener('prefs',h); w.append(minus,lbl,plus); return w;
 }
 
-window.UI={similar,quiz,play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,openSearch,BOOKS};
+window.UI={similar,quiz,play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,openSearch,report,BOOKS};
 })();

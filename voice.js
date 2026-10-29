@@ -1,7 +1,7 @@
 /* ---------- matching what the recognizer heard against the text being recited ----------
    Shared by both engines. The browser's recognizer (Siri dictation on iPhone) writes modern spelling, drops or merges
    words and often confuses letters close in sound, so words are compared in a folded "sound" form and matched with a
-   tolerant aligner. Nothing here judges harakat: the recognizer does not report them.
+   tolerant aligner. Only the Quran-trained Whisper model writes harakat; harakat() compares those where it can.
    Status of each expected word: 0 not reached, 1 said, 2 skipped (passed over), 3 shown as a hint, 4 before the start. */
 (function(){
 const H=/[ً-ٰٟۖ-ۭـ]/g;
@@ -39,8 +39,11 @@ const OK=.6, LOOK=5;
    three words run together, or (with the following token) a word the recognizer split. A token matching a word a few
    places ahead skips the words between, but only when the match is strong, so one stray word does not jump ahead.
    Tokens that match nothing are ignored: noise, repetitions, or a word the reader said twice. */
-function align(rawTokens,exp,hints,start){
-  const tok=rawTokens.map(fold).filter(Boolean), E=exp.map(e=>({...e,f:fold(e.n)}));
+function align(rawTokens,exp,hints,start,map){
+  const tok=[], idx=[]; rawTokens.forEach((x,i)=>{const f=fold(x);if(f){tok.push(f);idx.push(i)}});
+  // map (optional) receives, for each word matched by a single heard token, that token's index in rawTokens
+  const mark=(j,i)=>{if(map)map[j]=idx[i]};
+  const E=exp.map(e=>({...e,f:fold(e.n)}));
   // words before the chosen starting point are left out of the recitation (status 4)
   const st=new Array(E.length).fill(0); let p=Math.max(0,Math.min(start||0,E.length)), pend=[]; for(let j=0;j<p;j++)st[j]=4;
   const skipHints=()=>{while(p<E.length&&hints&&hints.has(p)){st[p]=3;p++}};
@@ -49,9 +52,9 @@ function align(rawTokens,exp,hints,start){
     const t=tok[i];
     if(/^\d+$/.test(t)){if(E[p].num){while(p<E.length&&E[p].num){st[p]=1;p++}}continue}
     const sc=score(t,E[p].f);
-    if(sc>=OK){st[p++]=1;pend=[];continue}
+    if(sc>=OK){mark(p,i);st[p++]=1;pend=[];continue}
     // a near miss in the right place counts when the next heard word lines up with the next expected word
-    if(core(t).length>=2&&lev(core(t),core(E[p].f))<=Math.max(1,Math.floor(Math.max(core(t).length,core(E[p].f).length)/2))&&(i+1>=tok.length||(p+1<E.length&&score(tok[i+1],E[p+1].f)>=OK))){st[p++]=1;pend=[];continue}
+    if(core(t).length>=2&&lev(core(t),core(E[p].f))<=Math.max(1,Math.floor(Math.max(core(t).length,core(E[p].f).length)/2))&&(i+1>=tok.length||(p+1<E.length&&score(tok[i+1],E[p+1].f)>=OK))){mark(p,i);st[p++]=1;pend=[];continue}
     // run together: «بسمالله»
     if(p+1<E.length){const two=E[p].f+E[p+1].f;if(score(t,two)>=(two.length>=6?.5:OK)){st[p]=st[p+1]=1;p+=2;continue}}
     if(p+2<E.length&&score(t,E[p].f+E[p+1].f+E[p+2].f)>=.7){st[p]=st[p+1]=st[p+2]=1;p+=3;continue}
@@ -61,10 +64,32 @@ function align(rawTokens,exp,hints,start){
     if(core(t).length>=3){let k=-1,best=0;for(let j=1;j<=LOOK&&p+j<E.length;j++){const s=score(t,E[p+j].f);if(s>=.8&&s>best){best=s;k=p+j}if(s===1)break}
       // short words heard since the last match may belong to the gap: credit them in order before calling the rest skipped
       if(k>0){let q=0;for(let j=p;j<k;j++){let f=q;while(f<pend.length&&score(pend[f],E[j].f)<OK)f++;
-        if(f<pend.length){st[j]=1;q=f+1}else st[j]=hints&&hints.has(j)?3:2}st[k]=1;p=k+1;pend=[];continue}}
+        if(f<pend.length){st[j]=1;q=f+1}else st[j]=hints&&hints.has(j)?3:2}mark(k,i);st[k]=1;p=k+1;pend=[];continue}}
     pend.push(t);
   }
   skipHints(); return {st,p};
+}
+/* ---------- harakat (only when the recognizer wrote them: the Quran-trained model does) ----------
+   A word is compared only when the heard word has exactly the same letters as the text, letter by letter, and only where
+   both carry a vowel: a missing mark, a sukun or a shadda is never counted, nor the last letter's sukun of a pause. The
+   vowel is compared by its class (a / u / i), so tanween against a plain vowel is not flagged either. */
+const VCL={'َ':'a','ً':'a','ُ':'u','ٌ':'u','ِ':'i','ٍ':'i'};
+function vowels(w){const out=[];for(const c of toAscii(w).replace(/[^ء-يٱً-ْ]/g,'')){if(/[ء-يٱ]/.test(c))out.push({c,v:''});else if(out.length&&VCL[c])out[out.length-1].v=VCL[c]}return out}
+const hasHarakat=s=>/[ً-ِ]/.test(s);
+function harakat(rawTokens,exp,hints,start){
+  if(!hasHarakat(rawTokens.join(' ')))return [];
+  const map=[]; align(rawTokens,exp,hints,start,map); const out=[];
+  map.forEach((i,j)=>{if(i==null||!exp[j])return; const e=vowels(exp[j].n), h=vowels(rawTokens[i]);
+    if(e.length!==h.length||e.some((x,k)=>norm(x.c)!==norm(h[k].c)))return;
+    if(e.some((x,k)=>x.v&&h[k].v&&x.v!==h[k].v))out.push({j,e:exp[j].n,h:rawTokens[i]})});
+  return out;
+}
+// after a recitation: remember which words to underline (VS.hk) and describe the first few
+const arD=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
+function harakNote(VS,exp){
+  const hk=harakat(VS.finals.join(' ').split(/\s+/).filter(Boolean),exp,VS.hints,VS.start); VS.hk=new Set(hk.map(x=>x.j));
+  if(!hk.length)return '';
+  return 'انتبه لحركة '+arD(hk.length)+' كلمات (تجريبي): '+hk.slice(0,4).map(x=>'«'+x.e+'» قرأتها «'+x.h+'»').join('، ')+(hk.length>4?'…':'');
 }
 /* With several alternatives for one result, take the one that carries the recitation furthest. */
 function best(prefixTokens,alts,exp,hints){
@@ -78,8 +103,10 @@ const LANGS=['ar-SA','ar-AE','ar-EG','ar-JO'];
    Chosen in settings (localStorage ui_asrEngine = 'whisper'). Audio is recorded at the device's own rate and resampled
    to 16 kHz with an OfflineAudioContext (custom-rate AudioContexts with a microphone are unreliable in Safari). */
 const MODELS={base:'onnx-community/whisper-base',small:'onnx-community/whisper-small',quran:'iqbalaesthetic/Basira'};
+// the large model runs out of memory in Safari on iPhone/iPad, so there it falls back to the normal one
+const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
 const engine=()=>{try{return localStorage.getItem('ui_asrEngine')||'web'}catch(e){return 'web'}};
-const modelId=()=>{try{return MODELS[localStorage.getItem('ui_asrModel')]||MODELS.base}catch(e){return MODELS.base}};
+const modelId=()=>{let k='base';try{k=localStorage.getItem('ui_asrModel')||'base'}catch(e){} if(IOS&&k==='small')k='base'; return MODELS[k]||MODELS.base};
 let worker=null, waiters=[], onProg=null;
 function getWorker(){
   if(worker)return worker;
@@ -147,10 +174,10 @@ function precise(h){
         if(!text)h.msg('ما التقطت كلام. قرّب الجوال وجرّب مرة ثانية.');
       }catch(e){
         h.btn.disabled=false; h.VS.on=true; h.stop(true);
-        h.msg('ما زبط التحليل الدقيق على هالجهاز ('+(e.message||'')+'). جرّب «تعرّف المتصفح» من الإعدادات.');
+        const m=e.message||''; h.msg(/memory|alloc|abort|wasm|out of/i.test(m)?'ذاكرة الجهاز ما كفّت النموذج. اختار «عادي» أو «بيفحص الحركات» من الإعدادات ('+m+').':'ما زبط التحليل الدقيق على هالجهاز ('+m+'). جرّب «تعرّف المتصفح» من الإعدادات.');
       }
     }
   };
 }
-window.VOICE={norm,fold,score,align,best,LANGS,engine,W,MODELS,precise};
+window.VOICE={norm,fold,score,align,harakat,harakNote,best,LANGS,engine,W,MODELS,IOS,precise};
 })();

@@ -97,6 +97,7 @@ html,body,button,a,.w,.v,input,select,label{touch-action:manipulation}
 /* during voice recitation a word passed over shows in gold, never red; nothing stays marked after the session */
 .m-voice .w.miss{color:var(--gold)!important;background:var(--gold-soft)!important;border-radius:5px}
 .m-voice .w.miss *{color:var(--gold)!important;background:transparent!important}
+.m-voice .w.hk{text-decoration:underline dotted var(--gold);text-decoration-thickness:2px;text-underline-offset:.45em}
 .w.wk{text-decoration:none!important}
 /* floating repetition counter */
 .ui-fab{position:fixed;inset-inline-start:max(16px,env(safe-area-inset-left,0px));z-index:30;width:68px;height:68px;border-radius:50%;border:0;background:var(--accent);color:#fff;font:700 22px var(--ui);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;box-shadow:0 6px 18px rgba(0,0,0,.22);cursor:pointer;font-variant-numeric:tabular-nums}

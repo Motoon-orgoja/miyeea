@@ -132,7 +132,7 @@ function vUpdate(){
   const ws=vWords(); if(!ws.length)return;
   const raw=(VS.finals.join(' ')+' '+VS.interim).trim();
   const r=VOICE.align(raw.split(/\s+/).filter(Boolean),vExp(),VS.hints,VS.start); lastRes=r;
-  ws.forEach((w,i)=>{w.classList.toggle('said',r.st[i]>0);w.classList.toggle('pre',r.st[i]===4);w.classList.toggle('miss',r.st[i]===2);w.classList.toggle('hinted',r.st[i]===3);w.classList.toggle('cursor',VS.on&&i===r.p)});
+  ws.forEach((w,i)=>{w.classList.toggle('said',r.st[i]>0);w.classList.toggle('pre',r.st[i]===4);w.classList.toggle('miss',r.st[i]===2);w.classList.toggle('hinted',r.st[i]===3);w.classList.toggle('cursor',VS.on&&i===r.p);w.classList.toggle('hk',!VS.on&&!!VS.hk&&VS.hk.has(i))});
   const said=r.st.filter(x=>x>0).length;
   $('vCount').textContent=`${ar(r.st.filter(x=>x>0&&x<4).length)} / ${ar(ws.length-VS.start)} كلمة`+(r.st.includes(2)?` · فاتك ${ar(r.st.filter(x=>x===2).length)}`:'');
   $('vHeard').textContent=raw?('سمعت: '+raw.split(/\s+/).slice(-5).join(' ')):(VS.on?'بسمعك… ابدأ القراءة':'');
@@ -140,7 +140,7 @@ function vUpdate(){
   if(VS.on&&r.p>=ws.length)vStop(false);
 }
 function vMsg(s){$('vMsg').textContent=s||''}
-function vReset(){VS.finals=[];VS.prev=[];VS.interim='';VS.hints.clear();$('vRes').hidden=true;vMsg('');if(mode[active]==='voice')vUpdate()}
+function vReset(){VS.hk=null;VS.finals=[];VS.prev=[];VS.interim='';VS.hints.clear();$('vRes').hidden=true;vMsg('');if(mode[active]==='voice')vUpdate()}
 async function vStart(){
   if(window.claude){vMsg('صفحات Claude ما بتسمح بالمايك. افتح رابط الصفحة على GitHub وجرّب من هناك.');return}
   if(!SR){vMsg(IOS?'افتح الرابط بسفاري: كروم على الآيفون ما بيدعم التعرّف على الصوت.':'المتصفح هذا ما بيدعم التعرّف على الصوت. جرّب Chrome أو Safari.');return}
@@ -205,6 +205,7 @@ function vStop(silent){
     const h=document.createElement('div');
     h.textContent=bad.size?`تحتاج مراجعة: الأبيات ${[...bad].sort((a,b)=>a-b).map(ar).join('، ')}`:(r.p>=ws.length?'ما شاء الله، سمّعت كل الأبيات بدون غلط 🤍':`وقفت عند الكلمة ${ar(r.p+1)} من ${ar(ws.length)}، بدون أغلاط لحد هون.`);
     res.append(h); res.hidden=false;
+    const hn=VOICE.harakNote(VS,vExp()); if(hn){const x=document.createElement('div');x.className='note';x.textContent=hn;res.append(x);vUpdate()}
   }
   if(VS.media){
     const m=VS.media; VS.media=null;
