@@ -120,7 +120,25 @@ function getWorker(){
   worker.onerror=e=>{const w=waiters.shift();w&&w.reject(new Error(e.message||'worker'))};
   return worker;
 }
-function ask(msg,transfer){return new Promise((resolve,reject)=>{waiters.push({resolve,reject});getWorker().postMessage(msg,transfer||[])})}
+/* When the model is too big for the phone, Safari kills the whole tab (“A problem repeatedly occurred”) and no error
+   reaches the page. So a flag is set while the model loads or runs; finding it still set on the next visit means the
+   tab died: the next smaller choice is taken (large → normal → the browser's own recognition) and the reader is told. */
+const BUSY='ui_asrBusy';
+const lsg=k=>{try{return localStorage.getItem(k)}catch(e){return null}}, lss=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+let crashNote='';
+if(lsg(BUSY)){
+  const was=lsg('ui_asrModel')||'base'; lss(BUSY,null);
+  if(was==='small'){lss('ui_asrModel','base');crashNote='الصفحة انقفلت وهي بتشغّل النموذج «الأدق» لأنه أكبر من ذاكرة الجهاز، فرجّعتك للنموذج «العادي».'}
+  else{lss('ui_asrEngine',null);crashNote='الصفحة انقفلت وهي بتشغّل التعرّف الدقيق لأنه أكبر من ذاكرة الجهاز، فرجّعتك لـ«تعرّف المتصفح». بتقدر ترجع تجرّبه من الإعدادات.'}
+}
+// leaving the page normally is not a crash
+addEventListener('pagehide',()=>lss(BUSY,null));
+if(crashNote)addEventListener('load',()=>setTimeout(()=>{window.UI&&window.UI.toast?window.UI.toast(crashNote):alert(crashNote)},600));
+// on iPhone/iPad the CPU path is used: the GPU path keeps a larger copy of the model in memory
+function ask(msg,transfer){
+  if(IOS)msg.device='wasm';
+  lss(BUSY,'1');
+  return new Promise((resolve,reject)=>{waiters.push({resolve:v=>{lss(BUSY,null);resolve(v)},reject:e=>{lss(BUSY,null);reject(e)}});getWorker().postMessage(msg,transfer||[])})}
 const W={rec:null,stream:null,parts:[],
   // download (or open from cache) the model ahead of time, reporting progress as a percentage
   prepare(progress){onProg=progress?(p=>{if(p.total)progress(Math.round(p.loaded/p.total*100),p.file)}):null;return ask({type:'load',model:modelId()})},

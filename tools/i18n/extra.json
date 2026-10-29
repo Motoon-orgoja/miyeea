@@ -99,4 +99,6 @@
 "باليوم بتختم بعد":{"fus":"في اليوم تختم بعد","en":"a day, you finish in"},
 "بـ":{"fus":"بـ","en":"At"},
 "· مسار «":{"fus":"· مسار «","en":"· track “"},
-"» قرأتها «":{"fus":"» قرأتها «","en":"” you read “"}}
+"» قرأتها «":{"fus":"» قرأتها «","en":"” you read “"},
+"الصفحة انقفلت وهي بتشغّل النموذج «الأدق» لأنه أكبر من ذاكرة الجهاز، فرجّعتك للنموذج «العادي».":{"fus":"أُغلقت الصفحة أثناء تشغيل النموذج «الأدق» لأنه أكبر من ذاكرة الجهاز، فأُعدت إلى النموذج «العادي».","en":"The page closed while running the “most precise” model, which is too big for this device’s memory, so you are back on the “normal” model."},
+"الصفحة انقفلت وهي بتشغّل التعرّف الدقيق لأنه أكبر من ذاكرة الجهاز، فرجّعتك لـ«تعرّف المتصفح». بتقدر ترجع تجرّبه من الإعدادات.":{"fus":"أُغلقت الصفحة أثناء تشغيل التعرّف الدقيق لأنه أكبر من ذاكرة الجهاز، فأُعدت إلى «تعرّف المتصفح». يمكنك تجربته مجددًا من الإعدادات.","en":"The page closed while running precise recognition, which is too big for this device’s memory, so you are back on browser recognition. You can try it again in settings."}}
