@@ -111,6 +111,14 @@ started.forEach(r=>{
   top.append(el('span','',r.b.title),el('small','',`${ar(r.done)} من ${ar(r.total)} ${r.b.poems?'بيت':r.unit}`+(r.chapters>1?` · ختمت ${ar(r.finished)} باب من ${ar(r.chapters)}`:'')));
   const bar=el('div','bar'), i=el('i'); i.style.width=Math.max(r.done?1.5:0,r.done/r.total*100)+'%'; bar.append(i);
   row.append(top,bar); $('progList').append(row);
+  // a finished text gets its certificate; the first time it is noticed, a toast offers it too
+  if(r.total&&r.done>=r.total&&window.UI&&UI.certificate){
+    const s=get(r.b.lsk), track=r.b.tracks&&s&&s.track&&s.track!=='full'?({matn:' · متن الأحاديث',first:' · حديث من كل باب'})[s.track]||'':'';
+    const what=r.b.poems?'عدد الأبيات: '+ar(r.total):(/^الحديث/.test(r.b.chapters[0].title)?'عدد الأحاديث: ':'عدد الأبواب: ')+ar(r.chapters)+track;
+    const open=()=>UI.certificate({title:r.b.title,what,key:r.b.key});
+    const c=el('button','btn gold','🎓 شهادة الختم'); c.type='button'; c.onclick=open; row.append(c);
+    const k='ui_cert_'+r.b.key; if(!localStorage.getItem(k)){try{localStorage.setItem(k,'1')}catch(e){} setTimeout(()=>UI.toast('ما شاء الله، ختمت «'+r.b.title+'» 🤍',{label:'شهادة الختم',fn:open}),900)}
+  }
 });
 if(!started.length)$('progList').append(el('div','empty','بيظهر هون تقدمك بكل متن.'));
 // the grid runs oldest to newest, a column per week; RTL puts the newest week on the left

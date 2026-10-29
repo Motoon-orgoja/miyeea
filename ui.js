@@ -541,5 +541,50 @@ function fadeBar(onChange){
   paint(); addEventListener('prefs',h); w.append(minus,lbl,plus); return w;
 }
 
-window.UI={similar,quiz,play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,openSearch,report,BOOKS};
+/* ---------- a certificate for finishing a text («شهادة ختم») ----------
+   c = {title, what: e.g. "١٠٠ بيت", key}. Drawn on a canvas in Arabic (it is the text's own language), with the reader's
+   name if they give one (kept on this device only), the Hijri and Gregorian dates, then shared or saved as a picture. */
+function certificate(c){
+  const b=sheet('شهادة الختم');
+  const name=el('input'); name.type='text'; name.dir='rtl'; name.placeholder='اسمك على الشهادة (اختياري)'; name.value=P.certName||'';
+  const img=el('img','ui-cert'); img.alt='شهادة ختم '+c.title;
+  const go=el('button','btn primary','📤 احفظها أو شاركها'), note=el('div','ui-hint','الاسم بينحفظ على جهازك بس.');
+  b.append(name,img,go,note);
+  let blob=null;
+  async function draw(){
+    const W=1080,H=1350,cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');
+    try{await Promise.all(['700 80px Amiri','400 40px Amiri','500 30px "Noto Kufi Arabic"'].map(f=>document.fonts.load(f)))}catch(e){}
+    const gold='#A8812F', green='#0E6B4F', ink='#2A2A2A';
+    g.fillStyle='#FBF7EE';g.fillRect(0,0,W,H);
+    g.strokeStyle=gold;g.lineWidth=6;g.strokeRect(40,40,W-80,H-80);g.lineWidth=2;g.strokeRect(62,62,W-124,H-124);
+    // an eight-pointed star in each corner and at the top
+    const star=(x,y,r)=>{g.save();g.translate(x,y);g.fillStyle=gold;for(const a of [0,Math.PI/4]){g.save();g.rotate(a);g.fillRect(-r/2,-r/2,r,r);g.restore()}
+      g.fillStyle='#FBF7EE';g.beginPath();g.arc(0,0,r*.28,0,7);g.fill();g.restore()};
+    [[62,62],[W-62,62],[62,H-62],[W-62,H-62]].forEach(([x,y])=>star(x,y,34)); star(W/2,175,46);
+    g.direction='rtl';g.textAlign='center';g.textBaseline='middle';
+    const line=(t,y,font,col,max=W-220)=>{g.font=font;g.fillStyle=col;let s=t;while(g.measureText(s).width>max&&s.length>4)s=s.slice(0,-2);g.fillText(s===t?t:s+'…',W/2,y)};
+    line('شهادة خَتْم',300,'700 92px Amiri',green);
+    line('الحمد لله الذي بنعمته تتمّ الصالحات',400,'400 40px Amiri',ink);
+    const nm=name.value.trim();
+    line(nm?'بفضل الله وتوفيقه أتمّ':'بفضل الله وتوفيقه تمّ',500,'400 40px Amiri',ink);
+    if(nm)line(nm,580,'700 64px Amiri',gold);
+    line('حفظ',nm?660:570,'400 40px Amiri',ink);
+    line('«'+c.title+'»',nm?760:670,'700 78px Amiri',green);
+    if(c.what)line(c.what,nm?850:760,'500 30px "Noto Kufi Arabic"','#6B6B6B');
+    const d=new Date(), f=(loc,o)=>{try{return new Intl.DateTimeFormat(loc,o).format(d)}catch(e){return ''}};
+    const hij=f('ar-SA-u-ca-islamic-umalqura-nu-arab',{day:'numeric',month:'long',year:'numeric'}), gre=f('ar-JO-u-nu-arab',{day:'numeric',month:'long',year:'numeric'});
+    g.strokeStyle=gold;g.lineWidth=2;g.beginPath();g.moveTo(W/2-200,960);g.lineTo(W/2+200,960);g.stroke();
+    line('بتاريخ '+hij,1020,'400 38px Amiri',ink); if(gre)line('الموافق '+gre,1075,'400 32px Amiri','#6B6B6B');
+    line('اللهم انفعني بما علّمتني، وعلّمني ما ينفعني، وزدني علمًا',1170,'400 34px Amiri',green);
+    line('حفظ المتون',1245,'500 24px "Noto Kufi Arabic"',gold);
+    blob=await new Promise(r=>cv.toBlob(r,'image/png')); if(img.src)URL.revokeObjectURL(img.src); img.src=URL.createObjectURL(blob);
+  }
+  let t=0; name.oninput=()=>{P.certName=name.value.trim();save();clearTimeout(t);t=setTimeout(draw,300)};
+  go.onclick=async()=>{if(!blob)return; const file=new File([blob],'شهادة ختم - '+c.title+'.png',{type:'image/png'});
+    try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'شهادة ختم '+c.title});return}}catch(e){if(e.name==='AbortError')return}
+    const a=document.createElement('a');a.href=img.src;a.download=file.name;document.body.append(a);a.click();a.remove()};
+  draw();
+}
+
+window.UI={similar,quiz,play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,openSearch,report,certificate,BOOKS};
 })();

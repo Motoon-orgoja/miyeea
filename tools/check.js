@@ -63,8 +63,8 @@ async function browser(){
     if(m.method==='Runtime.exceptionThrown')errs.push('error: '+(m.params.exceptionDetails.exception&&m.params.exceptionDetails.exception.description||m.params.exceptionDetails.text).split('\n')[0]);
     if(m.method==='Runtime.consoleAPICalled'&&m.params.type==='error')errs.push('console.error: '+m.params.args.map(a=>a.value||a.description||'').join(' ').slice(0,200));
     if(m.method==='Network.responseReceived'){const u=m.params.response.url;
-      // a chapter without commentary has no file: that 404 is expected
-      if(u.startsWith(base)&&m.params.response.status>=400&&!/riyad-sharh\/riyad\d+\.json/.test(u))errs.push('missing: '+u.slice(base.length))}});
+      // a chapter or poem without commentary has no file: that 404 is expected
+      if(u.startsWith(base)&&m.params.response.status>=400&&!/(-sharh|\/data\/sharh)\/[^/]+\.json$/.test(u))errs.push('missing: '+u.slice(base.length))}});
   await S('Runtime.enable'); await S('Network.enable'); await S('Page.enable');
   const go=async url=>{const done=new Promise(r=>{const h=m=>{if(m.sessionId===sessionId&&m.method==='Page.loadEventFired'){handlers.splice(handlers.indexOf(h),1);r()}};handlers.push(h)});await S('Page.navigate',{url});await done;await new Promise(r=>setTimeout(r,700))};
   const run=async expr=>{const r=await S('Runtime.evaluate',{expression:expr,awaitPromise:true});if(r.result&&r.result.exceptionDetails)errs.push('while testing: '+(r.result.exceptionDetails.exception||{}).description)};

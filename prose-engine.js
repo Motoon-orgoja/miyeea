@@ -15,8 +15,8 @@ const SHARH=window.SHARH||{};
 // a big book keeps its commentary in one file per chapter (BOOK.sharhDir/<chapter id>.json), fetched the first time the chapter is shown
 const SHLOAD={};
 function loadSharh(cid){
-  if(!BOOK.sharhDir||SHLOAD[cid])return; SHLOAD[cid]=1;
-  fetch(BOOK.sharhDir+cid+'.json').then(r=>r.ok?r.json():null).then(j=>{if(!j)return;Object.assign(SHARH,j);if(CUR===cid&&typeof renderAll==='function')renderAll()}).catch(()=>{SHLOAD[cid]=0});
+  const dir=BOOK.sharhDir||'data/'+BOOK.key+'-sharh/'; if(SHLOAD[cid])return; SHLOAD[cid]=1;
+  fetch(dir+cid+'.json').then(r=>r.ok?r.json():null).then(j=>{if(!j)return;Object.assign(SHARH,j);if(CUR===cid&&typeof renderAll==='function')renderAll()}).catch(()=>{SHLOAD[cid]=0});
 }
 // the commentaries put the text being explained in (…); show it bold so it stands out from the explanation
 function richText(p,txt){

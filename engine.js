@@ -262,11 +262,28 @@ function fill(key,a,b,opts={}){
     const r=verseRow(i,{isNew:opts.markNew&&i>S.mem});
     if(opts.status){r.classList.toggle('mem',i<=S.mem); if(opts.cur)r.classList.toggle('cur',i>=opts.cur[0]&&i<=opts.cur[1])}
     list.append(r);
-    if(key==='all'&&P.sharh&&P.sharh[i]){const d=document.createElement('details');d.className='vsharh';const sm=document.createElement('summary');sm.textContent='شرح البيت';const p=document.createElement('p');p.textContent=P.sharh[i];d.append(sm,p);list.append(d)}
+    if(key==='all'&&P.sharh&&P.sharh[i])list.append(vSharh(i));
   });
   if(!list.childElementCount){const x=document.createElement('div');x.className='empty';x.textContent='لا يوجد أبيات هنا بعد.';list.append(x)}
   step[key]=Math.min(step[key],idx.length); applyMode(key);
 }
+/* ---------- verse commentary: inline (P.sharh, strings) or data/sharh/<book>.json, loaded once, verbatim from a classical
+   commentary: {name, author, death, url, v:[{t, ref, url} | null, … one per verse]} ---------- */
+function vSharh(i){
+  const d=document.createElement('details'); d.className='vsharh';
+  const sm=document.createElement('summary'); sm.textContent='شرح البيت'; d.append(sm);
+  const e=P.sharhRef&&P.sharhRef[i-1];
+  String(P.sharh[i]).split(/\n\n+/).forEach(par=>{const p=document.createElement('p');
+    par.split(/(\([^()]{1,300}\))/).forEach(x=>{if(/^\(.*\)$/.test(x)){const b=document.createElement('b');b.textContent=x;p.append(b)}else p.append(x)});d.append(p)});
+  if(e&&e.url){const a=document.createElement('a');a.className='ref';a.href=e.url;a.target='_blank';a.rel='noopener';a.textContent=P.sharhSrc.name+(e.ref?' · '+e.ref:'')+' ↗';d.append(a)}
+  return d;
+}
+if(!P.sharh)fetch('data/sharh/'+(MULTI?B.key+'-'+CUR:B.key)+'.json').then(r=>r.ok?r.json():null).then(j=>{
+  if(!j||!j.v)return;
+  P.sharh=[null].concat(j.v.map(x=>x&&x.t)); P.sharhRef=j.v;
+  P.sharhSrc={name:j.name+(j.author?'، ل'+j.author:'')+(j.death?' (ت '+j.death+')':''),url:j.url};
+  renderPoemInfo(); render();
+}).catch(()=>{});
 function render(){
   const f=from(), e=S.end, memEnd=S.mem;
   $('barM').style.width=(memEnd/N*100)+'%';
@@ -562,6 +579,7 @@ function renderPoems(){
   const finished=S.mem>=N, next=ORDER.find(id=>{if(id===CUR)return false;const st=stateOf(id);return !(st&&st.mem>=poemOf(id).verses.length)});
   $('pDone').hidden=!finished; $('pDone').replaceChildren();
   if(finished){const t=document.createElement('span');t.textContent='ما شاء الله، ختمت هالقصيدة 🤍';$('pDone').append(t);
+    const c=document.createElement('button');c.className='btn gold';c.textContent='🎓 شهادة الختم';c.addEventListener('click',()=>window.UI.certificate({title:P.title,what:'عدد الأبيات: '+ar(N)}));$('pDone').append(c);
     if(next){const b=document.createElement('button');b.className='btn primary';b.textContent='انتقل لـ «'+poemOf(next).title+'»';b.addEventListener('click',()=>switchPoem(next));$('pDone').append(b)}}
   const list=$('poemList'); list.replaceChildren();
   ORDER.forEach((id,k)=>{const p=poemOf(id), row=document.createElement('div'); row.className='prow'+(id===CUR?' cur':'');
