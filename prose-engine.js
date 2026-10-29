@@ -211,8 +211,18 @@ function renderToday(){
   $('stNew').textContent=ar(fresh.length); $('stDue').textContent=ar(due.length+(ld?1:0));
   $('stMem').textContent=ar(learnedIds().length); $('stTotal').textContent=ar(U.length);
   const box=$('cardBox'); box.replaceChildren(); voiceHost=null;
-  // the chapter review comes first, then today's new unit, then linking what is learned so far
-  const kind=bd?'block':fresh.length?'new':ld?'link':null;
+  // two lanes, as in hadith circles: reviewing finished chapters, and memorising new units (+ linking them).
+  // Neither waits for the other; the user picks the lane, and an empty lane falls back to the other one.
+  const revKind=bd?'block':null, newKind=fresh.length?'new':ld?'link':null;
+  let lane=null;try{lane=localStorage.getItem('ui_lane_'+BOOK.key)}catch(e){}
+  const kind=revKind&&newKind?(lane==='new'?newKind:revKind):revKind||newKind;
+  if(revKind&&newKind){
+    const sw=document.createElement('div'); sw.className='modes lanes';
+    [['rev','🔁 المراجعة ('+ar(due.length)+')',revKind],['new','✨ الحفظ الجديد ('+ar(fresh.length+(ld?1:0))+')',newKind]].forEach(([k,l,kd])=>{
+      const b=document.createElement('button'); b.type='button'; b.textContent=l; b.setAttribute('aria-pressed',String(kd===kind));
+      b.addEventListener('click',()=>{try{localStorage.setItem('ui_lane_'+BOOK.key,k)}catch(e){}if(VS.on)vStop(true);renderToday()}); sw.append(b)});
+    box.append(sw);
+  }
   if(!kind){
     const e=document.createElement('div'); e.className='empty';
     const b=S.blocks[CUR], nx=allLearned()&&MULTI?nextChapter():null;
