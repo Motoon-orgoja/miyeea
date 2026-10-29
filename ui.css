@@ -182,3 +182,5 @@ a.ui-hit small{color:var(--muted);font-size:calc(12px*var(--us,1))}
 /* English interface: the layout runs left to right, the Arabic texts keep their own direction */
 :root[dir=ltr] .bayt,:root[dir=ltr] .utext,:root[dir=ltr] .gloss,:root[dir=ltr] .sharh,:root[dir=ltr] .ecard,:root[dir=ltr] .ui-hit-t,:root[dir=ltr] .ui-preview,:root[dir=ltr] .ptitle,:root[dir=ltr] #cTitle{direction:rtl;text-align:right}
 :root[dir=ltr] body{direction:ltr}
+.ui-vmode{font-size:12px;padding:6px 10px;flex:0 0 auto;white-space:nowrap}
+.ui-myrec .btn{flex:none;font-size:12px;padding:6px 10px;min-width:44px}

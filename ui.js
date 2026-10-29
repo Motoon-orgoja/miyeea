@@ -145,17 +145,11 @@ function openSettings(){
   b.append(el('h3','ui-sec','التسميع بالصوت'));
   b.append(field('لغة التعرّف على الصوت',seg('لغة التعرّف',[['','تلقائي'],['ar-SA','فصحى (السعودية)'],['ar-EG','مصر'],['ar-JO','الأردن']],asr,v=>{try{v?localStorage.setItem('ui_asrLang',v):localStorage.removeItem('ui_asrLang')}catch(e){}toast('بيتطبّق من التسميع الجاي')}),
     'إذا التسميع ما بيلتقط كلامك منيح، جرّب لغة ثانية. التلقائي بيبلّش بالفصحى.'));
-  // recognition engine: live browser recognition, or Whisper on the device (more precise, corrects after you finish)
+  // how recitation is checked: live browser recognition, or record and listen back (the reader marks their own slips)
   const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);v===null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
-  const eng=el('div','ui-col'), dl=el('button','btn'), st=el('div','ui-hint');
-  const ios=window.VOICE?VOICE.IOS:/iP(hone|ad|od)/.test(navigator.userAgent), mopts=[['base','عادي · ٧٧ م.ب'],['quran','بيفحص الحركات · ١٠٠ م.ب']].concat(ios?[]:[['small','أدق · ٢٥٠ م.ب']]);
-  const modelSeg=seg('حجم النموذج',mopts,ios&&ls('ui_asrModel')==='small'?'base':(ls('ui_asrModel')||'base'),v=>{ls('ui_asrModel',v);paintDl()});
-  function paintDl(){const on=(ls('ui_asrEngine')||'web')==='whisper';modelSeg.hidden=dl.hidden=!on;st.textContent=on?(window.VOICE&&VOICE.W.ready()?'النموذج نازل على جهازك وجاهز ✓':(ios?'بينزل مرة وحدة، وبعدها بيشتغل بدون نت. النموذج الكبير مش متاح على الآيفون لأنه أكبر من ذاكرة سفاري.':'بينزل مرة وحدة، وبعدها بيشتغل بدون نت. «أدق» للكمبيوتر.')):'بيسمعك مباشرة وبيعلّم الكلمات وإنت بتقرأ. بيحتاج نت.'}
-  dl.textContent='⬇️ نزّل النموذج هلأ'; dl.onclick=async()=>{if(!window.VOICE){toast('افتح صفحة متن لتنزّل النموذج');return}dl.disabled=true;
-    try{await VOICE.W.prepare(p=>{st.textContent='بينزل… '+ar(p)+'٪'});toast('النموذج جاهز ✓')}catch(e){toast('ما زبط التنزيل: '+e.message)}dl.disabled=false;paintDl()};
-  eng.append(seg('محرّك التسميع',[['web','تعرّف المتصفح'],['whisper','التعرّف الدقيق']],ls('ui_asrEngine')||'web',v=>{ls('ui_asrEngine',v==='web'?null:v);paintDl()}),modelSeg,dl,st);
-  b.append(field('محرّك التسميع بالصوت',eng,'«التعرّف الدقيق» (Whisper) بيسجّل تسميعك كامل، ولما تخلص بيحلّله على جهازك وبيورجيك وين غلطت. أبطأ شوي بس أدق بكثير، وبيشتغل حتى بدون نت. نموذج «بيفحص الحركات» (مدرّب على التلاوة) بيكتب الحركات كمان، فبينبّهك على الكلمات اللي قرأت حركتها غير المتن (تجريبي).'));
-  paintDl();
+  const curEng=()=>(ls('ui_asrEngine')||'web')==='web'?'web':'self';
+  b.append(field('طريقة التسميع بالصوت',seg('طريقة التسميع',[['web','تعرّف تلقائي'],['self','سجّل واسمع']],curEng(),v=>{ls('ui_asrEngine',v==='web'?null:v);dispatchEvent(new Event('ui-asr'))}),
+    '«تعرّف تلقائي» بيسمعك وبيعلّم الكلمات وإنت بتقرأ (بيحتاج نت). «سجّل واسمع» بيسجّل تسميعك، وبعدين بتسمع حالك والنص قدامك وبتضغط على الكلمات اللي غلطت فيها، فبتنحفظ متل أغلاط التسميع. بيشتغل بدون نت وعلى أي جوال. بتقدر تبدّل كمان من الزر جنب المايك.'));
   const wk=el('label','ui-check'); const cb=el('input'); cb.type='checkbox'; cb.checked=P.wake; cb.onchange=()=>{P.wake=cb.checked;save();P.wake?wake():sleep()};
   wk.append(cb,document.createTextNode(' خلّي الشاشة شغّالة وأنا بحفظ'));
   b.append(el('h3','ui-sec','الجهاز والبيانات'));

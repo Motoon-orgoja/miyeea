@@ -370,16 +370,17 @@ let lastRes={st:[],p:0};
 function vUpdate(){
   const ws=vWords(); if(!ws.length)return;
   const raw=(VS.finals.join(' ')+' '+VS.interim).trim();
-  const r=VOICE.align(raw.split(/\s+/).filter(Boolean),vExp(),VS.hints,VS.start); lastRes=r;
+  // in «سجّل واسمع» the reader's own marks stand in for the matching
+  const r=VS.forced?{st:VS.forced.slice(),p:VS.forced.length}:VOICE.align(raw.split(/\s+/).filter(Boolean),vExp(),VS.hints,VS.start); lastRes=r;
   ws.forEach((w,i)=>{w.classList.toggle('said',r.st[i]>0);w.classList.toggle('pre',r.st[i]===4);w.classList.toggle('miss',r.st[i]===2);w.classList.toggle('hinted',r.st[i]===3);w.classList.toggle('cursor',VS.on&&i===r.p);w.classList.toggle('hk',!VS.on&&!!VS.hk&&VS.hk.has(i))});
   const said=r.st.filter(x=>x>0).length, bad=r.st.filter(x=>x===2).length;
   $('vCount').textContent=`${ar(r.st.filter(x=>x>0&&x<4).length)} / ${ar(ws.length-VS.start)} كلمة`+(bad?` · فاتك ${ar(bad)}`:'');
-  $('vHeard').textContent=raw?('سمعت: '+raw.split(/\s+/).slice(-5).join(' ')):(VS.on?'بسمعك… ابدأ القراءة':'');
+  $('vHeard').textContent=VS.self?'':raw?('سمعت: '+raw.split(/\s+/).slice(-5).join(' ')):(VS.on?'بسمعك… ابدأ القراءة':'');
   const cur=ws[r.p]; if(VS.on&&cur&&cur.getBoundingClientRect().bottom>innerHeight-170)cur.scrollIntoView({block:'center',behavior:'smooth'});
   if(VS.on&&r.p>=ws.length)vStop(false);
 }
 const vMsg=s=>$('vMsg').textContent=s||'';
-function vReset(){VS.hk=null;VS.finals=[];VS.prev=[];VS.interim='';VS.hints.clear();vMsg('');lastRes={st:[],p:0};vUpdate()}
+function vReset(){VOICE.reset(VS);micLabel();VS.hk=null;VS.finals=[];VS.prev=[];VS.interim='';VS.hints.clear();vMsg('');lastRes={st:[],p:0};vUpdate()}
 function updateVoicebar(){
   const on=(active==='today'&&mode.today==='voice'&&voiceHost)||(active==='all'&&mode.all==='voice');
   $('voicebar').hidden=!on||!$('setup').hidden||!$('welcome').hidden||!$('oldMem').hidden; if(on){vReset()}
@@ -420,11 +421,11 @@ function vRecStart(){
   try{r.start();return true}catch(e){return false}
 }
 function vStop(silent){
-  if(silent&&VOICE.W.recording())VOICE.W.cancel();
+  if(silent&&VS.self){VOICE.reset(VS);micLabel()}
   if(!VS.on)return;
   VS.on=false; try{VS.rec&&VS.rec.stop()}catch(_){}
   if(VS.interim){VS.finals.push(VS.interim);VS.interim=''}
-  $('vMic').textContent='🎤 ابدأ';$('vMic').classList.remove('live');
+  $('vMic').classList.remove('live');micLabel();
   const ws=vWords(); vUpdate(); const r=lastRes; if(silent)return;
   const said=r.st.filter(x=>x===1).length; if(!said)return;
   const badW=[]; r.st.forEach((s,i)=>{if((s===2||s===3)&&ws[i]){const u=ws[i].closest('.unit');badW.push(u.dataset.id+':'+[...u.querySelectorAll('.w')].indexOf(ws[i]))}});
@@ -432,9 +433,11 @@ function vStop(silent){
   vMsg(badW.length?`فاتك ${ar(badW.length)} ${badW.length<=10?'كلمات':'كلمة'}، طلعت بلون مختلف. سمّع مرة ثانية من «من جديد».`:r.p>=ws.length?'ما شاء الله، سمّعته كامل بدون غلط 🤍':`وقفت عند الكلمة ${ar(r.p+1)} من ${ar(ws.length)}، بدون أغلاط لحد هون.`);
   const hn=VOICE.harakNote(VS,vExp()); if(hn){vMsg($('vMsg').textContent+' · '+hn);vUpdate()}
 }
-// the precise engine (Whisper on the device) records first and corrects after; the default listens live
-const PREC=VOICE.precise({VS,msg:vMsg,update:vUpdate,stop:vStop,btn:$('vMic')});
-$('vMic').addEventListener('click',()=>{const w=VOICE.engine()==='whisper';VS.on?(w&&VOICE.W.recording()?PREC.finish():vStop(false)):(w?(lastRes.p>=vWords().length&&vReset(),PREC.start()):vStart())});
+// «سجّل واسمع» records first and lets the reader mark their own slips; the default listens live
+const SELF=VOICE.selfRec({VS,msg:vMsg,update:vUpdate,stop:vStop,btn:$('vMic'),words:vWords});
+function micLabel(){const m=$('vMic');if(m&&!m.classList.contains('live'))m.textContent=VOICE.engine()==='self'?'🎤 سجّل':'🎤 ابدأ'}
+VOICE.modeSwitch($('vMic'),()=>{if(VS.on)vStop(true);vReset()});
+$('vMic').addEventListener('click',()=>{VS.on?vStop(false):VOICE.engine()==='self'||VS.self?SELF.click():vStart()});
 $('vReset').addEventListener('click',()=>{if(VS.on)vStop(true);vReset()});
 $('vHint').addEventListener('click',()=>{const ws=vWords();if(lastRes.p<ws.length){VS.hints.add(lastRes.p);vUpdate()}});
 

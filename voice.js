@@ -1,7 +1,7 @@
 /* ---------- matching what the recognizer heard against the text being recited ----------
    Shared by both engines. The browser's recognizer (Siri dictation on iPhone) writes modern spelling, drops or merges
    words and often confuses letters close in sound, so words are compared in a folded "sound" form and matched with a
-   tolerant aligner. Only the Quran-trained Whisper model writes harakat; harakat() compares those where it can.
+   tolerant aligner. harakat() compares vowels when the heard text carries them (the browser recognizers do not).
    Status of each expected word: 0 not reached, 1 said, 2 skipped (passed over), 3 shown as a hint, 4 before the start. */
 (function(){
 const H=/[ً-ٰٟۖ-ۭـ]/g;
@@ -99,103 +99,82 @@ function best(prefixTokens,alts,exp,hints){
 }
 // languages to try, Modern Standard Arabic first: dialect models (ar-JO) recognize classical text worse
 const LANGS=['ar-SA','ar-AE','ar-EG','ar-JO'];
-/* ---------- the precise engine: record the whole recitation, then transcribe it on the device with Whisper ----------
-   Chosen in settings (localStorage ui_asrEngine = 'whisper'). Audio is recorded at the device's own rate and resampled
-   to 16 kHz with an OfflineAudioContext (custom-rate AudioContexts with a microphone are unreliable in Safari). */
-const MODELS={base:'onnx-community/whisper-base',small:'onnx-community/whisper-small',quran:'iqbalaesthetic/Basira'};
-// the large model runs out of memory in Safari on iPhone/iPad, so there it falls back to the normal one
+/* ---------- «سجّل واسمع»: record the recitation, then listen back with the text in front of you and mark your own slips ----------
+   Chosen in settings or from the voice bar (localStorage ui_asrEngine = 'self'). Nothing is sent anywhere and no
+   recognition runs: the page only records, so it works on any phone and without internet. */
 const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
-const engine=()=>{try{return localStorage.getItem('ui_asrEngine')||'web'}catch(e){return 'web'}};
-const modelId=()=>{let k='base';try{k=localStorage.getItem('ui_asrModel')||'base'}catch(e){} if(IOS&&k==='small')k='base'; return MODELS[k]||MODELS.base};
-let worker=null, waiters=[], onProg=null;
-function getWorker(){
-  if(worker)return worker;
-  worker=new Worker(new URL('whisper-worker.js',document.baseURI),{type:'module'});
-  worker.onmessage=({data})=>{
-    if(data.type==='progress'){onProg&&onProg(data);return}
-    if(data.type==='ready'){try{localStorage.setItem('ui_asrReady',modelId())}catch(e){}}
-    const w=waiters.shift(); if(!w)return;
-    data.type==='error'?w.reject(new Error(data.message)):w.resolve(data);
-  };
-  worker.onerror=e=>{const w=waiters.shift();w&&w.reject(new Error(e.message||'worker'))};
-  return worker;
-}
-/* When the model is too big for the phone, Safari kills the whole tab (“A problem repeatedly occurred”) and no error
-   reaches the page. So a flag is set while the model loads or runs; finding it still set on the next visit means the
-   tab died: the next smaller choice is taken (large → normal → the browser's own recognition) and the reader is told. */
-const BUSY='ui_asrBusy';
-const lsg=k=>{try{return localStorage.getItem(k)}catch(e){return null}}, lss=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
-let crashNote='';
-if(lsg(BUSY)){
-  const was=lsg('ui_asrModel')||'base'; lss(BUSY,null);
-  if(was==='small'){lss('ui_asrModel','base');crashNote='الصفحة انقفلت وهي بتشغّل النموذج «الأدق» لأنه أكبر من ذاكرة الجهاز، فرجّعتك للنموذج «العادي».'}
-  else{lss('ui_asrEngine',null);crashNote='الصفحة انقفلت وهي بتشغّل التعرّف الدقيق لأنه أكبر من ذاكرة الجهاز، فرجّعتك لـ«تعرّف المتصفح». بتقدر ترجع تجرّبه من الإعدادات.'}
-}
-// leaving the page normally is not a crash
-addEventListener('pagehide',()=>lss(BUSY,null));
-if(crashNote)addEventListener('load',()=>setTimeout(()=>{window.UI&&window.UI.toast?window.UI.toast(crashNote):alert(crashNote)},600));
-// on iPhone/iPad the CPU path is used: the GPU path keeps a larger copy of the model in memory
-function ask(msg,transfer){
-  if(IOS)msg.device='wasm';
-  lss(BUSY,'1');
-  return new Promise((resolve,reject)=>{waiters.push({resolve:v=>{lss(BUSY,null);resolve(v)},reject:e=>{lss(BUSY,null);reject(e)}});getWorker().postMessage(msg,transfer||[])})}
+const engine=()=>{let v='web';try{v=localStorage.getItem('ui_asrEngine')||'web'}catch(e){} return v==='web'?'web':'self'};
+const setEngine=v=>{try{v==='web'?localStorage.removeItem('ui_asrEngine'):localStorage.setItem('ui_asrEngine',v)}catch(e){}};
 const W={rec:null,stream:null,parts:[],
-  // download (or open from cache) the model ahead of time, reporting progress as a percentage
-  prepare(progress){onProg=progress?(p=>{if(p.total)progress(Math.round(p.loaded/p.total*100),p.file)}):null;return ask({type:'load',model:modelId()})},
-  ready:()=>{try{return localStorage.getItem('ui_asrReady')===modelId()}catch(e){return false}},
   async start(){
     this.stream=await navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:true,noiseSuppression:true}});
     this.parts=[]; this.rec=new MediaRecorder(this.stream); this.rec.ondataavailable=e=>{if(e.data.size)this.parts.push(e.data)}; this.rec.start();
   },
   recording(){return !!(this.rec&&this.rec.state==='recording')},
-  // stop recording and return what was said, as plain text
-  async stop(progress){
-    if(!this.rec)return '';
+  // stop and return the recording
+  async stop(){
+    if(!this.rec)return null;
     const rec=this.rec; this.rec=null;
     await new Promise(r=>{rec.onstop=r;try{rec.stop()}catch(e){r()}});
     try{this.stream.getTracks().forEach(t=>t.stop())}catch(e){}
-    const blob=new Blob(this.parts,{type:rec.mimeType||'audio/mp4'}); this.lastBlob=blob;
-    const ac=new (window.AudioContext||window.webkitAudioContext)();
-    const buf=await ac.decodeAudioData(await blob.arrayBuffer()); try{ac.close()}catch(e){}
-    const off=new OfflineAudioContext(1,Math.max(1,Math.ceil(buf.duration*16000)),16000);
-    const src=off.createBufferSource(); src.buffer=buf; src.connect(off.destination); src.start();
-    const audio=(await off.startRendering()).getChannelData(0);
-    onProg=progress?(p=>{if(p.total)progress(Math.round(p.loaded/p.total*100))}):null;
-    const res=await ask({type:'run',audio,model:modelId()},[audio.buffer]);
-    return res.text||'';
+    return new Blob(this.parts,{type:rec.mimeType||'audio/mp4'});
   },
   async cancel(){if(this.rec){try{this.rec.stop()}catch(e){}this.rec=null}try{this.stream&&this.stream.getTracks().forEach(t=>t.stop())}catch(e){}}
 };
-const arN=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
-/* One precise session, wired to a page's voice state through h = {VS, msg, update, stop, btn}:
-   start() records (and starts the model download in the background the first time); finish() transcribes,
-   hands the text to the page's normal matching, and ends the session with its usual summary. */
-function precise(h){
+const RATES=[1,1.25,1.5,.75];
+/* One session wired to a page's voice state through h = {VS, msg, update, stop, btn, words}.
+   VS.self is 'rec' while recording and 'check' while listening back; VS.forced holds the word states then
+   (1 = right, 2 = the reader marked a slip), and the page's own matching is skipped. */
+function selfRec(h){
+  const host=()=>h.btn.closest('.stepbar,.voicebar');
+  function mark(e){
+    if(h.VS.self!=='check')return; const w=e.target.closest('.w'); if(!w)return;
+    const i=h.words().indexOf(w); if(i<h.VS.start||i<0)return;
+    e.preventDefault(); e.stopPropagation();
+    h.VS.forced[i]=h.VS.forced[i]===2?1:2; h.update();
+    const n=h.VS.forced.filter(x=>x===2).length;
+    h.msg(n?`علّمت ${n===1?'كلمة وحدة':n===2?'كلمتين':arN(n)+' '+(n<=10?'كلمات':'كلمة')}. لما تخلص اضغط «✓ خلصت التصحيح».`:'اسمع تسجيلك والنص قدامك، واضغط على أي كلمة غلطت فيها.');
+  }
+  document.addEventListener('click',mark,true);
   return {
     async start(){
       if(!navigator.mediaDevices||!window.MediaRecorder){h.msg('المتصفح هذا ما بيدعم التسجيل.');return}
+      reset(h.VS);
       try{await W.start()}catch(e){h.msg('ما قدرت أشغّل المايك. اسمح للمتصفح يستعمله.');return}
-      h.VS.on=true; h.VS.prev=[...h.VS.finals]; h.btn.textContent='⏹ خلصت، صحّح'; h.btn.classList.add('live');
-      h.msg(W.ready()?'سمّع من حفظك، ولما تخلص اضغط «خلصت».':'سمّع من حفظك. وبنفس الوقت بنزّل نموذج التعرّف لأول مرة…');
-      if(!W.ready())W.prepare(p=>{if(W.recording())h.msg('سمّع من حفظك · تنزيل النموذج '+arN(p)+'٪')}).catch(()=>{});
+      h.VS.self='rec'; h.btn.textContent='⏹ خلصت، خليني أسمع'; h.btn.classList.add('live');
+      h.msg('سمّع من حفظك وأنا بسجّل. لما تخلص اضغط الزر.'); h.update();
     },
-    async finish(){
-      h.btn.disabled=true; h.btn.textContent='⏳ بحلّل…'; h.msg('بحلّل تسميعك على جهازك…');
-      try{
-        const text=await W.stop(p=>h.msg('بنزّل نموذج التعرّف '+arN(p)+'٪ (مرة وحدة بس)'));
-        h.VS.finals=[...h.VS.prev,text].filter(Boolean); h.VS.interim=''; h.update();
-        h.btn.disabled=false; h.stop(false);
-        // the reader can listen back to their own recitation, next to the marked text
-        const host=h.btn.closest('.stepbar,.voicebar'); if(host&&W.lastBlob){host.querySelectorAll('.ui-myrec').forEach(x=>x.remove());
-          const d=document.createElement('div');d.className='ui-myrec';const au=document.createElement('audio');au.controls=true;au.src=URL.createObjectURL(W.lastBlob);
-          const l=document.createElement('small');l.textContent='اسمع تسميعك:';d.append(l,au);host.append(d)}
-        if(!text)h.msg('ما التقطت كلام. قرّب الجوال وجرّب مرة ثانية.');
-      }catch(e){
-        h.btn.disabled=false; h.VS.on=true; h.stop(true);
-        const m=e.message||''; h.msg(/memory|alloc|abort|wasm|out of/i.test(m)?'ذاكرة الجهاز ما كفّت النموذج. اختار «عادي» أو «بيفحص الحركات» من الإعدادات ('+m+').':'ما زبط التحليل الدقيق على هالجهاز ('+m+'). جرّب «تعرّف المتصفح» من الإعدادات.');
+    async listen(){
+      const blob=await W.stop(); h.btn.classList.remove('live');
+      if(!blob||!blob.size){h.VS.self=null;h.btn.textContent='🎤 سجّل';h.msg('ما انسجّل شي. جرّب مرة ثانية.');return}
+      const n=h.words().length; h.VS.forced=Array.from({length:n},(_,i)=>i<h.VS.start?4:1); h.VS.self='check';
+      h.btn.textContent='✓ خلصت التصحيح'; h.update();
+      const box=host(); if(box){
+        box.querySelectorAll('.ui-myrec').forEach(x=>x.remove());
+        const d=document.createElement('div'); d.className='ui-myrec';
+        const au=document.createElement('audio'); au.controls=true; au.src=URL.createObjectURL(blob); au.setAttribute('playsinline','');
+        const sp=document.createElement('button'); sp.className='btn'; sp.type='button'; let ri=0; sp.textContent='×١';
+        sp.onclick=()=>{ri=(ri+1)%RATES.length; au.playbackRate=RATES[ri]; sp.textContent='×'+arN(RATES[ri]).replace('.','٫')};
+        d.append(au,sp); box.append(d); au.play().catch(()=>{});
       }
-    }
+      h.msg('اسمع تسجيلك والنص قدامك، واضغط على أي كلمة غلطت فيها.');
+    },
+    // hand the marks to the page's normal summary, which saves the slips like any recitation
+    done(){h.VS.self=null; h.VS.on=true; h.btn.textContent='🎤 سجّل'; h.stop(false)},
+    click(){const s=h.VS.self; s==='rec'?this.listen():s==='check'?this.done():this.start()}
   };
 }
-window.VOICE={norm,fold,score,align,harakat,harakNote,best,LANGS,engine,W,MODELS,IOS,precise};
+function reset(VS){VS.self=null;VS.forced=null;document.querySelectorAll('.ui-myrec').forEach(x=>x.remove());if(W.recording())W.cancel()}
+// the small switch next to the mic button: live recognition ⇄ record and listen
+function modeSwitch(btn,after){
+  const b=document.createElement('button'); b.type='button'; b.className='btn ui-vmode';
+  const paint=()=>{const s=engine()==='self'; b.textContent=s?'🎧 سجّل واسمع':'🗣 تعرّف تلقائي'; b.title='غيّر طريقة التسميع'; if(!btn.classList.contains('live'))btn.textContent=s?'🎤 سجّل':'🎤 ابدأ'};
+  b.onclick=()=>{if(btn.classList.contains('live'))return; setEngine(engine()==='self'?'web':'self'); after&&after(); paint();
+    window.UI&&window.UI.toast&&window.UI.toast(engine()==='self'?'سجّل واسمع: بتسمّع، وبعدين بتسمع حالك والنص قدامك وبتعلّم غلطاتك':'تعرّف تلقائي: بيسمعك وبيعلّم الكلمات وإنت بتقرأ')};
+  // the same choice made in settings
+  addEventListener('ui-asr',()=>{if(btn.classList.contains('live'))return; after&&after(); paint()});
+  btn.after(b); paint(); return {paint};
+}
+const arN=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
+window.VOICE={norm,fold,score,align,harakat,harakNote,best,LANGS,engine,setEngine,W,IOS,selfRec,reset,modeSwitch};
 })();
