@@ -30,6 +30,14 @@
 .tasks li::before{content:"○ ";color:var(--gold)}
 .tasks li.done{color:var(--muted);font-weight:400}
 .tasks li.done::before{content:"✓ ";color:var(--accent)}
+.tasks li.over{opacity:.62}
+.tasks li small.tm{color:var(--gold)}
+.dayplan{margin:8px 0 4px;display:flex;flex-direction:column;gap:6px}
+.dayplan>small{color:var(--muted);font-size:12px}
+.dayopts{display:flex;flex-wrap:wrap;gap:6px}
+.dayopts .chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer}
+.dayopts .chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.dayplan .note{font-size:13px;color:var(--gold);line-height:1.7}
 .tasks em{font-style:normal;font-size:11px;font-weight:700;padding:1px 8px;border-radius:99px;margin-inline-end:6px;vertical-align:2px}
 .k-new{background:var(--accent-soft);color:var(--accent)}.k-recent{background:var(--gold-soft);color:var(--gold)}.k-old{background:var(--veil);color:var(--ink)}.k-test{background:var(--bad-bg);color:var(--bad)}
 .tasks small{display:block;padding-inline-start:18px;color:var(--muted);font-size:12px;font-weight:400}

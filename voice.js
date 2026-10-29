@@ -156,13 +156,32 @@ function selfRec(h){
         const sp=document.createElement('button'); sp.className='btn'; sp.type='button'; let ri=0; sp.textContent='×١';
         sp.onclick=()=>{ri=(ri+1)%RATES.length; au.playbackRate=RATES[ri]; sp.textContent='×'+arN(RATES[ri]).replace('.','٫')};
         d.append(au,sp); box.append(d); au.play().catch(()=>{});
+        // kept in «تسجيلاتي», and can go straight to a teacher
+        const U=window.UI, B=window.BOOK; if(U&&U.recSave&&B){
+          const poem=B.poems&&B.poems.length>1&&B.poems.find(p=>p.id===document.body.dataset.poem);
+          const rec={id:Date.now(),book:B.key,title:B.title+(poem?' · '+poem.title:''),label:label(h.words().slice(h.VS.start)),at:new Date().toISOString(),type:blob.type,blob,slips:0};
+          h.VS.recId=rec.id; U.recSave(rec);
+          const acts=document.createElement('div'); acts.className='ui-myrec-acts';
+          const sh=document.createElement('button'); sh.type='button'; sh.className='btn'; sh.textContent='📤 ابعثه للشيخ'; sh.onclick=()=>U.recShare(rec);
+          const all=document.createElement('button'); all.type='button'; all.className='btn'; all.textContent='🗂 تسجيلاتي'; all.onclick=()=>U.openRecordings(B.key);
+          acts.append(sh,all); d.append(acts);
+        }
       }
       h.msg('اسمع تسجيلك والنص قدامك، واضغط على أي كلمة غلطت فيها.');
     },
     // hand the marks to the page's normal summary, which saves the slips like any recitation
-    done(){h.VS.self=null; h.VS.on=true; h.btn.textContent='🎤 سجّل'; h.stop(false)},
+    done(){const n=(h.VS.forced||[]).filter(x=>x===2).length; if(h.VS.recId&&window.UI&&window.UI.recPatch)window.UI.recPatch(h.VS.recId,{slips:n});
+      h.VS.self=null; h.VS.on=true; h.btn.textContent='🎤 سجّل'; h.stop(false)},
     click(){const s=h.VS.self; s==='rec'?this.listen():s==='check'?this.done():this.start()}
   };
+}
+// what a recording covers, read from the words on the page: «الأبيات ٣–٨» or the first and last passage labels
+function label(ws){
+  if(!ws.length)return '';
+  const a=ws[0].closest('.v[data-i],.unit[data-id]'), b=ws[ws.length-1].closest('.v[data-i],.unit[data-id]'); if(!a||!b)return '';
+  if(a.classList.contains('v')){const x=+a.dataset.i,y=+b.dataset.i; return x===y?'البيت '+arN(x):'الأبيات '+arN(x)+'–'+arN(y)}
+  const t=u=>{const s=u.querySelector('.uhead span');return s?s.textContent:''};
+  return a===b?t(a):t(a)+' ← '+t(b);
 }
 function reset(VS){VS.self=null;VS.forced=null;document.querySelectorAll('.ui-myrec').forEach(x=>x.remove());if(W.recording())W.cancel()}
 // the small switch next to the mic button: live recognition ⇄ record and listen

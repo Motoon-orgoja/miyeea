@@ -132,24 +132,78 @@ function openNotes(c){
   d.n.forEach(n=>b.append(noteCard(n,()=>editNote(c,k,n))));
   const h=document.createElement('div'); h.className='ui-hint'; h.textContent='اضغط على ملاحظة لتعدّلها أو تحذفها.'; b.append(h);
 }
-// every note in every text, newest first, each linking to its place
+// where a mark lives: the link that opens it, and a short «البيت ٣» / passage label
+const books=()=>UI().BOOKS||[];
+function placeOf(bk,k){
+  const b=books().find(x=>x.key===bk), m=k.match(/^u:(.+)$/)||k.match(/^v:([^:]*):(\d+)$/); if(!m)return {href:'',where:b?b.t:bk};
+  const href=b?b.url+(k[0]==='u'?'#u='+encodeURIComponent(m[1]):'#v='+m[2]+(m[1]&&m[1]!==b.key?'&p='+encodeURIComponent(m[1]):'')):'';
+  let where=b?b.t:bk; if(k[0]==='v')where+=' · البيت '+arN(m[2]); else if(bk===B.key){const u=unit(m[1]); if(u)where+=' · '+u.label}
+  return {href,where};
+}
+function go(bk,href){if(!href)return; UI().closeSheet(); if(bk===B.key){const h='#'+href.split('#')[1]; location.hash===h?dispatchEvent(new HashChangeEvent('hashchange')):location.hash=h}else location.href=href}
+const unit=id=>{for(const c of B.chapters||[])for(const u of c.units)if(u.id===id)return u; return null};
+// the words of a passage or verse of this page's text, in the same addressing as the marks
+function wordsOf(k){
+  let m=k.match(/^u:(.+)$/); if(m){const u=unit(m[1]); if(!u)return []; const out=[]; u.segs.forEach(([,t],si)=>t.split(' ').forEach((w,wi)=>out.push([si+'.'+wi,w]))); return out}
+  m=k.match(/^v:([^:]*):(\d+)$/); if(!m||!B.poems)return [];
+  const p=B.poems.find(x=>x.id===m[1])||B.poems[0], v=p.verses[+m[2]-1]; if(!v)return [];
+  return v[0].split(' ').concat(v[1].split(' ')).map((w,i)=>[String(i),w]);
+}
+// coloured words of this text, joined into runs of the same colour, in reading order
+function runs(){
+  const out=[];
+  Object.entries(book()).forEach(([k,d])=>{const h=d.h||{}; if(!Object.keys(h).length)return; let cur=null;
+    wordsOf(k).forEach(([a,w])=>{const c=h[a]; if(c&&cur&&cur.c===c)cur.t+=' '+w; else{cur=c?{k,c,t:w}:null; if(cur)out.push(cur)}})});
+  return out;
+}
+const CN=Object.fromEntries(COLORS);
+// every note in every text, newest first, and the coloured words of this text, each linking to its place
 function openAll(){
-  const b=UI().sheet('ملاحظاتي'), books=UI().BOOKS||[], all=[];
+  const b=UI().sheet('ملاحظاتي'), all=[];
   Object.entries(A).forEach(([bk,cs])=>Object.entries(cs).forEach(([k,d])=>(d.n||[]).forEach(n=>all.push({bk,k,n}))));
-  const hl=Object.values(A).reduce((s,cs)=>s+Object.values(cs).reduce((x,d)=>x+Object.keys(d.h||{}).length,0),0);
+  const hl=Object.values(A).reduce((s,cs)=>s+Object.values(cs).reduce((x,d)=>x+Object.keys(d.h||{}).length,0),0), R=runs();
   const s=document.createElement('div'); s.className='ui-hint';
-  s.textContent=all.length?`${arN(all.length)} ${all.length===1?'ملاحظة':'ملاحظات'} و${arN(hl)} كلمة ملوّنة بكل المتون.`:'لسا ما في ملاحظات. فعّل «🖍» واختار كلمة واضغط «📝 ملاحظة».';
+  s.textContent=all.length||hl?`${arN(all.length)} ${all.length===1?'ملاحظة':'ملاحظات'} و${arN(hl)} كلمة ملوّنة بكل المتون.`:'لسا ما في ملاحظات. فعّل «🖍» واختار كلمة واضغط «📝 ملاحظة».';
+  const tabs=document.createElement('div'); tabs.className='ann-row ann-tabs'; let tab='n';
+  const tn=document.createElement('button'), th=document.createElement('button'), pr=document.createElement('button');
+  [tn,th,pr].forEach(x=>{x.type='button';x.className='btn'}); tn.textContent='📝 الملاحظات'; th.textContent='🖍 الملوّن بهالمتن ('+arN(R.length)+')'; pr.textContent='🖨 اطبع أو احفظ PDF';
+  tn.onclick=()=>{tab='n';render()}; th.onclick=()=>{tab='h';render()}; pr.onclick=printAll; tabs.append(tn,th,pr);
   const f=document.createElement('input'); f.type='search'; f.placeholder='دوّر بملاحظاتك…'; f.dir='auto'; f.className='ann-f';
-  const list=document.createElement('div'); b.append(s); if(all.length>4)b.append(f); b.append(list);
+  const list=document.createElement('div'); b.append(s,tabs); if(all.length>4)b.append(f); b.append(list);
   all.sort((x,y)=>String(y.n.at||'').localeCompare(String(x.n.at||''))||String(y.n.id).localeCompare(String(x.n.id)));
-  const render=()=>{list.replaceChildren(); const q=f.value.trim();
+  const render=()=>{list.replaceChildren(); const q=f.value.trim(); tn.classList.toggle('primary',tab==='n'); th.classList.toggle('primary',tab==='h'); f.hidden=tab!=='n';
+    if(tab==='h'){
+      if(!R.length){const e=document.createElement('div');e.className='ui-hint';e.textContent='ما في كلمات ملوّنة بهالمتن.';list.append(e);return}
+      R.forEach(r=>{const p=placeOf(B.key,r.k), d=document.createElement('div'); d.className='ann-note click ann-run';
+        const w=document.createElement('small'); w.className='ann-where'; w.textContent=p.where+' · '+CN[r.c];
+        const t=document.createElement('div'); t.className='ann-q'; t.dataset.noi18n=''; const sp=document.createElement('span'); sp.className='w hl-'+r.c; sp.textContent=r.t; t.append(sp);
+        d.append(w,t); d.onclick=()=>go(B.key,p.href); list.append(d)});
+      return}
     all.filter(o=>!q||(o.n.t+' '+o.n.q).includes(q)).forEach(o=>{
-      const bk=books.find(x=>x.key===o.bk), m=o.k.match(/^u:(.+)$/)||o.k.match(/^v:([^:]*):(\d+)$/);
-      const href=bk?bk.url+(o.k[0]==='u'?'#u='+encodeURIComponent(m[1]):'#v='+m[2]+(m[1]&&m[1]!==bk.key?'&p='+encodeURIComponent(m[1]):'')):'';
-      const card=noteCard(o.n,href?()=>{UI().closeSheet(); if(o.bk===B.key){const h='#'+href.split('#')[1]; location.hash===h?dispatchEvent(new HashChangeEvent('hashchange')):location.hash=h}else location.href=href}:null);
-      const where=document.createElement('small'); where.className='ann-where'; where.textContent=(bk?bk.t:o.bk)+(o.k[0]==='v'?' · البيت '+arN(m[2]):''); card.prepend(where);
+      const p=placeOf(o.bk,o.k), card=noteCard(o.n,p.href?()=>go(o.bk,p.href):null);
+      const where=document.createElement('small'); where.className='ann-where'; where.textContent=p.where; card.prepend(where);
       list.append(card)})};
   f.oninput=render; render();
+}
+// a plain page with every note (and this text's coloured words), opened for printing or saving as PDF
+function printAll(){
+  const e=s=>esc(s), parts=[];
+  Object.entries(A).forEach(([bk,cs])=>{const bt=(books().find(x=>x.key===bk)||{}).t||bk, ns=[];
+    Object.entries(cs).forEach(([k,d])=>(d.n||[]).forEach(n=>ns.push({k,n})));
+    const rs=bk===B.key?runs():[]; if(!ns.length&&!rs.length)return;
+    parts.push(`<h2>${e(bt)}</h2>`);
+    if(rs.length)parts.push('<h3>الكلمات الملوّنة</h3><ul>'+rs.map(r=>`<li><mark class="${r.c}">${e(r.t)}</mark> <small>${e(placeOf(bk,r.k).where)}</small></li>`).join('')+'</ul>');
+    if(ns.length)parts.push('<h3>الملاحظات</h3>'+ns.map(({k,n})=>`<div class="n"><small>${e(placeOf(bk,k).where)} · ${e(n.at||'')}</small><div class="q">«${e(n.q)}»</div>`+(n.t?`<p>${e(n.t).replace(/\n/g,'<br>')}</p>`:'')+(n.d?svgOf(n.d,n.H||170):'')+'</div>').join(''));
+  });
+  if(!parts.length){UI().toast('ما في ملاحظات للطباعة');return}
+  const html=`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ملاحظاتي · حفظ المتون</title>
+<link rel="stylesheet" href="${new URL('fonts.css',document.baseURI)}"><style>body{font-family:'Noto Kufi Arabic',sans-serif;color:#222;max-width:720px;margin:24px auto;padding:0 18px;line-height:1.8}
+h1{font-family:Amiri,serif;color:#0E6B4F}h2{font-family:Amiri,serif;color:#0E6B4F;border-bottom:2px solid #A8812F;margin-top:28px}h3{font-size:15px;color:#A8812F}
+.q{font-family:Amiri,serif;font-size:20px}.n{border:1px solid #ddd;border-radius:10px;padding:8px 12px;margin:8px 0;break-inside:avoid}small{color:#777;font-size:12px}
+mark{font-family:Amiri,serif;font-size:19px;background:linear-gradient(transparent 55%,var(--c) 55%)}mark.y{--c:#ffd84d}mark.g{--c:#8fdca2}mark.b{--c:#9cc6ff}mark.p{--c:#d2b3f7}
+svg{width:100%;max-width:360px;display:block;fill:none;stroke:#222;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}</style></head>
+<body><h1>ملاحظاتي</h1>${parts.join('')}<script>addEventListener('load',()=>setTimeout(()=>print(),400))<\/script></body></html>`;
+  const w=open('','_blank'); if(!w){UI().toast('المتصفح منع فتح الصفحة، اسمح بالنوافذ المنبثقة');return} w.document.write(html); w.document.close();
 }
 
 /* ---------- the floating 🖍 button (the app bar is already full on a phone) ---------- */

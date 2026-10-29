@@ -27,12 +27,12 @@ function poemBook(b){
   if(c){const {p,s}=c, N=p.verses.length, per=s.per||2, win=Math.max(per,s.win||10), goal=s.goal||20;
     let end=s.end; if(s.day!==T&&s.done&&end<N)end=Math.min(N,end+per);
     const grow=s.grow&&s.grow.d===T&&s.day===T?s.grow.n:0, from=Math.max(s.old===false?s.start:1,end-win-grow+1), done=s.day===T&&s.done, reps=s.day===T?s.reps:0;
-    r.tasks.push({k:'new',t:`ورد اليوم: الأبيات ${ar(from)}–${ar(end)}`+(multi?` من «${p.title}»`:''),sub:done?'تمّ ✓':`${ar(reps)} من ${ar(goal)} تكرار`,done});
+    r.tasks.push({k:'new',t:`ورد اليوم: الأبيات ${ar(from)}–${ar(end)}`+(multi?` من «${p.title}»`:''),sub:done?'تمّ ✓':`${ar(reps)} من ${ar(goal)} تكرار`,done,min:(end-from+1)*Math.max(0,goal-reps)*.1});
     const wd=s.wday??5;
-    if(wd===new Date().getDay()&&s.mem>0){const ok=(s.tasmee||[]).some(x=>x.d===T);r.tasks.push({k:'test',t:'التسميع الأسبوعي',sub:ok?'سجّلته ✓':'اليوم موعده',done:ok})}
+    if(wd===new Date().getDay()&&s.mem>0){const ok=(s.tasmee||[]).some(x=>x.d===T);r.tasks.push({k:'test',t:'التسميع الأسبوعي',sub:ok?'سجّلته ✓':'اليوم موعده',done:ok,min:Math.min(30,s.mem*.15)})}
   }
   const due=all.reduce((n,{s})=>n+(s.oldB||[]).filter(x=>x.due<=T).length,0);
-  if(due)r.tasks.push({k:'old',t:'مراجعة المحفوظ القديم',sub:due===1?'مقطع واحد':`${ar(due)} مقاطع`,done:false});
+  if(due)r.tasks.push({k:'old',t:'مراجعة المحفوظ القديم',sub:due===1?'مقطع واحد':`${ar(due)} مقاطع`,done:false,min:all.reduce((n,{s})=>n+(s.oldB||[]).filter(x=>x.due<=T).reduce((m,x)=>m+(x.b-x.a+1)*.15,0),0)});
   else if(all.some(({s})=>s.olog&&s.olog[T]))r.tasks.push({k:'old',t:'مراجعة المحفوظ القديم',sub:'خلصتها ✓',done:true});
   return r;
 }
@@ -50,12 +50,12 @@ function proseBook(b){
   Object.entries(s.log||{}).forEach(([d,x])=>{if(x.n||x.r)r.days.add(d)});
   const cur=b.chapters.find(c=>c.id===s.cur)||b.chapters[0];
   const due=b.chapters.filter(c=>blocks[c.id]&&(blocks[c.id].due<=T||ahead[c.id]===T));
-  if(due.length)r.tasks.push({k:'old',t:due.length===1?`مراجعة «${due[0].title}» كامل`:`مراجعة ${ar(due.length)} أبواب`,sub:due.length>1?due.slice(0,3).map(c=>c.title).join('، ')+(due.length>3?'…':''):'',done:false});
+  if(due.length)r.tasks.push({k:'old',t:due.length===1?`مراجعة «${due[0].title}» كامل`:`مراجعة ${ar(due.length)} أبواب`,sub:due.length>1?due.slice(0,3).map(c=>c.title).join('، ')+(due.length>3?'…':''):'',done:false,min:due.reduce((n,c)=>n+trackUnits(b,s,c).length,0)});
   const cu=trackUnits(b,s,cur), learned=cu.filter(u=>cards[u.id]).length, left=cu.length-learned;
   const used=s.newDay===T?s.newCount:0, extra=s.extra&&s.extra.d===T?s.extra.n:0, fresh=Math.min(left,Math.max(0,(s.per||1)+extra-used));
-  if(fresh)r.tasks.push({k:'new',t:`جديد: ${ar(fresh)} ${fresh===1?W:W==='فقرة'?'فقرات':'أحاديث'}`,sub:b.chapters.length>1?'من «'+cur.title+'»':'',done:false});
+  if(fresh)r.tasks.push({k:'new',t:`جديد: ${ar(fresh)} ${fresh===1?W:W==='فقرة'?'فقرات':'أحاديث'}`,sub:b.chapters.length>1?'من «'+cur.title+'»':'',done:false,min:fresh*5});
   else if(used&&left>=0)r.tasks.push({k:'new',t:'الجديد',sub:'حفظته ✓',done:true});
-  if(left&&learned>=2){const ok=link[cur.id]===T;r.tasks.push({k:'recent',t:'الربط',sub:ok?'سمّعته ✓':`سمّع ${ar(learned)} ${W==='فقرة'?'فقرة':'وحدة'} متصلة`,done:ok})}
+  if(left&&learned>=2){const ok=link[cur.id]===T;r.tasks.push({k:'recent',t:'الربط',sub:ok?'سمّعته ✓':`سمّع ${ar(learned)} ${W==='فقرة'?'فقرة':'وحدة'} متصلة`,done:ok,min:learned*.75})}
   return r;
 }
 
@@ -63,6 +63,15 @@ const R=BOOKS.map(b=>b.poems?poemBook(b):proseBook(b));
 const started=R.filter(r=>r.started), rest=R.filter(r=>!r.started);
 // the daily ward shows only the texts the reader is working on now; paused ones wait below
 const paused=k=>window.UI&&UI.isPaused(k), active=started.filter(r=>!paused(r.b.key)), held=started.filter(r=>paused(r.b.key));
+
+/* one plan for the day across every text: each open task has a rough time; within the reader's daily minutes the
+   reviews come first (old, then recent and the weekly recitation), new memorisation last — so when time is short,
+   what is already memorised is kept and only the new waits. Tasks past the budget show «إذا ضل وقت». */
+const BUDGET=(window.UI&&UI.prefs().dayMin)||0, ORDER_K={old:0,recent:1,test:2,new:3};
+const mins=m=>ar(Math.max(1,Math.round(m)));
+const pending=active.flatMap(r=>r.tasks.filter(x=>!x.done).map(x=>({r,x}))).sort((a,b)=>ORDER_K[a.x.k]-ORDER_K[b.x.k]);
+const totalMin=pending.reduce((n,{x})=>n+(x.min||0),0);
+if(BUDGET){let used=0; pending.forEach(({x})=>{used+=x.min||0; x.over=used>BUDGET+2})}
 
 /* today */
 $('dayLbl').textContent=dayName(T);
@@ -76,15 +85,25 @@ active.forEach(r=>{
   if(!r.tasks.length)ul.append(el('li','done','ما في شي اليوم بهالكتاب'));
   // each task wears its kind, as huffaz split the day: new (sabaq), recent (sabqi), old (manzil)
 const KIND={new:'جديد',recent:'قريب',old:'قديم',test:'تسميع'};
-  r.tasks.forEach(x=>{const li=el('li',x.done?'done':'');if(x.k)li.append(el('em','k-'+x.k,KIND[x.k]));li.append(el('span','',x.t));if(x.sub)li.append(el('small','',x.sub));ul.append(li)});
+  r.tasks.forEach(x=>{const li=el('li',x.done?'done':x.over?'over':'');if(x.k)li.append(el('em','k-'+x.k,KIND[x.k]));li.append(el('span','',x.t));if(x.sub)li.append(el('small','',x.sub));
+    if(!x.done&&x.min)li.append(el('small','tm',(x.over?'إذا ضل وقت · ':'')+'⏱ '+mins(x.min)+' د'));ul.append(li)});
   c.append(ul);
   const go=el('a','btn'+(pend?' primary':''),pend?'افتح وكمّل':'افتحه'); go.href=PAGE[r.b.key]; c.append(go);
   list.append(c);
 });
-$('todaySum').textContent=!started.length?'لسا ما بلّشت بأي متن. اختر متن من تحت وابدأ فيه.':!active.length?'كل متونك موقوفة. فعّل اللي بدك تحفظه من تحت.':open?`باقي عليك ${ar(open)} ${open===1?'مهمة':'مهام'} اليوم.`:'ما شاء الله، خلصت ورد اليوم بكل المتون 🤍';
+$('todaySum').textContent=!started.length?'لسا ما بلّشت بأي متن. اختر متن من تحت وابدأ فيه.':!active.length?'كل متونك موقوفة. فعّل اللي بدك تحفظه من تحت.':open?`باقي عليك ${ar(open)} ${open===1?'مهمة':'مهام'} اليوم، تقريبًا ${mins(totalMin)} دقيقة.`:'ما شاء الله، خلصت ورد اليوم بكل المتون 🤍';
+// the daily time: a row of choices under the summary, and a word when today asks for more than that
+if(active.length){
+  const box=el('div','dayplan'), row=el('div','dayopts'); box.append(el('small','','وقتي اليومي للحفظ:'),row);
+  [[0,'مفتوح'],[15,'١٥ د'],[30,'٣٠ د'],[45,'٤٥ د'],[60,'ساعة'],[90,'ساعة ونص']].forEach(([v,t])=>{const b=el('button','chip'+(BUDGET===v?' on':''),t);b.type='button';
+    b.onclick=()=>{UI.setPref('dayMin',v);location.reload()};row.append(b)});
+  if(BUDGET&&totalMin>BUDGET+2){const late=pending.filter(({x})=>x.over&&x.k==='new').map(({r})=>r.b.title);
+    box.append(el('div','note',`ورد اليوم أطول من وقتك (${mins(totalMin)} من ${ar(BUDGET)} دقيقة). ابدأ بالمراجعة، لأنه الحفاظ على المحفوظ أولى`+(late.length?`، وأجّل الجديد بـ«${[...new Set(late)].join('» و«')}» إذا ما ضل وقت.`:'.')))}
+  $('todaySum').after(box);
+}
 
 /* the next step: the first unfinished task, one tap away */
-const nextUp=active.map(r=>({r,t:r.tasks.find(x=>!x.done)})).find(x=>x.t);
+const nextUp=pending.length?{r:pending[0].r,t:pending[0].x}:null;
 if(nextUp){const h=$('hero');h.hidden=false;h.href=PAGE[nextUp.r.b.key];
   h.append(el('small','','الخطوة الجاية'),el('b','',nextUp.t.t),el('span','',nextUp.r.b.title+(nextUp.t.sub?' · '+nextUp.t.sub:'')),el('i','','ابدأ ←'))}
 

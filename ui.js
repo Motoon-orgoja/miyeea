@@ -150,6 +150,8 @@ function openSettings(){
   const curEng=()=>(ls('ui_asrEngine')||'web')==='web'?'web':'self';
   b.append(field('طريقة التسميع بالصوت',seg('طريقة التسميع',[['web','تعرّف تلقائي'],['self','سجّل واسمع']],curEng(),v=>{ls('ui_asrEngine',v==='web'?null:v);dispatchEvent(new Event('ui-asr'))}),
     '«تعرّف تلقائي» بيسمعك وبيعلّم الكلمات وإنت بتقرأ (بيحتاج نت). «سجّل واسمع» بيسجّل تسميعك، وبعدين بتسمع حالك والنص قدامك وبتضغط على الكلمات اللي غلطت فيها، فبتنحفظ متل أغلاط التسميع. بيشتغل بدون نت وعلى أي جوال. بتقدر تبدّل كمان من الزر جنب المايك.'));
+  const recB=el('button','btn','🗂 افتح تسجيلاتي'); recB.type='button'; recB.onclick=()=>openRecordings(window.BOOK&&window.BOOK.key);
+  b.append(field('تسجيلاتي',recB,'كل تسميع بـ«سجّل واسمع» بينحفظ على جهازك، فبتقدر ترجع تسمعه وتقارن حالك مع الوقت، أو تبعثه لشيخك.'));
   const wk=el('label','ui-check'); const cb=el('input'); cb.type='checkbox'; cb.checked=P.wake; cb.onchange=()=>{P.wake=cb.checked;save();P.wake?wake():sleep()};
   wk.append(cb,document.createTextNode(' خلّي الشاشة شغّالة وأنا بحفظ'));
   b.append(el('h3','ui-sec','الجهاز والبيانات'));
@@ -541,6 +543,42 @@ function fadeBar(onChange){
   paint(); addEventListener('prefs',h); w.append(minus,lbl,plus); return w;
 }
 
+/* ---------- «تسجيلاتي»: every «سجّل واسمع» recitation, kept on the device (IndexedDB mutoon_rec) ----------
+   {id, book, title, label, at, type, blob, slips}. The newest RMAX are kept; each can be played, shared (to a teacher
+   on WhatsApp, say) or deleted. Recordings stay on this device: they are not in the backup code or the sync. */
+const RMAX=100;
+function rdb(){return new Promise((ok,no)=>{if(!window.indexedDB)return no(new Error('no indexedDB'));const q=indexedDB.open('mutoon_rec',1);
+  q.onupgradeneeded=()=>q.result.createObjectStore('recs',{keyPath:'id'});q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)})}
+async function rtx(mode,fn){const db=await rdb();return new Promise((ok,no)=>{const t=db.transaction('recs',mode),s=t.objectStore('recs');let out;const r=fn(s);if(r)r.onsuccess=()=>out=r.result;t.oncomplete=()=>{db.close();ok(out)};t.onerror=t.onabort=()=>{db.close();no(t.error)}})}
+const recAll=()=>rtx('readonly',s=>s.getAll()).then(a=>(a||[]).sort((x,y)=>y.id-x.id)).catch(()=>[]);
+async function recSave(r){
+  try{await rtx('readwrite',s=>s.put(r)); const all=await recAll(); for(const x of all.slice(RMAX))await rtx('readwrite',s=>s.delete(x.id)); return true}catch(e){return false}}
+const recPatch=async(id,p)=>{try{const all=await recAll(),r=all.find(x=>x.id===id);if(r)await rtx('readwrite',s=>s.put(Object.assign(r,p)))}catch(e){}};
+const recWhen=r=>{try{return new Intl.DateTimeFormat('ar-JO-u-nu-arab',{weekday:'long',day:'numeric',month:'long',hour:'numeric',minute:'2-digit'}).format(new Date(r.at))}catch(e){return r.at}};
+async function recShare(r){
+  const ext=/mp4|aac|m4a/.test(r.type||r.blob.type)?'m4a':/ogg/.test(r.type||'')?'ogg':'webm';
+  const name=('تسميع - '+r.title+' - '+r.label).replace(/[\\/:*?"<>|]/g,'')+'.'+ext;
+  const file=new File([r.blob],name,{type:r.blob.type||'audio/mp4'}), text='تسميعي من «'+r.title+'» · '+r.label;
+  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],text});return}}catch(e){if(e.name==='AbortError')return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(r.blob);a.download=name;document.body.append(a);a.click();a.remove();toast('انحفظ التسجيل كملف')}
+function recRow(r,onDel){
+  const d=el('div','ui-rec'); const h=el('div','ui-rec-h');
+  const t=el('b','',r.label); t.dataset.noi18n=''; h.append(t,el('small','',r.title+' · '+recWhen(r)+(r.slips?' · '+(r.slips===1?'غلطة وحدة':r.slips===2?'غلطتين':ar(r.slips)+(r.slips<=10?' غلطات':' غلطة')):'')));
+  const au=el('audio'); au.controls=true; au.preload='none'; au.setAttribute('playsinline',''); au.src=URL.createObjectURL(r.blob);
+  const row=el('div','ui-row'), sh=el('button','btn','📤 ابعثه'), del=el('button','btn','🗑');
+  sh.type=del.type='button'; sh.onclick=()=>recShare(r); del.setAttribute('aria-label','احذف التسجيل');
+  del.onclick=async()=>{if(!confirm('تحذف هالتسجيل؟'))return;try{await rtx('readwrite',s=>s.delete(r.id))}catch(e){}d.remove();onDel&&onDel()};
+  row.append(sh,del); d.append(h,au,row); return d;
+}
+async function openRecordings(book){
+  const b=sheet('تسجيلاتي'); const all=await recAll(); let only=book&&all.some(r=>r.book===book)?book:'';
+  const hint=el('div','ui-hint'), list=el('div','ui-col'), sw=el('div');
+  const paint=()=>{const rs=all.filter(r=>!only||r.book===only); list.replaceChildren(...rs.map(r=>recRow(r,()=>{all.splice(all.indexOf(r),1);paint()})));
+    hint.textContent=all.length?`${ar(rs.length)} تسجيل${only?' بهالمتن':''}. بيضلّوا على جهازك بس، وآخر ${ar(RMAX)} تسجيل بينحفظوا. «📤 ابعثه» بيبعثه لشيخك أو لصاحبك على واتساب.`:'لسا ما في تسجيلات. اختار «🎧 سجّل واسمع» من التسميع بالصوت، وكل تسميع بينحفظ هون.'};
+  if(book&&all.some(r=>r.book!==book)){const s=seg('أي تسجيلات',[[book,'هالمتن'],['','كل المتون']],only,v=>{only=v;paint()});sw.append(s)}
+  b.append(hint,sw,list); paint();
+}
+
 /* ---------- a certificate for finishing a text («شهادة ختم») ----------
    c = {title, what: e.g. "١٠٠ بيت", key}. Drawn on a canvas in Arabic (it is the text's own language), with the reader's
    name if they give one (kept on this device only), the Hijri and Gregorian dates, then shared or saved as a picture. */
@@ -586,5 +624,5 @@ function certificate(c){
   draw();
 }
 
-window.UI={similar,quiz,play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,openSearch,report,certificate,BOOKS};
+window.UI={similar,quiz,play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,openSearch,report,certificate,recSave,recPatch,recShare,openRecordings,BOOKS};
 })();
