@@ -237,9 +237,10 @@ let ref=null, saveT=null, friMode='all', lastSig={};
 let allRange=store.get(MULTI?'allRange:'+CUR:'allRange',[1,N]); allRange=[Math.min(allRange[0],N),Math.min(allRange[1],N)];
 $('allFrom').value=allRange[0]; $('allTo').value=allRange[1];
 // the ward is the last WIN verses up to today's end; with old:false it never reaches back before the starting point
-// a verse added today with «بيت زيادة» widens today's ward instead of pushing its first verse out
+// the ward slides: a verse added at its end pushes its first verse out. S.grow {d, n} moves today's first verse by hand:
+// n>0 keeps n earlier verses in, n<0 drops n more from the start (today only)
 const grown=()=>S.grow&&S.grow.d===S.day?S.grow.n:0;
-const from=()=>Math.max(S.old===false?S.start:1,S.end-WIN()-grown()+1);
+const from=()=>Math.min(S.end,Math.max(S.old===false?S.start:1,S.end-WIN()-grown()+1));
 // consecutive finished days ending today (or yesterday, while today's ward is still open)
 function streak(){
   const days=new Set(S.log.map(x=>x.d)); let n=0; const d=new Date(today()+'T12:00:00Z');
@@ -353,16 +354,27 @@ function renderWardCtl(){
   const box=$('wardCtl'); box.replaceChildren();
   const b=(txt,fn,cls)=>{const x=document.createElement('button');x.type='button';x.className='btn'+(cls?' '+cls:'');x.textContent=txt;x.addEventListener('click',fn);box.append(x)};
   if(S.done&&S.undoDone&&S.undoDone.d===S.day)b('↩︎ ما حفظته، رجّع الورد',()=>act('رجّعت ورد اليوم',()=>{S.mem=S.undoDone.mem;S.done=false;S.log=S.log.filter(x=>x.d!==S.day);delete S.undoDone}),'gold');
-  if(S.end<N)b('➕ بيت زيادة اليوم',()=>act('زدت بيت على ورد اليوم',()=>{S.end=Math.min(N,S.end+1);S.done=false;S.grow={d:S.day,n:grown()+1}}));
-  if(S.end>1&&S.end>S.start-1)b('➖ بيت أقل',()=>act('نقّصت بيت من ورد اليوم',()=>{S.end=Math.max(1,S.end-1);S.mem=Math.min(S.mem,S.end);if(grown())S.grow.n--}));
+  // today's range: one row for its first verse, one for its last, then the other actions
+  const f=from(), lo=S.old===false?S.start:1, grow=n=>{S.grow={d:S.day,n:grown()+n}};
+  const mk=(host,txt,fn,cls)=>{const x=document.createElement('button');x.type='button';x.className='btn'+(cls?' '+cls:'');x.textContent=txt;x.addEventListener('click',fn);host.append(x)};
+  const row=(lbl,btns)=>{const w=document.createElement('div');w.className='wr';const l=document.createElement('span');l.className='wr-l';l.textContent=lbl;w.append(l);
+    btns.filter(Boolean).forEach(([t,fn])=>mk(w,t,fn));box.append(w)};
+  row('أول الورد: البيت '+ar(f),[
+    f>lo&&['➕ رجّع البيت '+ar(f-1),()=>act('رجّعت البيت '+ar(f-1)+' للورد',()=>grow(1))],
+    f<S.end&&['✕ شيل البيت '+ar(f),()=>act('شلت البيت '+ar(f)+' من الورد',()=>grow(-1))]]);
+  row('آخر الورد: البيت '+ar(S.end),[
+    S.end<N&&['➕ زيد البيت '+ar(S.end+1),()=>act('زدت البيت '+ar(S.end+1),()=>{S.end=Math.min(N,S.end+1);S.done=false})],
+    S.end>1&&S.end>S.start-1&&S.end>f&&['✕ شيل البيت '+ar(S.end),()=>act('شلت البيت '+ar(S.end),()=>{S.end=Math.max(1,S.end-1);S.mem=Math.min(S.mem,S.end)})]]);
+  const more=document.createElement('div');more.className='wr wr-more';box.append(more);
+  const mb=(txt,fn,cls)=>mk(more,txt,fn,cls);
   // listen-and-repeat over today's ward when the text has one recording per verse
   const m=UI.mediaFor(B.key); if(m&&m.verse){const it=[];for(let i=from();i<=S.end;i++){const u=m.verse(i);if(u)it.push({url:u,label:'البيت '+ar(i)})}
-    if(it.length)b('🎧 استمع للورد',()=>UI.playQueue(it,'ورد اليوم '+ar(from())+'–'+ar(S.end)),'primary')}
+    if(it.length)mb('🎧 استمع للورد',()=>UI.playQueue(it,'ورد اليوم '+ar(from())+'–'+ar(S.end)),'primary')}
   // or the recording of the section today's ward is in
   else if(m&&m.sec){const keys=Object.keys(SECS).map(Number).sort((x,y)=>x-y);let k=0;keys.forEach((v,i)=>{if(v<=from())k=i});
-    b('🎧 استمع للباب',()=>UI.play(m.sec(k),SECS[keys[k]]+' · '+m.secBy),'primary')}
-  if(S.reps>0)b('↺ صفّر العدّاد',()=>act('صفّرت العدّاد',()=>{S.reps=0}));
-  if(UNDO.length)b('↶ تراجع عن «'+UNDO[UNDO.length-1].label+'»',undo);
+    mb('🎧 استمع للباب',()=>UI.play(m.sec(k),SECS[keys[k]]+' · '+m.secBy),'primary')}
+  if(S.reps>0)mb('↺ صفّر العدّاد',()=>act('صفّرت العدّاد',()=>{S.reps=0}));
+  if(UNDO.length)mb('↶ تراجع',undo);
 }
 $('friFrom1').addEventListener('click',()=>{friMode='all';render()});
 // «اختبرني»: random spot checks over everything memorised: finish a verse, or say the verse after a given one

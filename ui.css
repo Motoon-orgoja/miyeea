@@ -108,7 +108,11 @@ html,body,button,a,.w,.v,input,select,label{touch-action:manipulation}
 .ui-toast{display:flex;align-items:center;gap:12px}
 .ui-toast.act{pointer-events:auto}
 .ui-toast-act{border:0;background:transparent;color:var(--gold-soft);font:700 calc(14px*var(--us)) var(--ui);padding:6px 4px;cursor:pointer;text-decoration:underline;text-underline-offset:4px;min-height:36px}
-.wardctl{display:flex;flex-wrap:wrap;gap:6px}
+.wardctl{display:flex;flex-direction:column;gap:6px}
+.wardctl .wr{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.wardctl .wr-l{flex:1 1 9em;font-size:calc(12.5px*var(--us));color:var(--muted);font-weight:600}
+.wardctl .wr:not(.wr-more){border-bottom:1px dashed var(--line);padding-bottom:6px}
+.wardctl .wr-more:empty{display:none}
 .wardctl .btn{min-height:38px;padding:7px 12px;font-size:calc(12.5px*var(--us))}
 /* texts list: the link fills the row, the switch pauses or resumes the text */
 .ui-book{flex-direction:row;align-items:center;gap:10px}
