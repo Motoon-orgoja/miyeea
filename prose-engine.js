@@ -57,7 +57,7 @@ const when=d=>{const n=dayDiff(d,today());return n<=0?'اليوم':n===1?'بكر
 const inDays=n=>n<=1?'بكرة':n===2?'بعد يومين':`بعد ${ar(n)} ${n<=10?'أيام':'يوم'}`;
 const LSK=BOOK.lsk;
 // extra: today's added allowance of new units; pick: units chosen to learn next; blockAhead/link: per chapter, the day a review was pulled forward / the linking was done
-let S={per:1,goal:10,cards:{},newDay:'',newCount:0,reps:{},log:{},mistW:{},extra:{d:'',n:0},pick:[],blocks:{},blockAhead:{},link:{},cur:''};
+let S={per:1,goal:BOOK.study==='qa'?3:10,read:{},cards:{},newDay:'',newCount:0,reps:{},log:{},mistW:{},extra:{d:'',n:0},pick:[],blocks:{},blockAhead:{},link:{},cur:''};
 function save(){try{localStorage.setItem(LSK,JSON.stringify(S))}catch(e){}}
 function load(){try{const v=localStorage.getItem(LSK);return v?JSON.parse(v):null}catch(e){return null}}
 // progress saved before chapters existed had a single block and plain-string dates for the first chapter
@@ -160,6 +160,10 @@ function applyOld(){
     (full.length?`انضاف ${full.length===1?"باب واحد":full.length===2?"بابين":ar(full.length)+(full.length<=10?" أبواب":" بابًا")} للمراجعة، أولها ${when(dues[0])}`+(last!==dues[0]?` وآخرها ${when(last)}.`:'.'):'')+(part.length?` وعلّمت المحفوظ من ${part.length===1?"باب":ar(part.length)+" أبواب"}، وبتكمل حفظه من وين وقفت.`:'')}));
 }
 const W=BOOK.unitWord||'حديث';
+/* a textbook studied by questions (BOOK.study 'qa'): each unit has a question q, recitals show the questions with their
+   answers folded (retrieval, not rereading), each chapter is read whole once before its points are learned (sharh entry
+   'read:<chapter id>'), and a «الخريطة» tab shows the whole book as a tree of its chapters and points */
+const QA=BOOK.study==='qa';
 
 /* ---------- rendering a unit ---------- */
 function words(text,cls){
@@ -176,17 +180,20 @@ function words(text,cls){
 function unitEl(u,opts={}){
   const d=document.createElement('div'); d.className='unit'; d.dataset.id=u.id;
   const h=document.createElement('div'); h.className='uhead';
-  const l=document.createElement('span'); l.textContent=u.label; h.append(l);
+  const l=document.createElement('span'); l.textContent=u.q&&!opts.status?'':u.label; h.append(l);
   if(opts.status){const c=S.cards[u.id]; const p=document.createElement('span'); p.className='pill'+(c?'':' new'); p.textContent=c?'محفوظ ✓':'لسا ما بلّشته'; h.append(p)}
   const t=document.createElement('div'); t.className='utext';
   u.segs.forEach(([k,txt],i)=>{if(memSeg(k))t.append(words(txt,'seg-'+k));else{const o=document.createElement('span');o.className='seg seg-'+k+' seg-off';o.textContent=txt;t.append(o)} if(i<u.segs.length-1)t.append(document.createTextNode(' '))});
-  d.append(h,t);
+  d.append(h);
+  if(u.q){const q=document.createElement('div');q.className='uq';q.textContent=u.q;d.append(q)}
+  d.append(t);
+  if(u.q){const b=document.createElement('button');b.type='button';b.className='btn qshow';b.textContent='اكشف الجواب';d.append(b)}
   if(u.gloss&&opts.gloss!==false){const g=document.createElement('div');g.className='gloss';g.innerHTML='معاني: '+u.gloss.map(([a,b])=>`<b>${a}</b>: ${b}`).join(' · ');d.append(g)}
   return d;
 }
 
 /* ---------- study modes ---------- */
-const MODES=[['full','كامل'],['fade','إخفاء تدريجي'],['reveal','مخفي'],['voice','تسميع بالصوت']];
+const MODES=[...(QA?[['qa','سؤال وجواب']]:[]),['full','كامل'],['fade','إخفاء تدريجي'],['reveal','مخفي'],['voice','تسميع بالصوت']];
 let mode={today:'full',all:'full'};
 function modeBar(key,box,onChange){
   box.replaceChildren();
@@ -195,8 +202,10 @@ function modeBar(key,box,onChange){
   // the fading mode adds its level control under the buttons
   if(mode[key]==='fade'){const fb=window.UI.fadeBar(onChange);fb.style.gridColumn='1/-1';box.append(fb)}
 }
-function applyMode(el,m){el.classList.remove('m-full','m-hint','m-fade','m-reveal','m-hide','m-voice','open');el.classList.add('m-'+m);if(m==='fade')window.UI.fade(el,window.UI.fadeLevel())}
+function applyMode(el,m){el.classList.remove('m-qa','m-full','m-hint','m-fade','m-reveal','m-hide','m-voice','open');el.classList.add('m-'+m);if(m==='fade')window.UI.fade(el,window.UI.fadeLevel())}
 document.addEventListener('click',e=>{
+  // a question with its answer folded: tapping it (or «اكشف الجواب») shows the answer
+  const qh=e.target.closest('.uq,.qshow'); if(qh&&qh.closest('.m-qa')){qh.closest('.unit').classList.toggle('shown');return}
   // in voice mode, tapping a passage's heading starts the recitation there
   const hd=e.target.closest('.uhead'); if(hd&&hd.closest('.m-voice')){const first=hd.closest('.unit').querySelector('.w'),k=vWords().indexOf(first);
     if(k>=0){if(VS.on)vStop(true);VS.start=k;vReset();window.UI.toast('التسميع بيبلّش من «'+hd.firstChild.textContent+'»')}return}
@@ -237,14 +246,24 @@ function renderToday(){
     if(MULTI&&allLearned()){const pick=document.createElement('button');pick.className='btn';pick.textContent='اختر باب ثاني';pick.addEventListener('click',()=>{$('chapCard').hidden=false;renderChapters();$('chapCard').scrollIntoView({block:'start',behavior:'smooth'})});box.append(pick)}
     box.append(wardActions(null)); updateVoicebar(); return;
   }
+  if(QA&&kind==='new'&&!learnedIds().length&&!S.read[CUR]){
+    const tg=document.createElement('div'); tg.className='row'; const pl=document.createElement('span'); pl.className='pill new'; pl.textContent='قبل الحفظ · اقرأ الباب كامل'; tg.append(pl);
+    const nt=document.createElement('p'); nt.className='note'; nt.style.margin='0';
+    nt.textContent='اقرأ «'+CHI[CUR].title+'» كامل مرة بتمهّل وافهمه، وبعدين بتحفظ نقاطه المركزية ('+ar(U.length)+') كسؤال وجواب.';
+    const rd=sharhEl('read:'+CUR); box.append(tg,nt);
+    if(rd){rd.open=true;rd.classList.add('readall');box.append(rd)}else{const w=document.createElement('p');w.className='note';w.textContent='عم يتحمّل نص الباب…';box.append(w)}
+    const ok=document.createElement('button'); ok.className='btn primary'; ok.textContent='قرأته، يلّا نحفظ ✓';
+    ok.addEventListener('click',()=>{snap('قرأت «'+CHI[CUR].title+'»');S.read[CUR]=today();save();renderAll();scrollTo(0,0)});
+    box.append(ok,wardActions(null)); updateVoicebar(); return;
+  }
   const u=kind==='new'?fresh[0]:null, ids=kind==='block'?unitsOf(bd.id).map(x=>x.id):learnedIds();
   const tag=document.createElement('div'); tag.className='row';
   const p=document.createElement('span'); p.className='pill'+(kind==='new'?' new':'');
-  p.textContent=kind==='new'?'جديد · احفظه':kind==='block'?`مراجعة «${bd.title}» كاملًا · ${S.blocks[bd.id].old?'محفوظ قديم، أول مراجعة':stageTxt(S.blocks[bd.id])}`:`ربط · سمّع كل اللي حفظته من الباب (${ar(ids.length)})`; tag.append(p);
+  p.textContent=kind==='new'?'جديد · احفظه':kind==='block'?`مراجعة «${bd.title}» كاملًا · ${S.blocks[bd.id].old?'محفوظ قديم، أول مراجعة':stageTxt(S.blocks[bd.id])}`:QA?`ربط · جاوب أسئلة اللي حفظته من الباب (${ar(ids.length)})`:`ربط · سمّع كل اللي حفظته من الباب (${ar(ids.length)})`; tag.append(p);
   const modes=document.createElement('div'); modes.className='modes';
   // a new unit opens in full text, recitations open hidden; the user can switch after that
   const key=kind+(u?u.id:bd?bd.id:CUR);
-  if(mode._seen!==key){mode.today=kind==='new'?'full':'reveal';mode._seen=key}
+  if(mode._seen!==key){mode.today=kind==='new'?'full':QA?'qa':'reveal';mode._seen=key}
   const el=kind==='new'?unitEl(u,{gloss:true}):blockEl(ids); applyMode(el,mode.today); voiceHost=el;
   modeBar('today',modes,renderToday);
   box.append(tag,modes,el);
@@ -256,21 +275,22 @@ function renderToday(){
     const t=document.createElement('button'); t.className='tap'+(n>=S.goal?' full':''); t.dataset.fab=''; t.innerHTML=`${ar(n)}<small>من ${ar(S.goal)}</small>`;
     t.addEventListener('click',()=>{S.reps[u.id]=(S.reps[u.id]||0)+1;save();renderToday()});
     const side=document.createElement('div'); side.style.flex='1';
-    side.innerHTML='<p class="note" style="margin:0 0 8px">اقرأه كامل، واضغط الدائرة بعد كل قراءة. جرّب «إخفاء تدريجي» و«مخفي» لما تحس إنه بلّش يثبت.</p>';
+    side.innerHTML=QA?'<p class="note" style="margin:0 0 8px">اقرأ السؤال وجوابه وافهمه («من الكتاب» تحت فيه الفقرة كاملة)، واضغط الدائرة بعد كل قراءة. وجرّب «سؤال وجواب» لتختبر حالك قبل «حفظته».</p>':'<p class="note" style="margin:0 0 8px">اقرأه كامل، واضغط الدائرة بعد كل قراءة. جرّب «إخفاء تدريجي» و«مخفي» لما تحس إنه بلّش يثبت.</p>';
     const done=document.createElement('button'); done.className='btn primary'; done.textContent='حفظته ✓'; done.disabled=n<Math.min(3,S.goal);
     done.addEventListener('click',()=>{if(VS.on)vStop(true);mode._seen='';snap('حفظت '+u.label);learn(u.id);renderAll();undoToast('حفظته ✓')});
     side.append(done); c.append(t,side); box.append(c);
+    if(QA){const sh=sharhEl(u.id);if(sh)box.append(sh)}
   }else{
-    const show=document.createElement('button'); show.className='btn'; show.textContent='اكشف النص';
+    const show=document.createElement('button'); show.className='btn'; show.textContent=QA?'اكشف كل الأجوبة':'اكشف النص';
     show.addEventListener('click',()=>{if(VS.on)vStop(true);window.UI.reveal.stop();el.classList.add('open');applyMode(el,'full')});
     const hint=document.createElement('p'); hint.className='note'; hint.style.margin='0';
     if(kind==='link'){
-      hint.textContent='سمّع كل اللي حفظته من أول الباب لآخر '+W+' حفظته، مرة وحدة متصلة، بصوتك أو بقلبك. هاد بيربط المحفوظ ببعضه.';
+      hint.textContent=QA?'جاوب كل سؤال من حفظك، بصوتك أو بقلبك، وبعدين اضغطه لتكشف الجواب وتتأكد. هاد بيربط معلومات الباب ببعضها.':'سمّع كل اللي حفظته من أول الباب لآخر '+W+' حفظته، مرة وحدة متصلة، بصوتك أو بقلبك. هاد بيربط المحفوظ ببعضه.';
       const ok=document.createElement('button'); ok.className='btn primary'; ok.textContent='سمّعته ✓';
       ok.addEventListener('click',()=>{if(VS.on)vStop(true);mode._seen='';snap('سمّعت الربط');doneLink();renderAll();undoToast('سمّعته ✓')});
       box.append(show,hint,ok);
     }else{
-      hint.textContent='سمّع الباب كامل من حفظك بالترتيب، اكشفه، وبعدين قيّم حالك بصدق.';
+      hint.textContent=QA?'جاوب أسئلة الباب كلها من حفظك بالترتيب، واكشف كل جواب بعد ما تجاوبه، وبعدين قيّم حالك بصدق.':'سمّع الباب كامل من حفظك بالترتيب، اكشفه، وبعدين قيّم حالك بصدق.';
       const g=document.createElement('div'); g.className='grades';
       const pv=SRS.preview(S.blocks[bd.id],today());
       [['again','نسيت',inDays(pv.again),'bad'],['hard','صعب',inDays(pv.hard),'gold'],['good','تمام',inDays(pv.good),'primary']].forEach(([k,l,sub,c])=>{
@@ -307,7 +327,7 @@ function wardActions(kind,ch){
   // «اختبرني»: the opening words of a memorised passage, and the reader goes on
   const learnedAll=Object.keys(S.cards).filter(id=>UI_[id]);
   if(learnedAll.length){const qb=document.createElement('button');qb.className='btn gold';qb.textContent='🎯 اختبرني';qb.addEventListener('click',()=>{
-    window.UI.quiz(learnedAll.map(id=>{const u=UI_[id],txt=u.segs.map(x=>x[1]).join(' '),w=txt.split(' ');return {label:u.label,prompt:w.slice(0,Math.min(6,Math.ceil(w.length/3))).join(' ')+' …',answer:txt}}),'اختبرني · '+BOOK.title)});row.append(qb)}
+    window.UI.quiz(learnedAll.map(id=>{const u=UI_[id],txt=u.segs.map(x=>x[1]).join(' '),w=txt.split(' ');return {label:u.label,prompt:u.q||w.slice(0,Math.min(6,Math.ceil(w.length/3))).join(' ')+' …',answer:txt}}),'اختبرني · '+BOOK.title)});row.append(qb)}
   if(UNDO.length){const u=document.createElement('button');u.className='btn';u.textContent='↶ تراجع عن «'+UNDO[UNDO.length-1].label+'»';u.addEventListener('click',undo);row.append(u)}
   if(!row.childElementCount)return document.createTextNode('');
   box.append(row); return box;
@@ -319,6 +339,7 @@ function renderAll(){
   const b=S.blocks[CUR];
   st.textContent=b?`الباب محفوظ كامل ✓ · مراجعته: ${stageTxt(b)} · موعدها ${when(b.due)}`:`محفوظ ${ar(learnedIds().length)} من ${ar(U.length)} · لما تختم الباب بيصير مراجعة كاملة له ككتلة وحدة`;
   list.append(st);
+  if(QA){const rd=sharhEl('read:'+CUR);if(rd){rd.classList.add('readall');list.append(rd)}}
   CHI[CUR].units.forEach(u=>{if(!U.includes(u)){const el=unitEl(u,{status:false});el.classList.add('off');applyMode(el,mode.all);const ra=document.createElement('div');ra.className='row';ra.append(repBtn(u));el.append(ra);const sh=sharhEl(u.id);if(sh)el.append(sh);list.append(el);return}
     const el=unitEl(u,{status:true});applyMode(el,mode.all);
     const c=S.cards[u.id], acts=document.createElement('div'); acts.className='row';
@@ -335,8 +356,30 @@ function renderAll(){
   const days=Object.keys(S.log).sort().reverse();
   if(!days.length){const e=document.createElement('div');e.className='empty';e.textContent='سيظهر هنا كل يوم بتحفظ أو بتراجع فيه.';lg.append(e)}
   days.slice(0,60).forEach(d=>{const x=document.createElement('div');const a=document.createElement('span');a.textContent=dayName(d);const b=document.createElement('span');b.className='note';b.textContent=`جديد ${ar(S.log[d].n)} · مراجعة ${ar(S.log[d].r)}`;x.append(a,b);lg.append(x)});
-  renderChapters();
+  renderChapters(); if(QA&&active==='map')renderMap();
   updateVoicebar();
+}
+/* ---------- the map (QA books): the book as a tree, باب › مبحث › مطلب › points; a point opens to its question and answer ---------- */
+function renderMap(){
+  const box=$('mapBox'); if(!box)return; const open=new Set([...box.querySelectorAll('details[open]')].map(d=>d.dataset.k)); box.replaceChildren();
+  const base=c=>c.title.replace(/ \([٠-٩]+\)$/,'');
+  const det=(cls,k,txt,on)=>{const d=document.createElement('details');d.className=cls;d.dataset.k=k;d.open=open.has(k)||on;const s=document.createElement('summary');s.textContent=txt;d.append(s);return d};
+  let g, gd=box, sup, node, nb;
+  CH.forEach((c,i)=>{
+    if(c.group!==g){g=c.group;sup=null;nb=null;
+      const mine=CH.filter(x=>x.group===g), n=mine.reduce((a,x)=>a+x.units.length,0), l=mine.reduce((a,x)=>a+learnedIds(x.id).length,0);
+      gd=det('tg','g'+i,(g||BOOK.title)+' · '+ar(l)+' من '+ar(n),!open.size&&mine.some(x=>x.id===CUR));box.append(gd)}
+    if((c.sup||null)!==sup){sup=c.sup||null;nb=null;if(sup){const h=document.createElement('div');h.className='tsup';h.textContent=sup;gd.append(h)}}
+    if(base(c)!==nb){nb=base(c);
+      const parts=CH.filter(x=>x.group===c.group&&base(x)===nb), n=parts.reduce((a,x)=>a+x.units.length,0), l=parts.reduce((a,x)=>a+learnedIds(x.id).length,0);
+      node=det('tc'+(parts.some(x=>x.id===CUR)?' cur':''),'c'+c.id,(l===n?'✓ ':'')+nb+' · '+ar(l)+' من '+ar(n),!open.size&&parts.some(x=>x.id===CUR));gd.append(node);
+      const go=document.createElement('button'), tgt=parts.find(x=>!allLearned(x.id))||parts[0]; go.className='btn tgo';
+      go.textContent=parts.some(x=>x.id===CUR)?'الباب الحالي ← اليوم':'احفظه هلأ';
+      go.addEventListener('click',()=>{setCur(tgt.id);save();renderAll();goToday();scrollTo(0,0)}); node.append(go)}
+    c.units.forEach(u=>{const d=det('tp','p'+u.id,(S.cards[u.id]?'✓ ':'')+u.label,false);
+      if(u.q){const q=document.createElement('p');q.className='tq';q.textContent=u.q;d.append(q)}
+      const a=document.createElement('p');a.className='ta';a.textContent=u.segs.map(x=>x[1]).join(' ');d.append(a);node.append(d)});
+  });
 }
 
 /* ---------- chapters: the current one, and a list to switch between them ---------- */
@@ -477,10 +520,16 @@ $('oldBtn').addEventListener('click',()=>openOld(false));
 document.querySelector('#welcome ol').insertAdjacentHTML('beforeend','<li><b>محفوظك القديم:</b> إذا حافظ أبواب من قبل، من زر «📚 محفوظي القديم» تحت بتعلّمها، وبتنضاف لمراجعة الأبواب على طول.</li>');
 $('oldApply').addEventListener('click',applyOld);
 $('oldSkip').addEventListener('click',()=>showScreen('main'));
+if(QA){
+  document.querySelector('.tabs button[data-v="log"]').insertAdjacentHTML('beforebegin','<button role="tab" aria-selected="false" data-v="map">الخريطة</button>');
+  $('v-all').insertAdjacentHTML('afterend','<section id="v-map" class="card" hidden><div class="eyebrow">خريطة الكتاب · أبوابه ومطالبه ونقاطه، اضغط أي نقطة لتشوف سؤالها وجوابها</div><div id="mapBox" class="tree"></div></section>');
+  document.querySelector('#welcome ol').insertAdjacentHTML('beforeend','<li><b>الخريطة:</b> تبويب «الخريطة» بيعرض الكتاب كله شجرة: الأبواب ← المباحث ← المطالب ← النقاط، ووين وصلت بكل وحدة.</li>');
+}
+const VIEWS=[...document.querySelectorAll('.tabs button')].map(b=>b.dataset.v);
 let active='today';
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',String(x===b)));
-  active=b.dataset.v; ['today','all','log'].forEach(v=>$('v-'+v).hidden=v!==active);
+  active=b.dataset.v; VIEWS.forEach(v=>$('v-'+v).hidden=v!==active); if(active==='map')renderMap();
   window.UI.reveal.stop(); if(active!=='log'&&mode[active]==='reveal')window.UI.reveal.start(active==='all'?$('allList'):$('cardBox').querySelector('.unit,.block'),'الفقرة كاملة');
   if(VS.on)vStop(true); voiceHost=active==='all'?$('allList'):$('cardBox').querySelector('.unit'); updateVoicebar();
 }));
@@ -488,7 +537,7 @@ function showScreen(sc,canCancel){
   const main=sc==='main'; if(!main)window.UI.reveal.stop();
   $('setup').hidden=sc!=='setup'; $('welcome').hidden=sc!=='welcome'; $('oldMem').hidden=sc!=='old';
   ['mainTabs','foot'].forEach(id=>$(id).hidden=!main); if(MULTI){$('chapBar').hidden=!main;if(!main)$('chapCard').hidden=true}
-  ['today','all','log'].forEach(v=>$('v-'+v).hidden=!main||v!==active);
+  VIEWS.forEach(v=>$('v-'+v).hidden=!main||v!==active);
   $('backup').hidden=true; $('cancelSetup').hidden=!canCancel;
   if(VS.on)vStop(true); updateVoicebar(); if(!main)scrollTo(0,0);
 }

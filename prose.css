@@ -154,3 +154,32 @@ select{font:15px var(--ui);color:var(--ink);background:var(--bg);border:1px soli
 /* tracks: the parts read but not memorised */
 .seg-off{opacity:.6;font-size:.82em}
 .unit.off{opacity:.85}
+
+/* question-and-answer study (textbooks): the question over its answer; in «سؤال وجواب» the answer folds until tapped */
+.uq{font-weight:700;color:var(--accent);font-size:15px;line-height:1.7}
+.qshow{display:none;align-self:flex-start;font-size:13px;padding:6px 12px}
+.m-qa .uq,.m-qa.unit .uq{cursor:pointer}
+.m-qa .unit:not(.shown) .utext,.m-qa.unit:not(.shown) .utext{display:none}
+.m-qa .unit:not(.shown) .qshow,.m-qa.unit:not(.shown) .qshow{display:inline-block}
+.m-qa .unit.shown .utext,.m-qa.unit.shown .utext{animation:qin .25s ease}
+@keyframes qin{from{opacity:0}to{opacity:1}}
+.unit .qshow+*{margin-top:0}
+.sharh.readall{background:var(--surface)}
+.sharh.readall p{font-family:var(--verse);font-size:18px;line-height:2}
+/* the map: nested folds with a guide line */
+.tree{display:flex;flex-direction:column;gap:8px}
+.tree details>summary{cursor:pointer;list-style:none;padding:7px 0;font-weight:600}
+.tree details>summary::-webkit-details-marker{display:none}
+.tree details>summary::before{content:'◂';display:inline-block;width:1.2em;color:var(--muted);transition:transform .15s}
+.tree details[open]>summary::before{transform:rotate(-90deg)}
+.tg{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:0 12px 6px}
+.tg>summary{color:var(--accent);font-size:15px}
+.tsup{font-size:12.5px;font-weight:700;color:var(--gold);margin:8px 0 2px;padding-right:4px}
+.tc{border-right:2px solid var(--line);padding-right:10px;margin-right:4px}
+.tc.cur{border-right-color:var(--accent)}
+.tc>summary{font-size:14px}
+.tgo{font-size:12.5px;padding:5px 10px;margin:2px 0 6px}
+.tp{border-right:2px solid var(--line);padding-right:10px;margin-right:8px}
+.tp>summary{font-size:13.5px;font-weight:500;padding:5px 0}
+.tq{margin:0;font-weight:700;color:var(--accent);font-size:13.5px}
+.ta{margin:4px 0 8px;font-family:var(--verse);font-size:17px;line-height:1.9}

@@ -79,14 +79,16 @@ if (process.argv.includes('--export')) {
 /* 3. units: the chapter's key points from tools/texts/usul/key/<id>.json (see KEY-BRIEF.md; check-key.js proves every
    piece is the book's own words). Under each one, «من الكتاب» shows the paragraphs it was taken from with their footnotes. */
 const plain = s => s.replace(/\*\*/g, '').replace(/\s+/g, ' ').trim();
-const sharh = {}, kd = path.join(__dirname, 'texts/usul/key');
+const sharh = {}, kd = path.join(__dirname, 'texts/usul/key'), qd = path.join(__dirname, 'texts/usul/q');
 const BOOK = {
   key: 'usul', app: 'mutoon', lsk: 'mutoon_usul_v2', title: 'تهذيب مسار الأصول',
   sub: 'إلى علم أصول فقه الحنفية · أ.د. صلاح محمد أبو الحاج · التعريفات والقواعد',
-  unitWord: 'معلومة', sharhDir: 'data/usul-sharh/',
+  unitWord: 'معلومة', sharhDir: 'data/usul-sharh/', study: 'qa',
   chapters: CH.map(c => {
     const f = path.join(kd, c.id + '.json'); if (!fs.existsSync(f)) return null;
-    const units = JSON.parse(fs.readFileSync(f, 'utf8')).map((k, i) => {
+    const qf = path.join(qd, c.id + '.json'), qs = fs.existsSync(qf) ? JSON.parse(fs.readFileSync(qf, 'utf8')) : [];
+    const keys = JSON.parse(fs.readFileSync(f, 'utf8'));
+    const units = keys.map((k, i) => {
       const id = c.id + '_' + (i + 1);
       const text = (k.h ? k.h.replace(/[:،]\s*$/, '') + ': ' : '') + k.x.map(p => plain(p)).join(' ');
       const src = [...new Set(k.p || [])].sort((a, b) => a - b).map(n => c.units[n - 1]).filter(Boolean);
@@ -95,7 +97,8 @@ const BOOK = {
         { src: c.title, ref: pages.length ? 'ص ' + pages.map(ar).join('، ') : '', url: '', text: src.map(u => plain(u.t)).join('\n\n') },
         ...(notes.length ? [{ src: 'الحواشي', ref: '', url: '', text: notes.join('\n\n') }] : []),
       ] } });
-      return { id, label: k.t, segs: [['matn', text]] };
+      const o = { id, label: k.t, segs: [['matn', text]] }; if (qs[i]) o.q = qs[i];
+      return o;
     });
     if (!units.length) return null;
     // a chapter is reviewed as one block, so a big one is cut into even parts of at most PART points
@@ -105,6 +108,13 @@ const BOOK = {
       if (i) us.forEach(u => { sharh[id] = Object.assign(sharh[id] || {}, { [u.id]: sharh[c.id][u.id] }); delete sharh[c.id][u.id] });
       const o = { id, title: c.title + (k > 1 ? ' (' + ar(i + 1) + ')' : ''), group: c.group, units: us };
       if (c.sup && c.sup !== c.title) o.sup = c.sup;
+      // read before learning: the chapter's paragraphs whole (a part gets the stretch from its first to its last point's paragraphs)
+      const ps = keys.slice(i * size, (i + 1) * size).flatMap(x => x.p || []), a = i ? Math.min(...ps) : 1, z = i < k - 1 ? Math.max(...ps) : c.units.length;
+      const rs = c.units.slice(a - 1, z), rn = rs.flatMap(u => u.notes), rp = [...new Set(rs.map(u => u.page + 2))];
+      sharh[id] = Object.assign(sharh[id] || {}, { ['read:' + id]: { title: '📖 ' + c.title + ' كاملًا', foot: '', secs: [
+        { src: c.title, ref: rp.length ? 'ص ' + ar(rp[0]) + (rp.length > 1 ? '–' + ar(rp[rp.length - 1]) : '') : '', url: '', text: rs.map(u => plain(u.t)).join('\n\n') },
+        ...(rn.length ? [{ src: 'الحواشي', ref: '', url: '', text: rn.join('\n\n') }] : []),
+      ] } });
       return o;
     });
   }).filter(Boolean).flat(),
