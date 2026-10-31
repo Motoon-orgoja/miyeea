@@ -1,9 +1,7 @@
 // Builds data/usul.js and data/usul-sharh/<chapter>.json from the page transcriptions in tools/texts/usul/pages/pNNN.md
 // («تهذيب مسار الأصول إلى علم أصول فقه الحنفية» لـ د. صلاح أبو الحاج; format in tools/texts/usul/BRIEF.md).
-// Chapters are the book's مطالب (or a مبحث/فصل with no مطالب), units are its paragraphs. Bold text is the author's
-// definitions and rules: the «التعريفات والقواعد» track memorises only the paragraphs that have bold, and only their bold;
-// the «الكتاب كامل» track memorises everything. Footnotes go under their paragraph as «الحواشي». The end-of-chapter
-// exercises («مناقشة») are left out.
+// Chapters are the book's مطالب (or a مبحث/فصل with no مطالب). Units are not its paragraphs but its key points, chosen
+// per chapter in tools/texts/usul/key (see KEY-BRIEF.md). The introductions, objectives and exercises are left out.
 const fs = require('fs'), path = require('path');
 const root = path.join(__dirname, '..'), dir = path.join(__dirname, 'texts/usul/pages');
 const ar = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
@@ -68,59 +66,54 @@ for (const b of blocks) {
   if (pendingHead) { head = clean(pendingHead.replace(/\*\*/g, '')); t = '**' + pendingHead.replace(/\*\*/g, '') + '** ' + t; pendingHead = null }
   ch.units.push({ t, notes: b.notes, page: b.page, head });
 }
-// empty chapters (a title alone) go. A long chapter is one long review block, so one over MAX paragraphs is cut at its
-// #### sub-headings into parts of at least MIN paragraphs, each titled by its first sub-heading
-const MAX = 24, MIN = 6, CH = [];
-for (const c of chapters.filter(c => c.units.length)) {
-  if (c.units.length <= MAX) { CH.push(c); continue }
-  let part = null; const parts = [];
-  c.units.forEach((u, i) => {
-    if (!part || (u.head && part.units.length >= MIN && c.units.length - i >= MIN)) {
-      part = { ...c, title: part ? u.head : c.title, sup: part ? c.title : c.sup, units: [] }; parts.push(part);
-    }
-    part.units.push(u);
-  });
-  parts.forEach((p, k) => { p.id = c.id + (k ? String.fromCharCode(96 + k) : ''); CH.push(p) });
+const CH = chapters.filter(c => c.units.length);
+
+// --export: one readable file per chapter for choosing its key points (tools/texts/usul/source/<id>.md)
+if (process.argv.includes('--export')) {
+  const od = path.join(__dirname, 'texts/usul/source'); fs.mkdirSync(od, { recursive: true });
+  for (const c of CH) fs.writeFileSync(path.join(od, c.id + '.md'), '# ' + c.title + '\n(' + [c.group, c.sup].filter(Boolean).join(' › ') + ')\n\n'
+    + c.units.map((u, i) => '[' + (i + 1) + '] ' + u.t).join('\n\n') + '\n');
+  console.log('exported', CH.length, 'chapters'); process.exit(0);
 }
 
-/* 3. units: bold -> "matn" segments, the rest -> "ctx" */
-const segsOf = t => {
-  const out = [];
-  t.split(/(\*\*[^*]+\*\*)/).forEach(part => {
-    if (!part) return;
-    const bold = /^\*\*/.test(part), s = part.replace(/\*\*/g, '');
-    if (!s.trim()) return;
-    // punctuation alone stays with the segment before it
-    if (out.length && /^[\s.،؛:!?…\-ـ)\]»]+$/.test(s)) { out[out.length - 1][1] += s.trim(); return }
-    out.push([bold ? 'matn' : 'ctx', s.trim()]);
-  });
-  return out.filter(([, s]) => s);
-};
-const sharh = {};
+/* 3. units: the chapter's key points from tools/texts/usul/key/<id>.json (see KEY-BRIEF.md; check-key.js proves every
+   piece is the book's own words). Under each one, «من الكتاب» shows the paragraphs it was taken from with their footnotes. */
+const plain = s => s.replace(/\*\*/g, '').replace(/\s+/g, ' ').trim();
+const sharh = {}, kd = path.join(__dirname, 'texts/usul/key');
 const BOOK = {
-  key: 'usul', app: 'mutoon', lsk: 'mutoon_usul_v1', title: 'تهذيب مسار الأصول',
-  sub: 'إلى علم أصول فقه الحنفية · أ.د. صلاح محمد أبو الحاج',
-  unitWord: 'فقرة', sharhDir: 'data/usul-sharh/', track: 'matn',
-  tracks: [
-    { k: 'matn', l: 'التعريفات والقواعد', kinds: ['def'], note: 'الكلام الغامق بالكتاب بس (التعريفات والقواعد)، وباقي الفقرة بيضل ظاهر للقراءة.' },
-    { k: 'full', l: 'الكتاب كامل', note: 'كل فقرات الكتاب، كلمة كلمة.' },
-  ],
+  key: 'usul', app: 'mutoon', lsk: 'mutoon_usul_v2', title: 'تهذيب مسار الأصول',
+  sub: 'إلى علم أصول فقه الحنفية · أ.د. صلاح محمد أبو الحاج · التعريفات والقواعد',
+  unitWord: 'معلومة', sharhDir: 'data/usul-sharh/',
   chapters: CH.map(c => {
-    const units = c.units.map((u, i) => {
-      const id = c.id + '_' + (i + 1), segs = segsOf(u.t);
-      if (u.notes.length) sharh[c.id] = Object.assign(sharh[c.id] || {}, { [id]: { title: 'الحواشي', foot: '', secs: [{ src: 'حواشي الكتاب', ref: 'ص ' + ar(u.page + 2), url: '', text: u.notes.join('\n\n') }] } });
-      return { id, kind: segs.some(s => s[0] === 'matn') ? 'def' : 'text', label: c.title + ' · الفقرة ' + ar(i + 1), segs };
+    const f = path.join(kd, c.id + '.json'); if (!fs.existsSync(f)) return null;
+    const units = JSON.parse(fs.readFileSync(f, 'utf8')).map((k, i) => {
+      const id = c.id + '_' + (i + 1);
+      const text = (k.h ? k.h.replace(/[:،]\s*$/, '') + ': ' : '') + k.x.map(p => plain(p)).join(' ');
+      const src = [...new Set(k.p || [])].sort((a, b) => a - b).map(n => c.units[n - 1]).filter(Boolean);
+      const notes = src.flatMap(u => u.notes), pages = [...new Set(src.map(u => u.page + 2))];
+      sharh[c.id] = Object.assign(sharh[c.id] || {}, { [id]: { title: 'من الكتاب', foot: '', secs: [
+        { src: c.title, ref: pages.length ? 'ص ' + pages.map(ar).join('، ') : '', url: '', text: src.map(u => plain(u.t)).join('\n\n') },
+        ...(notes.length ? [{ src: 'الحواشي', ref: '', url: '', text: notes.join('\n\n') }] : []),
+      ] } });
+      return { id, label: k.t, segs: [['matn', text]] };
     });
-    const o = { id: c.id, title: c.title, group: c.group, units };
-    if (c.sup && c.sup !== c.title) o.sup = c.sup;
-    return o;
-  }),
+    if (!units.length) return null;
+    // a chapter is reviewed as one block, so a big one is cut into even parts of at most PART points
+    const PART = 9, k = Math.ceil(units.length / PART), size = Math.ceil(units.length / k);
+    return Array.from({ length: k }, (_, i) => {
+      const id = c.id + (i ? String.fromCharCode(97 + i) : ''), us = units.slice(i * size, (i + 1) * size);
+      if (i) us.forEach(u => { sharh[id] = Object.assign(sharh[id] || {}, { [u.id]: sharh[c.id][u.id] }); delete sharh[c.id][u.id] });
+      const o = { id, title: c.title + (k > 1 ? ' (' + ar(i + 1) + ')' : ''), group: c.group, units: us };
+      if (c.sup && c.sup !== c.title) o.sup = c.sup;
+      return o;
+    });
+  }).filter(Boolean).flat(),
 };
 
-fs.writeFileSync(path.join(root, 'data/usul.js'), '// Generated by tools/build-usul.js from tools/texts/usul/pages — edit the pages, not this file\nwindow.BOOK=' + JSON.stringify(BOOK) + ';\n');
+fs.writeFileSync(path.join(root, 'data/usul.js'), '// Generated by tools/build-usul.js from tools/texts/usul (pages + key) — edit those, not this file\nwindow.BOOK=' + JSON.stringify(BOOK) + ';\n');
 const sd = path.join(root, 'data/usul-sharh'); fs.mkdirSync(sd, { recursive: true });
 for (const f of fs.readdirSync(sd)) fs.unlinkSync(path.join(sd, f));
 for (const [cid, j] of Object.entries(sharh)) fs.writeFileSync(path.join(sd, cid + '.json'), JSON.stringify(j));
-const n = BOOK.chapters.reduce((a, c) => a + c.units.length, 0), d = BOOK.chapters.reduce((a, c) => a + c.units.filter(u => u.kind === 'def').length, 0);
-const w = BOOK.chapters.reduce((a, c) => a + c.units.reduce((b, u) => b + u.segs.filter(s => s[0] === 'matn').reduce((x, s) => x + s[1].split(/\s+/).length, 0), 0), 0);
-console.log(`${BOOK.chapters.length} chapters, ${n} paragraphs, ${d} with definitions (${w} words to memorise in the matn track), ${Object.keys(sharh).length} footnote files`);
+const n = BOOK.chapters.reduce((a, c) => a + c.units.length, 0);
+const w = BOOK.chapters.reduce((a, c) => a + c.units.reduce((b, u) => b + u.segs[0][1].split(/\s+/).length, 0), 0);
+console.log(`${BOOK.chapters.length} chapters, ${n} key points, ${w} words to memorise`);
