@@ -29,11 +29,13 @@ function sharhEl(id){
   const sm=document.createElement('summary'); sm.textContent=s.title; d.append(sm);
   s.secs.forEach(sec=>{
     const h=document.createElement('h4'); h.textContent=sec.src; d.append(h);
-    const r=document.createElement('a'); r.className='ref'; r.href=sec.url; r.target='_blank'; r.rel='noopener'; r.textContent=sec.ref+' ↗'; d.append(r);
+    if(sec.url){const r=document.createElement('a'); r.className='ref'; r.href=sec.url; r.target='_blank'; r.rel='noopener'; r.textContent=sec.ref+' ↗'; d.append(r)}else if(sec.ref){const r=document.createElement('p'); r.className='src'; r.textContent=sec.ref; d.append(r)}
     sec.text.split(/\n\n+/).forEach(par=>{const p=document.createElement('p');richText(p,par);d.append(p)});
   });
   if(s.note){const n=document.createElement('p');n.className='src';n.textContent=s.note;d.append(n)}
-  const f=document.createElement('p'); f.className='src'; f.textContent='النصوص منقولة بلفظها من المكتبة الشاملة وموقع quran.com، مع تصحيح أخطاء طباعية ظاهرة، وإعادة «ﷺ» حيث سقطت.'; d.append(f);
+  // a book's own footnotes need no note on where the texts come from
+  const foot=s.foot!==undefined?s.foot:'النصوص منقولة بلفظها من المكتبة الشاملة وموقع quran.com، مع تصحيح أخطاء طباعية ظاهرة، وإعادة «ﷺ» حيث سقطت.';
+  if(foot){const f=document.createElement('p'); f.className='src'; f.textContent=foot; d.append(f)}
   return d;
 }
 
@@ -70,10 +72,13 @@ function logToday(k){const t=today();S.log[t]=S.log[t]||{n:0,r:0};S.log[t][k]++}
    full: every verse and hadith with its narrator line and takhrij; matn: the hadiths only, the narrator line and the takhrij
    shown for reading but not memorised; first: like matn, each chapter's first hadith only (all its parts), to go through the
    whole book once. Progress is kept per unit, so switching tracks loses nothing. */
-const TRACKS=BOOK.tracks?[['full','كامل'],['matn','متن الأحاديث'],['first','حديث من كل باب']]:null;
-const track=()=>TRACKS&&S.track||'full';
+// BOOK.tracks is true for Riyad, or a list [{k, l, note, kinds}] where kinds are the unit kinds memorised in that track
+// (other units are left out); BOOK.track is the default
+const TDEF=Array.isArray(BOOK.tracks)?BOOK.tracks:BOOK.tracks?[{k:'full',l:'كامل',note:'الآيات والأحاديث كاملة بالراوي والتخريج.'},{k:'matn',l:'متن الأحاديث',note:'الأحاديث بس: الراوي والتخريج بيضلّوا ظاهرين للقراءة، وما بتنحفظ الآيات.'},{k:'first',l:'حديث من كل باب',note:'أول حديث من كل باب (متن)، عشان تمرّ على الكتاب كله مرة، وبعدين بتكمّل الباقي.'}]:null;
+const TRACKS=TDEF&&TDEF.map(t=>[t.k,t.l]);
+const track=()=>TRACKS&&(S.track||BOOK.track)||'full';
 const hnum=u=>parseInt(u.id,10);
-function inTrack(c,t){if(t==='full')return c.units; const h=c.units.filter(u=>u.kind==='hadith'); if(t!=='first')return h; return h.filter(u=>hnum(u)===hnum(h[0]))}
+function inTrack(c,t){if(t==='full')return c.units; const td=TDEF.find(x=>x.k===t); if(td&&td.kinds)return c.units.filter(u=>td.kinds.includes(u.kind)); const h=c.units.filter(u=>u.kind==='hadith'); if(t!=='first')return h; return h.filter(u=>hnum(u)===hnum(h[0]))}
 const TC={};
 const unitsOf=ch=>{const t=track();return TC[t+'|'+ch]||(TC[t+'|'+ch]=inTrack(CHI[ch],t))};
 // segments memorised in this track (the others are drawn as plain text)
@@ -491,7 +496,7 @@ function showScreen(sc,canCancel){
 if(TRACKS){
   document.querySelector('#setup .plan').insertAdjacentHTML('afterend','<label class="plan1"><span class="eyebrow">شو بدك تحفظ؟</span><select id="trackIn"></select></label><p class="note" id="trackNote" style="margin:0"></p>');
   const paint=()=>{const t=$('trackIn').value,i=trackInfo(t),per=Math.max(1,Math.min(10,numIn($('perIn').value)||1)),d=Math.ceil(i.left/per);
-    $('trackNote').textContent=({full:'الآيات والأحاديث كاملة بالراوي والتخريج.',matn:'الأحاديث بس: الراوي والتخريج بيضلّوا ظاهرين للقراءة، وما بتنحفظ الآيات.',first:'أول حديث من كل باب (متن)، عشان تمرّ على الكتاب كله مرة، وبعدين بتكمّل الباقي.'})[t]+' '+ar(i.n)+' وحدة'+(i.left<i.n?'، باقيلك '+ar(i.left):'')+'. بـ'+ar(per)+' باليوم بتختم بعد '+span(d)+'.'};
+    $('trackNote').textContent=(TDEF.find(x=>x.k===t)||{}).note+' '+ar(i.n)+' وحدة'+(i.left<i.n?'، باقيلك '+ar(i.left):'')+'. بـ'+ar(per)+' باليوم بتختم بعد '+span(d)+'.'};
   $('trackIn').append(...TRACKS.map(([v,l])=>{const o=document.createElement('option');o.value=v;o.textContent=l;return o}));
   $('trackIn').addEventListener('change',paint); $('perIn').addEventListener('input',paint);
   window.paintTrack=()=>{$('trackIn').value=track();paint()};

@@ -1,0 +1,7 @@
+p026 | مسروق رضي الله عنه | the honorific glyph after مسروق (a تابعي) may be رحمه الله rather than رضي الله عنه; glyph too small to tell
+p029 | التَّابعين رحمهم الله | honorific glyph after التابعين in the heading; could be رضي الله عنهم (same-looking glyph)
+p037 | حمد | name in «لأبي عليّ حمد بن محمد» reads حمد in the image (draft محد); possibly أحمد/محمد in the source
+p228 | ر١٤٠٤ | small print in footnote after للزمخشري; unclear if ر (رقم) prefix
+p334 | تحقروا | image looks like تحقروا; the known wording of the hadith is «فلا تخفروا الله في ذمته»; the draft has تقروا
+p336 | رضي الله عنهما / رضي الله عنه | small honorific glyphs after ومحمد and أبي حنيفة; could be رحمهما الله / رحمه الله
+p352 | رضي الله عنه (بعد الطَّحاوي) | honorific glyph after an imam; same shape as رضي الله عنه glyph, could be رحمه الله

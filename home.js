@@ -1,7 +1,7 @@
 /* ---------- the day across every book ----------
    home.html loads each data/*.js and pushes its window.BOOK into BOOKS. Nothing here writes progress: it reads each page's
    saved state, works out what that page will ask for today (the same rules the engines apply), and links to it. */
-const PAGE={zubad:'zubad.html',ajurrumiyya:'ajurrumiyya.html',nawawi:'nawawi.html',bayquniyya:'bayquniyya.html',tuhfa:'tuhfa.html',miyeea:'./',munajat:'munajat.html',shatibiyya:'shatibiyya.html',jazariyya:'jazariyya.html',riyad:'riyad.html',qudouri:'qudouri.html'};
+const PAGE={usul:'usul.html',zubad:'zubad.html',ajurrumiyya:'ajurrumiyya.html',nawawi:'nawawi.html',bayquniyya:'bayquniyya.html',tuhfa:'tuhfa.html',miyeea:'./',munajat:'munajat.html',shatibiyya:'shatibiyya.html',jazariyya:'jazariyya.html',riyad:'riyad.html',qudouri:'qudouri.html'};
 const $=id=>document.getElementById(id);
 const ar=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
 const today=()=>{try{return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Amman'}).format(new Date())}catch(e){return new Date().toISOString().slice(0,10)}};
@@ -39,7 +39,7 @@ function poemBook(b){
 
 // prose books: chapter reviews due, today's new units in the current chapter, and the daily linking recitation
 // the units memorised in the chosen track (see prose-engine.js: full / matn / first)
-function trackUnits(b,s,c){const t=b.tracks&&s&&s.track||'full';if(t==='full')return c.units;const h=c.units.filter(u=>u.kind==='hadith');return t==='first'?h.filter(u=>parseInt(u.id,10)===parseInt(h[0].id,10)):h}
+function trackUnits(b,s,c){const t=b.tracks&&(s&&s.track||b.track)||'full';if(t==='full')return c.units;const td=Array.isArray(b.tracks)&&b.tracks.find(x=>x.k===t);if(td&&td.kinds)return c.units.filter(u=>td.kinds.includes(u.kind));const h=c.units.filter(u=>u.kind==='hadith');return t==='first'?h.filter(u=>parseInt(u.id,10)===parseInt(h[0].id,10)):h}
 function proseBook(b){
   const s=get(b.lsk), W=b.unitWord||'حديث', r={b,started:!!s,tasks:[],days:new Set(),done:0,total:0,unit:W,chapters:b.chapters.length,finished:0};
   b.chapters.forEach(c=>r.total+=trackUnits(b,s,c).length);
@@ -132,7 +132,7 @@ started.forEach(r=>{
   row.append(top,bar); $('progList').append(row);
   // a finished text gets its certificate; the first time it is noticed, a toast offers it too
   if(r.total&&r.done>=r.total&&window.UI&&UI.certificate){
-    const s=get(r.b.lsk), track=r.b.tracks&&s&&s.track&&s.track!=='full'?({matn:' · متن الأحاديث',first:' · حديث من كل باب'})[s.track]||'':'';
+    const s=get(r.b.lsk), tk=r.b.tracks&&(s&&s.track||r.b.track),track=tk&&tk!=='full'?' · '+(Array.isArray(r.b.tracks)?(r.b.tracks.find(x=>x.k===tk)||{}).l:({matn:'متن الأحاديث',first:'حديث من كل باب'})[tk]||''):'';
     const what=r.b.poems?'عدد الأبيات: '+ar(r.total):(/^الحديث/.test(r.b.chapters[0].title)?'عدد الأحاديث: ':'عدد الأبواب: ')+ar(r.chapters)+track;
     const open=()=>UI.certificate({title:r.b.title,what,key:r.b.key});
     const c=el('button','btn gold','🎓 شهادة الختم'); c.type='button'; c.onclick=open; row.append(c);
