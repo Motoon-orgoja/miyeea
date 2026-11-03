@@ -121,8 +121,21 @@ const BOOK = {
       ] } });
       if (ex) {
         // the plain explanation of each point, the chapter's hard words, and the exercises whose paragraphs this part covers
-        us.forEach(u => { const pt = ex.pts[+u.id.split('_')[1] - 1]; if (pt) sharh[id]['ex:' + u.id] = { title: '💡 وضّحلي ببساطة', foot: EXFOOT, secs: [
-          { src: 'الفكرة', ref: '', url: '', text: pt.s }, ...(pt.e ? [{ src: 'مثال', ref: '', url: '', text: pt.e }] : [])] } });
+        // with the deeper layer (INTRO-BRIEF.md): a fuller explanation, several examples, the usual slip, and quick questions
+        const num = (xs) => xs.length > 1 ? xs.map((x, j) => ar(j + 1) + '- ' + x).join('\n\n') : xs[0];
+        us.forEach(u => { const n = +u.id.split('_')[1] - 1, pt = ex.pts[n], dp = (ex.deep || [])[n]; if (!pt) return;
+          sharh[id]['ex:' + u.id] = { title: '💡 اشرحلي النقطة', foot: EXFOOT, secs: [
+            { src: 'الفكرة ببساطة', ref: '', url: '', text: pt.s },
+            ...(dp ? [{ src: 'الشرح', ref: '', url: '', text: dp.x }, { src: 'أمثلة', ref: '', url: '', text: num(dp.ex) }]
+              : pt.e ? [{ src: 'مثال', ref: '', url: '', text: pt.e }] : []),
+            ...(dp && dp.trap ? [{ src: '⚠️ انتبه', ref: '', url: '', text: dp.trap }] : [])],
+            ...(dp && dp.check ? { check: dp.check } : {}) } });
+        // the chapter in plain words before reading it, and its tree to memorise
+        if (ex.intro) { const I = ex.intro; sharh[id]['intro:' + id] = { title: '🌱 الباب ببساطة', foot: EXFOOT, secs: [
+          { src: 'عن ماذا يتكلم؟', ref: '', url: '', text: I.what }, { src: 'ليش مهم؟', ref: '', url: '', text: I.why },
+          { src: 'الفكرة خطوة خطوة', ref: '', url: '', text: num(I.steps) }, { src: 'مثال يجمع الباب', ref: '', url: '', text: I.example },
+          ...(I.tip ? [{ src: '⚠️ انتبه', ref: '', url: '', text: I.tip }] : [])] } }
+        if (ex.tree) sharh[id]['tree:' + id] = ex.tree;
         if (ex.words.length) sharh[id]['words:' + id] = { title: '📘 كلمات تحتاجها لتفهم الباب', foot: EXFOOT, secs: ex.words.map(w => ({ src: w.w, ref: '', url: '', text: w.m })) };
         const mine = ex.quiz.filter(q => (ends.findIndex(e => Math.min(...q.p) <= e) + 1 || k) - 1 === i);
         if (mine.length) sharh[id]['quiz:' + id] = { items: mine.map(q => ({ k: q.k, q: q.q, ...(q.c ? { c: q.c } : {}), a: q.a, w: q.w,

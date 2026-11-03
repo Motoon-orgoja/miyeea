@@ -200,3 +200,20 @@ select{font:15px var(--ui);color:var(--ink);background:var(--bg);border:1px soli
 .qz-w>b{font-size:16px}.qz-w.ok>b{color:var(--accent)}.qz-w.no>b{color:var(--gold)}
 .qz-w h4{margin:8px 0 2px;color:var(--muted);font-size:13px}.qz-w p{margin:0;line-height:1.9}
 .qz-score{font-size:28px;font-weight:800;text-align:center;margin:10px 0 0;color:var(--accent)}
+
+/* «🌱 الباب ببساطة», «🤔 سؤال سريع» and «🌳 تشجير الباب» (prose-engine.js) */
+.sharh.intro{border-color:var(--accent);background:var(--accent-soft)}
+.sharh.intro>summary,.sharh.tree>summary{color:var(--accent);font-weight:700}
+.qchk{border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:6px 0;background:var(--surface)}
+.qchk>summary{cursor:pointer;font-weight:600;line-height:1.8}
+.qchk[open]>summary{color:var(--accent)}.qchk p{margin:6px 0 0}
+.tr{overflow-x:auto;padding:4px 0 8px}
+.tr ul{list-style:none;margin:0;padding:0 18px 0 0;position:relative}
+.tr>ul{padding:0}
+.tr li{position:relative;padding:5px 0 0}
+.tr ul ul li::before{content:'';position:absolute;top:0;right:-12px;width:10px;height:21px;border-right:2px solid var(--line);border-bottom:2px solid var(--line);border-bottom-right-radius:8px}
+.tr ul ul li:not(:last-child)::after{content:'';position:absolute;top:0;bottom:0;right:-12px;border-right:2px solid var(--line)}
+.tn{display:inline-block;padding:5px 10px;border-radius:10px;background:var(--surface);border:1px solid var(--line);line-height:1.7;font-size:calc(15px*var(--us,1));transition:filter .2s}
+.tn.top{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+.tr>ul>li>ul>li>.tn{border-color:var(--accent);font-weight:600}
+.tn.hid{filter:blur(6px);cursor:pointer;user-select:none}

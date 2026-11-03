@@ -42,6 +42,11 @@ const BOOKS=[
   {key:'kharida',c:'العقيدة',lsk:'mutoon_kharida_v1',url:'kharida.html',t:'الخريدة البهية',d:'التوحيد على طريقة الأشاعرة · ٧١ بيتًا'},
   {key:'gharami',c:'مصطلح الحديث',lsk:'mutoon_gharami_v1',url:'gharami.html',t:'غرامي صحيح',d:'ألقاب الحديث في غزلية · ٢٠ بيتًا'},
   {key:'tahawiyya',c:'العقيدة',lsk:'mutoon_tahawiyya_v1',url:'tahawiyya.html',t:'العقيدة الطحاوية',d:'عقيدة أهل السنة والجماعة · ١٠٥ فقرات'},
+  {key:'jawhara',c:'العقيدة',lsk:'mutoon_jawhara_v1',url:'jawhara.html',t:'جوهرة التوحيد',d:'التوحيد على طريقة الأشاعرة · ١٤٤ بيتًا'},
+  {key:'amali',c:'العقيدة',lsk:'mutoon_amali_v1',url:'amali.html',t:'بدء الأمالي',d:'العقيدة على طريقة الماتريدية · ٦٧ بيتًا'},
+  {key:'mulha',c:'النحو',lsk:'mutoon_mulha_v1',url:'mulha.html',t:'ملحة الإعراب',d:'النحو نظمًا للمبتدئين · ٣٨٠ بيتًا'},
+  {key:'waraqat',c:'أصول الفقه',lsk:'mutoon_waraqat_v1',url:'waraqat.html',t:'الورقات',d:'مبادئ أصول الفقه للجويني · ٢١ بابًا'},
+  {key:'imriti',c:'أصول الفقه',lsk:'mutoon_imriti_v1',url:'imriti.html',t:'نظم الورقات',d:'نظم الورقات · ٢١١ بيتًا'},
 ];
 // the order of fields in the texts sheet
 const FIELDS=['القراءات والتجويد','علوم القرآن','العقيدة','الحديث','مصطلح الحديث','الفقه','أصول الفقه','الفرائض','النحو','الصرف','المنطق','السيرة النبوية','الرقائق والأذكار'];

@@ -251,7 +251,7 @@ function renderToday(){
     const tg=document.createElement('div'); tg.className='row'; const pl=document.createElement('span'); pl.className='pill new'; pl.textContent='قبل الحفظ · اقرأ الباب كامل'; tg.append(pl);
     const nt=document.createElement('p'); nt.className='note'; nt.style.margin='0';
     nt.textContent='اقرأ «'+CHI[CUR].title+'» كامل مرة بتمهّل وافهمه، وبعدين بتحفظ نقاطه المركزية ('+ar(U.length)+') كسؤال وجواب.';
-    const rd=sharhEl('read:'+CUR), wd=sharhEl('words:'+CUR); box.append(tg,nt); if(wd){wd.classList.add('words');box.append(wd)}
+    const rd=sharhEl('read:'+CUR), wd=sharhEl('words:'+CUR), it=introEl(CUR), tr=treeEl(CUR); box.append(tg,nt); if(it)box.append(it); if(wd){wd.classList.add('words');box.append(wd)} if(tr)box.append(tr);
     if(rd){rd.open=true;rd.classList.add('readall');box.append(rd)}else{const w=document.createElement('p');w.className='note';w.textContent='عم يتحمّل نص الباب…';box.append(w)}
     const ok=document.createElement('button'); ok.className='btn primary'; ok.textContent='قرأته، يلّا نحفظ ✓';
     ok.addEventListener('click',()=>{snap('قرأت «'+CHI[CUR].title+'»');S.read[CUR]=today();save();renderAll();scrollTo(0,0)});
@@ -340,7 +340,7 @@ function renderAll(){
   const b=S.blocks[CUR];
   st.textContent=b?`الباب محفوظ كامل ✓ · مراجعته: ${stageTxt(b)} · موعدها ${when(b.due)}`:`محفوظ ${ar(learnedIds().length)} من ${ar(U.length)} · لما تختم الباب بيصير مراجعة كاملة له ككتلة وحدة`;
   list.append(st);
-  if(QA){const wd=sharhEl('words:'+CUR);if(wd){wd.classList.add('words');list.append(wd)}const rd=sharhEl('read:'+CUR);if(rd){rd.classList.add('readall');list.append(rd)}const qc=quizCard(CUR);if(qc)list.append(qc)}
+  if(QA){const it=introEl(CUR);if(it){it.open=false;list.append(it)}const tr=treeEl(CUR);if(tr)list.append(tr);const wd=sharhEl('words:'+CUR);if(wd){wd.classList.add('words');list.append(wd)}const rd=sharhEl('read:'+CUR);if(rd){rd.classList.add('readall');list.append(rd)}const qc=quizCard(CUR);if(qc)list.append(qc)}
   CHI[CUR].units.forEach(u=>{if(!U.includes(u)){const el=unitEl(u,{status:false});el.classList.add('off');applyMode(el,mode.all);const ra=document.createElement('div');ra.className='row';ra.append(repBtn(u));el.append(ra);const ex=exEl(u.id);if(ex)el.append(ex);const sh=sharhEl(u.id);if(sh)el.append(sh);list.append(el);return}
     const el=unitEl(u,{status:true});applyMode(el,mode.all);
     const c=S.cards[u.id], acts=document.createElement('div'); acts.className='row';
@@ -366,7 +366,27 @@ function renderAll(){
    'ex:<point>' the point in plain words, 'words:<chapter>' its hard words, 'quiz:<chapter>' {items:[{k,q,c?,a,w,src}]},
    exercises that make the reader apply the chapter to new cases. One at a time: a choice is checked at once; an open one
    is thought through, revealed, and graded by the reader. S.quiz[chapter] = {best, last, day, wrong:[item index]} (percent). */
-function exEl(id){const e=sharhEl('ex:'+id);if(e)e.classList.add('exp');return e}
+function exEl(id){const e=sharhEl('ex:'+id);if(!e)return null;e.classList.add('exp');const ck=SHARH['ex:'+id].check;
+  // quick questions: think, then reveal the answer
+  if(ck&&ck.length){const h=document.createElement('h4');h.textContent='🤔 سؤال سريع';const f=e.querySelector('p.src:last-of-type');e.insertBefore(h,f);
+    ck.forEach(c=>{const q=document.createElement('details');q.className='qchk';const s=document.createElement('summary');s.textContent=c.q;const a=document.createElement('p');a.textContent=c.a;q.append(s,a);e.insertBefore(q,f)})}
+  return e}
+// the chapter's tree («تشجير»): nested branches; «خبّي الفروع» hides every branch's words until tapped, to recite it from memory
+function treeEl(cid){
+  const t=SHARH['tree:'+cid]; if(!t)return null;
+  const d=document.createElement('details'); d.className='sharh tree'; const sm=document.createElement('summary'); sm.textContent='🌳 تشجير الباب'; d.append(sm);
+  const bar=document.createElement('div'); bar.className='row'; const hb=document.createElement('button'); hb.className='btn'; hb.textContent='🙈 خبّي الفروع وسمّع';
+  const box=document.createElement('div'); box.className='tr';
+  const node=(n,top)=>{const li=document.createElement('li'); const b=document.createElement('span'); b.className='tn'+(top?' top':''); b.textContent=n.t;
+    b.addEventListener('click',()=>b.classList.remove('hid')); li.append(b);
+    if(n.c&&n.c.length){const ul=document.createElement('ul'); n.c.forEach(c=>ul.append(node(c))); li.append(ul)} return li};
+  const ul=document.createElement('ul'); ul.append(node(t,true)); box.append(ul);
+  let hidden=false; hb.addEventListener('click',()=>{hidden=!hidden; box.querySelectorAll('.tn:not(.top)').forEach(x=>x.classList.toggle('hid',hidden)); hb.textContent=hidden?'👁 اكشف الكل':'🙈 خبّي الفروع وسمّع'});
+  bar.append(hb); d.append(bar,box);
+  const n=document.createElement('p'); n.className='src'; n.textContent=hidden?'':'اضغط على أي فرع مخفي لتكشفه. التشجير مساعد للحفظ، والمرجع نص الكتاب.'; d.append(n);
+  return d;
+}
+function introEl(cid){const e=sharhEl('intro:'+cid);if(e){e.classList.add('intro');e.open=!S.read||!S.read[cid]}return e}
 const QK={case:'طبّق على مسألة',spot:'ميّز',why:'علّل',diff:'فرّق',tf:'صح أم خطأ؟',recall:'تذكّر'};
 function quizCard(cid,small){
   const z=SHARH['quiz:'+cid]; if(!z||!z.items.length)return null;

@@ -1,6 +1,7 @@
 {
- "source": "https://ketabonline.com/ar/books/102359 (حاشية المحلي على متن الورقات = شرح المحلي، الشاملة الذهبية، «مقابل ومشكول ومراجع»، نسخ وتشكيل مكتب الرحاب): matn = the parenthesized text of al-Mahalli, fully vocalized",
- "check": "https://www.ajurry.com/vb/... thread 4859 (standalone vocalized matn) + https://shamela.ws/book/6297 (الورقات، تحقيق د. عبد اللطيف محمد العبد، partly vocalized) + https://sites.google.com/site/mutonshraayah/home/mtn-alwrqat (standalone, unvocalized); word-by-word script collation, see waraqat-sources.md",
+ "source": "https://ketabonline.com/ar/books/102359 (حاشية المحلي على متن الورقات = شرح الجلال المحلي، الشاملة الذهبية، «مقابل ومشكول ومراجع»، نسخ وتشكيل مكتب الرحاب) - the matn is the text the edition prints in parentheses, fully vocalized",
+ "check": "standalone matn copies, word-by-word script collation: (1) https://www.ajurry.com/vb/forum/منابر-المتون-العلمية-وشروحها/منبر-الفقه-وأصوله/مـتـون-الفقه-وعلومه/4859 (vocalized); (2) https://shamela.ws/book/6297 (الورقات، تحقيق د. عبد اللطيف محمد العبد، partly vocalized); (3) https://sites.google.com/site/mutonshraayah/home/mtn-alwrqat (unvocalized) - see waraqat-sources.md",
+ "basmala": "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ",
  "chapters": [
   {
    "title": "مَعْنَى أُصُولِ الْفِقْهِ",
