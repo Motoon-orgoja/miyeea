@@ -320,4 +320,10 @@
 "ما عادت موجودة":{"fus":"لم تعد موجودة","en":"no longer exists"},
 "ما في نت":{"fus":"لا يوجد اتصال","en":"Offline"},
 "حلقة جديدة أو انضمام":{"fus":"حلقة جديدة أو انضمام","en":"New circle or join"},
-"➕ اعمل حلقة أو انضم لوحدة":{"fus":"➕ أنشئ حلقة أو انضمّ إلى واحدة","en":"➕ Create or join a circle"}}
+"➕ اعمل حلقة أو انضم لوحدة":{"fus":"➕ أنشئ حلقة أو انضمّ إلى واحدة","en":"➕ Create or join a circle"},
+"تمام، صار يوصلك تذكير أصحابك ودعاؤهم إشعار 🔔":{"fus":"تمّ، ستصلك تذكيرات أصحابك ودعواتهم إشعارًا 🔔","en":"Done — your friends' reminders and prayers now reach you as notifications 🔔"},
+"الإشعارات مقفلة من إعدادات المتصفح":{"fus":"الإشعارات معطّلة من إعدادات المتصفح","en":"Notifications are blocked in the browser settings"},
+"ما زبط تفعيل الإشعارات، جرّب كمان مرة":{"fus":"تعذّر تفعيل الإشعارات، حاول مرة أخرى","en":"Couldn't turn on notifications — try again"},
+"🔔 فعّل الإشعارات: يوصلك تذكير أصحابك ودعاؤهم حتى والموقع مسكّر":{"fus":"🔔 فعّل الإشعارات: تصلك تذكيرات أصحابك ودعواتهم ولو كان الموقع مغلقًا","en":"🔔 Turn on notifications: get your friends' reminders and prayers even when the site is closed"},
+"📲 عشان توصلك إشعارات أصحابك على الآيفون: من زر المشاركة اختار «إضافة إلى الشاشة الرئيسية»، وافتح الموقع من الأيقونة، وبعدين فعّل الإشعارات من هون.":{"fus":"📲 لتصلك إشعارات أصحابك على الآيفون: اختر من زر المشاركة «إضافة إلى الشاشة الرئيسية»، وافتح الموقع من الأيقونة، ثم فعّل الإشعارات من هنا.","en":"📲 To get your friends' notifications on iPhone: tap Share and choose «Add to Home Screen», open the site from that icon, then turn notifications on here."},
+"🔕 الإشعارات مقفلة لهالموقع من إعدادات المتصفح، فتذكير أصحابك بيوصلك بس لما تفتح الموقع.":{"fus":"🔕 الإشعارات معطّلة لهذا الموقع من إعدادات المتصفح، فلا تصلك تذكيرات أصحابك إلا حين تفتح الموقع.","en":"🔕 Notifications are blocked for this site in the browser settings, so your friends' reminders only reach you when you open the site."}}

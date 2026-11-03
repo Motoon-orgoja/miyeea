@@ -13,7 +13,7 @@ const SERVER='https://mutoon-sync.mutoon.workers.dev';
 const SYNC_URL=(()=>{try{return localStorage.getItem('mutoon_sync_url')||''}catch(e){return ''}})()||SERVER;
 const META='mutoon_meta', LINK='mutoon_sync_link', LAST='mutoon_sync_last';
 // keys that belong to this device only
-const local=k=>k===META||k.startsWith('mutoon_sync')||k.startsWith('ui_')||k.startsWith('transformers');
+const local=k=>k===META||k==='mutoon_webpush'||k.startsWith('mutoon_sync')||k.startsWith('ui_')||k.startsWith('transformers');
 const LS=window.localStorage, _set=Storage.prototype.setItem, _rm=Storage.prototype.removeItem;
 let meta; try{meta=JSON.parse(LS.getItem(META)||'null')}catch(e){meta=null}
 if(!meta){ // first run: what is already here counts as old (time 1), so anything edited anywhere later wins over it

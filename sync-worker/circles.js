@@ -6,7 +6,10 @@
 //   new {mid,tok,name,cname,stat} → {id}          join {id,mid,tok,name,stat} → circle
 //   get {id,mid,tok} → circle + my cheers         stat {ids,mid,tok,name,stat} → {ok}
 //   cheer {id,mid,tok,to,kind} → {ok}             leave {id,mid,tok,who?} → {ok}     rename {id,mid,tok,cname} → {ok}
+//   sub {mid,tok,sub:{endpoint,keys:{p256dh,auth}}, drop?} → {ok}   (this device's push subscription, or drop it)
+// A new cheer is also sent as a push notification to the devices the member subscribed (notify, given by the worker).
 const ALPH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', MAXM = 50, KINDS = ['dua', 'nudge', 'mabrook'];
+const SAY = { dua: 'دعالك 🤲', nudge: 'ذكّرك بالورد 🔔', mabrook: 'بارك لك 🎉' };
 const hex = /^[0-9a-f]{16,64}$/;
 async function sha(t) { const d = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode('mutoon-circle:' + t))); return [...d].map(b => b.toString(16).padStart(2, '0')).join('') }
 const clean = (s, n) => String(s || '').replace(/[\u0000-\u001f<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, n);
@@ -15,7 +18,7 @@ const day = () => new Date(Date.now() + 3 * 36e5).toISOString().slice(0, 10);
 function statOf(s) { const j = JSON.stringify(s || {}); if (j.length > 3000) throw new E(413, 'stat'); return j }
 class E extends Error { constructor(st, m) { super(m); this.st = st } }
 
-export async function circles(action, b, db) {
+export async function circles(action, b, db, notify) {
   const now = Date.now();
   if (!hex.test(b.mid || '') || !hex.test(b.tok || '')) throw new E(400, 'id');
   const th = await sha(b.tok);
@@ -32,6 +35,16 @@ export async function circles(action, b, db) {
     await db.newCircle(id, cname, b.mid, now);
     await db.putMember(id, b.mid, th, name, statOf(b.stat), now);
     return { id };
+  }
+  if (action === 'sub') {
+    // a member id's subscriptions all belong to the token that first made one
+    const own = await db.subTh(b.mid); if (own && own !== th) throw new E(403, 'member');
+    const s = b.sub || {}, k = s.keys || {}, ep = String(s.endpoint || '');
+    if (!/^https:\/\/[^\s]{10,900}$/.test(ep)) throw new E(400, 'sub');
+    if (b.drop) { await db.delSub(ep); return { ok: true } }
+    if (!/^[A-Za-z0-9_-]{80,100}$/.test(k.p256dh || '') || !/^[A-Za-z0-9_-]{16,30}$/.test(k.auth || '')) throw new E(400, 'sub');
+    await db.putSub(b.mid, th, ep, k.p256dh, k.auth, now);
+    return { ok: true };
   }
   const id = String(b.id || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
   if (action === 'stat') {
@@ -53,7 +66,8 @@ export async function circles(action, b, db) {
   if (action === 'cheer') {
     if (!KINDS.includes(b.kind) || !hex.test(b.to || '') || b.to === b.mid || !await db.member(id, b.to)) throw new E(400, 'cheer');
     // one cheer of each kind from one member to another a day
-    await db.addCheer(id, b.to, b.mid, m.name, b.kind, day(), now);
+    const added = await db.addCheer(id, b.to, b.mid, m.name, b.kind, day(), now);
+    if (added && notify) { const c = await db.circle(id); await notify(b.to, { t: c.name, b: m.name + ' ' + SAY[b.kind], u: 'home.html' }) }
     return { ok: true };
   }
   if (action === 'rename') {
@@ -87,7 +101,12 @@ export function d1(D) {
     putMember: (cid, mid, th, name, stat, at) => run('INSERT INTO members(cid,mid,th,name,stat,at,joined) VALUES(?,?,?,?,?,?,?)', cid, mid, th, name, stat, at, at),
     updateMember: (cid, mid, name, stat, at) => run('UPDATE members SET name=?,stat=?,at=? WHERE cid=? AND mid=?', name, stat, at, cid, mid),
     delMember: async (cid, mid) => { await run('DELETE FROM members WHERE cid=? AND mid=?', cid, mid); await run('DELETE FROM cheers WHERE cid=? AND (tomid=? OR frommid=?)', cid, mid, mid) },
-    addCheer: (cid, to, from, name, kind, d, at) => run('INSERT OR IGNORE INTO cheers(cid,tomid,frommid,fromname,kind,day,at) VALUES(?,?,?,?,?,?,?)', cid, to, from, name, kind, d, at),
+    addCheer: async (cid, to, from, name, kind, d, at) => (await run('INSERT OR IGNORE INTO cheers(cid,tomid,frommid,fromname,kind,day,at) VALUES(?,?,?,?,?,?,?)', cid, to, from, name, kind, d, at)).meta.changes > 0,
+    subTh: async mid => (await one('SELECT th FROM subs WHERE mid=? LIMIT 1', mid) || {}).th,
+    subs: async mid => (await D.prepare('SELECT ep,p256dh,auth FROM subs WHERE mid=?').bind(mid).all()).results,
+    // a member keeps at most 5 devices: the newest
+    putSub: async (mid, th, ep, p, a, at) => { await run('INSERT OR REPLACE INTO subs(ep,mid,th,p256dh,auth,at) VALUES(?,?,?,?,?,?)', ep, mid, th, p, a, at); await run('DELETE FROM subs WHERE mid=? AND ep NOT IN (SELECT ep FROM subs WHERE mid=? ORDER BY at DESC LIMIT 5)', mid, mid) },
+    delSub: ep => run('DELETE FROM subs WHERE ep=?', ep),
     takeCheers: async (cid, to) => {
       const r = (await D.prepare('SELECT fromname,kind,at FROM cheers WHERE cid=? AND tomid=? AND seen=0 ORDER BY at').bind(cid, to).all()).results;
       if (r.length) await run('UPDATE cheers SET seen=1 WHERE cid=? AND tomid=?', cid, to);
@@ -97,7 +116,7 @@ export function d1(D) {
 }
 
 export function memory() {
-  const C = new Map(), M = new Map(), H = [];
+  const C = new Map(), M = new Map(), H = [], S = new Map();
   const k = (c, m) => c + '|' + m;
   return {
     circle: async id => C.get(id) || null,
@@ -111,16 +130,24 @@ export function memory() {
     putMember: async (cid, mid, th, name, stat, at) => { M.set(k(cid, mid), { cid, mid, th, name, stat, at, joined: at }) },
     updateMember: async (cid, mid, name, stat, at) => Object.assign(M.get(k(cid, mid)), { name, stat, at }),
     delMember: async (cid, mid) => { M.delete(k(cid, mid)) },
-    addCheer: async (cid, to, from, name, kind, d, at) => { if (!H.some(h => h.cid === cid && h.to === to && h.from === from && h.kind === kind && h.d === d)) H.push({ cid, to, from, name, kind, d, at, seen: 0 }) },
+    addCheer: async (cid, to, from, name, kind, d, at) => { if (H.some(h => h.cid === cid && h.to === to && h.from === from && h.kind === kind && h.d === d)) return false; H.push({ cid, to, from, name, kind, d, at, seen: 0 }); return true },
+    subTh: async mid => ([...S.values()].find(s => s.mid === mid) || {}).th,
+    subs: async mid => [...S.values()].filter(s => s.mid === mid),
+    putSub: async (mid, th, ep, p256dh, auth, at) => { S.set(ep, { mid, th, ep, p256dh, auth, at }) },
+    delSub: async ep => { S.delete(ep) },
     takeCheers: async (cid, to) => H.filter(h => h.cid === cid && h.to === to && !h.seen).map(h => { h.seen = 1; return { from: h.name, kind: h.kind, at: h.at } }),
   };
 }
 
 // the HTTP side: POST /c/<action>, JSON in and out
-export async function handle(req, db, cors) {
+export async function handle(req, db, cors, notify) {
   const m = new URL(req.url).pathname.match(/^\/c\/([a-z]+)$/);
   const json = (o, st = 200) => new Response(JSON.stringify(o), { status: st, headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
   if (!m || req.method !== 'POST') return json({ error: 'not found' }, 404);
   let b; try { const t = await req.text(); if (t.length > 8000) throw 0; b = JSON.parse(t) } catch (e) { return json({ error: 'body' }, 400) }
-  try { return json(await circles(m[1], b, db)) } catch (e) { return json({ error: e.message }, e.st || 500) }
+  try { return json(await circles(m[1], b, db, notify)) } catch (e) { return json({ error: e.message }, e.st || 500) }
+}
+
+export async function pushTo(db, mid, msg, send) {
+  for (const s of await db.subs(mid)) { try { const st = await send(s, msg); if (st === 404 || st === 410) await db.delSub(s.ep) } catch (e) { } }
 }

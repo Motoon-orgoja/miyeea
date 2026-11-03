@@ -42,6 +42,36 @@ function today_(s){
 }
 const ago=t=>{const m=Math.round((Date.now()-t)/6e4);return m<2?'هلأ':m<60?'قبل '+ar(m)+' دقيقة':m<1440?'قبل '+ar(Math.round(m/60))+' ساعة':'قبل '+ar(Math.round(m/1440))+' يوم'};
 const CHEER={dua:['🤲','ادعيله','دعالك'],nudge:['🔔','ذكّره بالورد','ذكّرك بالورد'],mabrook:['🎉','بارك الله فيك','بارك لك']};
+
+/* push notifications: a cheer reaches the friend's device even when the site is closed (push.js in sync-worker/).
+   The iPhone allows it only to the site added to the home screen (iOS 16.4 and later). */
+const VAPID='BM_jWerlxMRyCtFOz93Buf8UL4DxmRGEvwKqRyy94UG7tvCxCWwhzd6ARntDhlXHyHx0xYIafCI273qgsJZs6qA';
+const PUSHK='mutoon_webpush';
+const canPush=()=>'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
+const iosTab=()=>/iPad|iPhone|iPod/.test(navigator.userAgent)&&!navigator.standalone&&!matchMedia('(display-mode: standalone)').matches;
+function pushState(){
+  if(!canPush())return iosTab()?'ios':'none';
+  return Notification.permission==='denied'?'denied':Notification.permission==='granted'&&get(PUSHK)?'on':'off';
+}
+async function subscribe(){
+  const reg=await navigator.serviceWorker.register('sw.js').then(()=>navigator.serviceWorker.ready);
+  const key=Uint8Array.from(atob(VAPID.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
+  const sub=await reg.pushManager.getSubscription()||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:key});
+  if(get(PUSHK)!==sub.endpoint){await api('sub',{sub:sub.toJSON()});put(PUSHK,sub.endpoint)}
+}
+async function enablePush(btn){
+  btn.disabled=true;
+  try{if(await Notification.requestPermission()!=='granted')throw 0;await subscribe();toast('تمام، صار يوصلك تذكير أصحابك ودعاؤهم إشعار 🔔');btn.remove()}
+  catch(e){toast(Notification.permission==='denied'?'الإشعارات مقفلة من إعدادات المتصفح':'ما زبط تفعيل الإشعارات، جرّب كمان مرة');btn.disabled=false}
+}
+// the offer to turn them on, where it fits: in a circle and on the home card
+function pushOffer(){
+  const st=pushState();
+  if(st==='off'){const b=el('button','btn primary','🔔 فعّل الإشعارات: يوصلك تذكير أصحابك ودعاؤهم حتى والموقع مسكّر');b.type='button';b.onclick=()=>enablePush(b);return b}
+  if(st==='ios')return el('p','ui-hint','📲 عشان توصلك إشعارات أصحابك على الآيفون: من زر المشاركة اختار «إضافة إلى الشاشة الرئيسية»، وافتح الموقع من الأيقونة، وبعدين فعّل الإشعارات من هون.');
+  if(st==='denied')return el('p','ui-hint','🔕 الإشعارات مقفلة لهالموقع من إعدادات المتصفح، فتذكير أصحابك بيوصلك بس لما تفتح الموقع.');
+  return null;
+}
 function showCheers(cs){if(cs&&cs.length)toast(cs.slice(-3).map(c=>c.from+' '+CHEER[c.kind][2]+' '+CHEER[c.kind][0]).join(' · '))}
 
 /* asking for a nickname the first time */
@@ -100,6 +130,7 @@ function render(v,fresh){
   const head=el('div','cc-head'); const code=el('div','ui-code',v.id.slice(0,4)+'-'+v.id.slice(4)); code.setAttribute('data-noi18n','');
   const inv=el('button','btn primary','📨 ادعُ أصحابك'); inv.onclick=()=>invite(v); head.append(code,inv); b.append(head);
   if(fresh)b.append(el('p','ui-hint','الحلقة جاهزة. ابعت الرابط لأصحابك، أو خلّيهم يكتبوا الكود من «حلقاتي».'));
+  const po=pushOffer(); if(po)b.append(po);
   const ms=v.members.slice().sort((a,b)=>{const r=x=>({done:0,mid:1,off:2})[today_(x.stat)[0]];return r(a)-r(b)||(b.stat.s||0)-(a.stat.s||0)});
   const done=ms.filter(x=>today_(x.stat)[0]==='done').length;
   b.append(el('div','chapstat',ar(done)+' من '+ar(ms.length)+' خلّصوا وردهم اليوم'));
@@ -135,6 +166,8 @@ async function card(box){
   for(const c of cs){const r=el('button','ui-book'),info=el('small','','…');r.type='button';r.append(el('b','',c.name),info);r.onclick=()=>openCircle(c.id);rows.append(r);
     api('get',{id:c.id}).then(v=>{showCheers(v.cheers);const d=v.members.filter(x=>today_(x.stat)[0]==='done').length;info.textContent=ar(v.members.length)+' أعضاء · '+ar(d)+' خلّصوا وردهم اليوم';
       if(v.name!==c.name)setList(list().map(x=>x.id===c.id?{id:x.id,name:v.name}:x))}).catch(e=>{info.textContent=e.st===403||e.st===404?'ما عادت موجودة':'ما في نت'})}
+  // notifications already on: keep the server's copy of this device's subscription current (it can change)
+  if(cs.length){if(pushState()==='on')subscribe().catch(()=>{});else{const po=pushOffer();if(po)box.append(po)}}
   const go=el('button','btn'+(cs.length?'':' primary'),cs.length?'حلقة جديدة أو انضمام':'➕ اعمل حلقة أو انضم لوحدة'); go.type='button'; go.onclick=open; box.append(go);
 }
 
