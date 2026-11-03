@@ -1,14 +1,15 @@
 name = "mutoon-sync"
 main = "worker.js"
 compatibility_date = "2026-01-01"
+account_id = "7ca944ff1de3511af3530dee90d99318"
 
 # create it once with: npx wrangler kv namespace create SYNC   — then paste the id here
 [[kv_namespaces]]
 binding = "SYNC"
-id = "REPLACE_WITH_KV_ID"
+id = "736b0f6c9cf2424f9edfb3670cbad68f"
 
 # «الحلقات»: npx wrangler d1 create mutoon-circles — paste the id here, then run schema.sql (see its first lines)
 [[d1_databases]]
 binding = "CIRCLES"
 database_name = "mutoon-circles"
-database_id = "REPLACE_WITH_D1_ID"
+database_id = "ab23a62c-eb83-4963-930d-f10179193d30"

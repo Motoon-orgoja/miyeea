@@ -8,8 +8,8 @@
      neither read nor tie the data to anyone. Each device pulls on opening and pushes a moment after a change.
    The server is the small Cloudflare Worker in sync-worker/. */
 (function(){
-// the deployed sync-worker; empty until it is set up (a local test server can be set in localStorage.mutoon_sync_url)
-const SERVER='';
+// the deployed sync-worker (a local test server can be set in localStorage.mutoon_sync_url)
+const SERVER='https://mutoon-sync.mutoon.workers.dev';
 const SYNC_URL=(()=>{try{return localStorage.getItem('mutoon_sync_url')||''}catch(e){return ''}})()||SERVER;
 const META='mutoon_meta', LINK='mutoon_sync_link', LAST='mutoon_sync_last';
 // keys that belong to this device only
