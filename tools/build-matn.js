@@ -45,7 +45,8 @@ if (fs.existsSync(T(key + '.txt'))) {
     else {
       // a very short paragraph joins the next one
       const paras = []; let carry = '';
-      for (const p0 of c.paras) { const p = (carry ? carry + ' ' : '') + p0.trim(); if (words(p) < 6) { carry = p; continue } carry = ''; paras.push(p) }
+      // a long paragraph is cut at clause ends, like a long hadith
+      for (const p0 of c.paras.flatMap(p => words(p) > 45 ? chunks(p, 30) : [p])) { const p = (carry ? carry + ' ' : '') + p0.trim(); if (words(p) < 6) { carry = p; continue } carry = ''; paras.push(p) }
       if (carry) paras.length ? paras[paras.length - 1] += ' ' + carry : paras.push(carry);
       paras.forEach((t, k) => units.push({ id: id + '_' + (k + 1), label: c.title + ' · ' + ar(k + 1), segs: [['matn', t]] }));
     }

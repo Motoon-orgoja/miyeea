@@ -11,6 +11,7 @@ const A = R('A.json');
 const FIX = [
   [2, 'وماء الثلج وماء البرد', 'وما ذاب من الثلج وماء البرد'],
   [2, 'وهوالماء', 'وهو الماء'],
+  [3, 'لقربه كالوضوء', 'لقربة كالوضوء'],
   [9, 'تحري للتوضؤ', 'تحرى للتوضؤ'],
   [12, 'أربيعن', 'أربعين'],
   [37, 'اثنا عشرة شيئا', 'اثنا عشر شيئا'],
@@ -118,6 +119,11 @@ const clean = t => t
   .replace(/\s+([،.:؛])/g, '$1').replace(/([،:؛])(?=\S)/g, '$1 ')
   .replace(/(^|\s)(الى|اذا|احدى)(?=\s)/g, (m, s, w) => s + ({ 'الى': 'إلى', 'اذا': 'إذا', 'احدى': 'إحدى' })[w])
   .replace(/\s+/g, ' ').trim();
+// spelling only (hamza, ة/ه, ى/ي) — checked against B and the commentary; applied as whole words everywhere
+const SPELL = [['والى', 'وإلى'], ['واذا', 'وإذا'], ['فاذا', 'فإذا'], ['او', 'أو'], ['فان', 'فإن'], ['احب', 'أحب'], ['الراس', 'الرأس'], ['الامام', 'الإمام'], ['اليه', 'إليه'], ['باس', 'بأس'], ['اعلم', 'أعلم'],
+  ['إلى ان', 'إلى أن'], ['بتسليمه', 'بتسليمة'], ['أهدنا', 'اهدنا'], ['اوليي', 'أوليي'], ['وصلاتة', 'وصلاته'], ['الأثنين', 'الاثنين'], ['والأطمئنان', 'والاطمئنان'],
+  ['للإحكام', 'للأحكام'], ['ولفافه', 'ولفافة'], ['نافله', 'نافلة'], ['مروحه', 'مروحة'], ['وأن ركع', 'وإن ركع'], ['وأن كان لكافر', 'وإن كان لكافر'], ['أو لقربه', 'أو لقربة']];
+const spell = t => SPELL.reduce((s, [a, b]) => s.replace(new RegExp('(^|[\\s،.:؛])' + a + '(?=[\\s،.:؛]|$)', 'g'), '$1' + b), t);
 const headClean = t => t.replace(/[\[\]"]/g, '').replace(/\s+/g, ' ').trim();
 
 // ---- chapters (word tokens with their source item) ----
@@ -133,7 +139,7 @@ A.forEach((x, i) => {
     else if (/^فصل /.test(h) && PREPEND[h.slice(4)]) pre = PREPEND[h.slice(4)];
     pend = h; pendPre = pre; return;
   }
-  let t = clean(x.text);
+  let t = spell(clean(x.text));
   if (t === 'تنبيه') t = 'تنبيه:';
   if (pend) { cur = { title: pend, group, items: [] }; chapters.push(cur); if (pendPre) cur.items.push({ text: pendPre, page: x.page, i: -1 }); pend = null; }
   cur.items.push({ text: t, page: x.page, i });
@@ -197,7 +203,6 @@ const out = chapters.map((c, ci) => {
 const json = {
   source: 'https://shamela.ws/book/412 (مراقي الفلاح شرح متن نور الإيضاح، اعتنى به نعيم زرزور، المكتبة العصرية ١٤٢٥هـ: المتن المطبوع أعلى الصفحات؛ والزكاة والحج من نص الشرح نفسه) — نص غير مشكول',
   check: 'https://shamela.ws/book/12117 (نور الإيضاح، ت. محمد أنيس مهرات، المكتبة العصرية) + ألفاظ المتن المقتبسة داخل شرح مراقي الفلاح (shamela 412) + حاشية الطحطاوي (ketabonline 1088) للزكاة والحج؛ كل الفروق في nuridah-sources.md',
-  vocalized: false,
   chapters: out,
 };
 fs.writeFileSync(path.join(__dirname, 'nuridah.json'), JSON.stringify(json, null, 1) + '\n');

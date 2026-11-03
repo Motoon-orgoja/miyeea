@@ -36,6 +36,11 @@ const AFIX = [
   [/عَارِفِينَ \[مؤمنين\] \(١\) /, 'عَارِفِينَ '],                  // al-Albani's addition from one MS (not in Ibn Abi al-Izz): dropped
   [/ \(٢\) \[تقدس عن كل سوء وحين \(١\) وتنزه عن كل عيب وشين\]/, ''],  // same
   [/عَنْهم/g, 'عَنْهُمْ'],
+  [/\] ف صَلَّى/, '] فصَلَّى'],                                   // «فصلى» printed apart after the Qur'an reference
+  [/قَالَ تَعَالَى لَا يُكَلِّفُ الله نفسا/, 'قَالَ تَعَالَى (لَا يُكَلِّفُ الله نفسا'],   // missing opening parenthesis of the verse
+  [/غلبت مشيئة الْمَشِيئَاتِ/, 'غلبت مشيئته الْمَشِيئَاتِ'],
+  [/وَعُثْمَانُ علي /, 'وَعُثْمَانُ وعلي '],
+  [/تائها شاكا لا مؤمنا/, 'تائها شاكا زائغا لا مؤمنا'],
 ];
 let A = paras.map(p => p.join(' '));
 const ahits = AFIX.map(() => 0);
@@ -105,7 +110,7 @@ function transfer(toks, name) {
         if (tried.some(t => Math.abs(t - bs) < 30)) continue; tried.push(bs); if (tried.length > 4) break;
         const lo = Math.max(0, bs - 20), hi = Math.min(D.length, bs + a.length + 40);
         let got = 0;
-        for (const [ai, dj] of runs(lcs(a, D, lo, hi))) { const t = toks[s + ai]; if (!t.v) { t.v = D[dj].w; t.src = name; got++; } }
+        for (const [ai, dj] of runs(lcs(a, D, lo, hi))) { const t = toks[s + ai]; if (!t.v) { t.v = D[dj].w; t.src = name; t.dj = dj; got++; } }
         if (got) { progress = true; break; }
       }
     }
@@ -114,16 +119,19 @@ function transfer(toks, name) {
 const fullyVoc = w => { const c = [...bare(w).replace(PUN, '')]; for (let i = 0; i < c.length; i++) { const ch = c[i]; if (!/[ء-ي]/.test(ch) || 'اويىآٱءة'.includes(ch)) continue; if (ch === 'ل' && (c[i - 1] === 'ا')) continue; if (!MARKS.test(c[i + 1] || '')) return false; } return MARKS.test(w); };
 // hand completion: key = paragraph number + ':' + albani word (letters) -> vocalized word (each logged)
 const MANUAL = JSON.parse(fs.readFileSync(path.join(__dirname, 'manual-voc.json'), 'utf8'));
-const log = [];
+const log = [], used = {};
 P.forEach((toks, pi) => {
   transfer(toks, 'I');
   transfer(toks, 'Q');
   toks.forEach(t => {
     if (t.v && letters(t.v) !== t.l) throw new Error('letters mismatch ' + t.v + ' / ' + t.a);
     if (!t.v && fullyVoc(t.a)) { t.v = t.a; t.src = 'A'; }
-    if (!t.v) { const k = pi + ':' + t.l; if (MANUAL[k]) { t.v = MANUAL[k]; t.src = 'M'; } }
+    if (!t.v) { const k = pi + ':' + t.l; if (MANUAL.fill[k]) { t.v = NFC(MANUAL.fill[k]); t.src = 'M'; used[k] = 1; } }
+    { const k = pi + ':' + t.l; if (MANUAL.override[k]) { t.v = NFC(MANUAL.override[k]); t.src = 'M!'; used[k] = 1; } }
+    if (t.v && letters(t.v) !== t.l) throw new Error('manual letters mismatch ' + t.v + ' / ' + t.a);
   });
 });
+for (const k of [...Object.keys(MANUAL.fill), ...Object.keys(MANUAL.override)]) if (!used[k]) { if (k in MANUAL.override) throw new Error('override unused: ' + k); console.log('fill not needed (donor found it): ' + k); }
 const missing = [];
 P.forEach((toks, pi) => toks.forEach((t, k) => { if (!t.v) missing.push(pi + ':' + t.l + '\t' + toks.slice(Math.max(0, k - 3), k + 3).map(x => x.a).join(' ')); }));
 if (missing.length) { fs.writeFileSync(logf + '.missing', missing.join('\n') + '\n'); console.log('MISSING', missing.length, '-> ' + logf + '.missing'); }
@@ -135,8 +143,13 @@ const render = toks => {
   toks.forEach((t, k) => {
     let w = bare(t.v || t.a);
     let p = (w.match(PUN) || [''])[0]; w = w.replace(PUN, '');
+    // punctuation: al-Albani's own, else the donor's only when the next word comes from the same donor position (same context)
+    const ap = (bare(t.a).match(PUN) || [''])[0], nx = toks[k + 1];
+    if (ap) p = ap; else if (t.src && t.src[0] === 'M') { /* hand-set punctuation kept */ } else if (!(nx && t.dj !== undefined && nx.src === t.src && nx.dj === t.dj + 1)) p = '';
     if (t.quran) p = ''; // punctuation inside a quotation is not carried over
     w = fixCase[w] || w;
+    w = w.replace(/اً/g, 'ًا').replace(/ىً/g, 'ًى');            // tanween fath written before the alif/ya (style of the main donor)
+    if (t.src === 'Q') w = w.replace(/^([وفبكل]َ?|[بل]ِ)?ال(?=[ء-ي][ً-ِ])/, (m, p) => (p || '') + 'الْ').replace(/الله([َُِ])$/, 'اللَّه$1');
     if (t.open) w = '﴿' + w;
     if (t.close) w = w + '﴾';
     o.push(w + p);

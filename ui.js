@@ -36,6 +36,12 @@ const BOOKS=[
   {key:'alfiyya',c:'النحو',lsk:'mutoon_alfiyya_v1',url:'alfiyya.html',t:'ألفية ابن مالك',d:'النحو والصرف · ١٠٠٢ بيت'},
   {key:'sullam',c:'المنطق',lsk:'mutoon_sullam_v1',url:'sullam.html',t:'السُّلَّم المُنَوْرَق',d:'مبادئ المنطق · ١٤٤ بيتًا'},
   {key:'lamiyya',c:'الصرف',lsk:'mutoon_lamiyya_v1',url:'lamiyya.html',t:'لامية الأفعال',d:'أبنية الأفعال وتصريفها · ١١٤ بيتًا'},
+  {key:'qatr',c:'النحو',lsk:'mutoon_qatr_v1',url:'qatr.html',t:'قطر الندى',d:'المتن المتوسط بعد الآجرومية · ٢٧ بابًا'},
+  {key:'akhdari',c:'الفقه',lsk:'mutoon_akhdari_v1',url:'akhdari.html',t:'متن الأخضري',d:'فقه العبادات على مذهب مالك · ٨ فصول'},
+  {key:'zamzami',c:'علوم القرآن',lsk:'mutoon_zamzami_v1',url:'zamzami.html',t:'منظومة الزمزمي',d:'أصول التفسير نظمًا · ١٥٨ بيتًا'},
+  {key:'kharida',c:'العقيدة',lsk:'mutoon_kharida_v1',url:'kharida.html',t:'الخريدة البهية',d:'التوحيد على طريقة الأشاعرة · ٧١ بيتًا'},
+  {key:'gharami',c:'مصطلح الحديث',lsk:'mutoon_gharami_v1',url:'gharami.html',t:'غرامي صحيح',d:'ألقاب الحديث في غزلية · ٢٠ بيتًا'},
+  {key:'tahawiyya',c:'العقيدة',lsk:'mutoon_tahawiyya_v1',url:'tahawiyya.html',t:'العقيدة الطحاوية',d:'عقيدة أهل السنة والجماعة · ١٠٥ فقرات'},
 ];
 // the order of fields in the texts sheet
 const FIELDS=['القراءات والتجويد','علوم القرآن','العقيدة','الحديث','مصطلح الحديث','الفقه','أصول الفقه','الفرائض','النحو','الصرف','المنطق','السيرة النبوية','الرقائق والأذكار'];

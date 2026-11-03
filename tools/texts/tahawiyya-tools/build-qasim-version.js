@@ -1,4 +1,4 @@
-// Builds tools/texts/tahawiyya.json from raw/tahawiyya/qasim.txt (Shamela 574, نص العقيدة الطحاوية بتحقيق عبد المحسن القاسم).
+// SUPERSEDED (first version, al-Qasim recension; kept for reference - the delivered file is built by build2.js). Builds a json from raw/tahawiyya/qasim.txt.
 // usage: node build.js <qasim.txt> <out.json>
 const fs = require('fs');
 const [src, out] = process.argv.slice(2);
