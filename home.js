@@ -145,6 +145,7 @@ if(!started.length)$('progList').append(el('div','empty','بيظهر هون تق
 if(window.CIRCLES&&CIRCLES.available){
   CIRCLES.setStatus({s:streak,d30:last30,td:days.has(T),open:active.length?open:-1,v:verses,u:units,
     bk:active.slice(0,4).map(r=>[r.b.title,r.done,r.total])});
+  CIRCLES.banner($('pushBar'));
   const cc=$('circleCard'); cc.hidden=false; CIRCLES.card(cc); CIRCLES.fromHash(); addEventListener('hashchange',CIRCLES.fromHash);
 }
 const grid=$('heat'), start=addDays(T,-7*11-((new Date(T+'T12:00:00Z').getUTCDay()+1)%7));

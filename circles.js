@@ -27,7 +27,8 @@ const errText=e=>e.st===404?'ما لقينا هالحلقة، تأكد من ال
 let STAT=null;
 function setStatus(s){
   STAT={...s,day:today()};
-  const ids=list().map(c=>c.id), m=me(); if(!ids.length||!m.name)return;
+  // read, not me(): making an empty id here would outrank the one a linked device brings (the newer key wins)
+  const ids=list().map(c=>c.id), m=get('mutoon_me'); if(!ids.length||!m||!m.name)return;
   const h=JSON.stringify(STAT), last=get('mutoon_circle_push')||{};
   if(last.h===h&&Date.now()-last.at<3*36e5)return;
   api('stat',{ids,name:m.name,stat:STAT}).then(()=>put('mutoon_circle_push',{h,at:Date.now()})).catch(()=>{});
@@ -48,9 +49,11 @@ const CHEER={dua:['🤲','ادعيله','دعالك'],nudge:['🔔','ذكّره 
 const VAPID='BM_jWerlxMRyCtFOz93Buf8UL4DxmRGEvwKqRyy94UG7tvCxCWwhzd6ARntDhlXHyHx0xYIafCI273qgsJZs6qA';
 const PUSHK='mutoon_webpush';
 const canPush=()=>'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
-const iosTab=()=>/iPad|iPhone|iPod/.test(navigator.userAgent)&&!navigator.standalone&&!matchMedia('(display-mode: standalone)').matches;
+const IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const STANDALONE=!!navigator.standalone||matchMedia('(display-mode: standalone)').matches;
+const iosTab=()=>IOS&&!STANDALONE;
 function pushState(){
-  if(!canPush())return iosTab()?'ios':'none';
+  if(!canPush())return iosTab()?'ios':IOS?'old':'none';
   return Notification.permission==='denied'?'denied':Notification.permission==='granted'&&get(PUSHK)?'on':'off';
 }
 async function subscribe(){
@@ -63,6 +66,59 @@ async function enablePush(btn){
   btn.disabled=true;
   try{if(await Notification.requestPermission()!=='granted')throw 0;await subscribe();toast('تمام، صار يوصلك تذكير أصحابك ودعاؤهم إشعار 🔔');btn.remove()}
   catch(e){toast(Notification.permission==='denied'?'الإشعارات مقفلة من إعدادات المتصفح':'ما زبط تفعيل الإشعارات، جرّب كمان مرة');btn.disabled=false}
+}
+/* the banner at the top of the home page, for members of a circle whose notifications are not on yet.
+   On the iPhone the site must be added to the home screen first, and the icon opens with storage of its own:
+   so this device is linked for sync (sync.js) and the icon's start page carries the sync code (#link=…),
+   which brings the progress, the circles and the member id over by themselves. The code is also shown, as a fallback. */
+const LATER='ui_pushbar_later';
+async function carry(){
+  if(!window.SYNC||!SYNC.available)return '';
+  if(!SYNC.linked())await SYNC.link(SYNC.newSecret());
+  const code=SYNC.code(), start=new URL('home.html#link='+code,location.href).href;
+  history.replaceState(null,'','home.html#link='+code);
+  // the icon starts at the manifest's start_url: give this page a copy that carries the code
+  try{const m=await (await fetch('manifest.webmanifest')).json(), abs=u=>new URL(u,location.href).href;
+    m.start_url=start;m.scope=abs('./');m.icons.forEach(i=>i.src=abs(i.src));
+    document.querySelector('link[rel=manifest]').href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}))}catch(e){}
+  return code;
+}
+function banner(box){
+  box.replaceChildren(); box.hidden=true;
+  const st=pushState(), cs=list().length;
+  // the home-screen icon opened empty on an iPhone: offer to bring things over with the code
+  if(IOS&&STANDALONE&&!cs&&window.SYNC&&!SYNC.linked()&&!localStorage.getItem('ui_carry_no')){
+    box.append(el('b','','📲 جاي من سفاري؟'),el('p','','إذا كنت بحلقة أو بتحفظ على سفاري، اكتب رمز النقل اللي طلعلك هناك، وبينتقل كل اشي لهون.'));
+    const i=el('input');i.placeholder='XXXXX-XXXXX-XXXXX-XXXXX';i.setAttribute('autocapitalize','characters');i.setAttribute('data-noi18n','');
+    const ok=el('button','btn primary','انقل');ok.onclick=async()=>{ok.disabled=true;try{await SYNC.link(i.value);location.reload()}catch(e){toast('الرمز مش صحيح أو ما في نت');ok.disabled=false}};
+    const no=el('button','btn','لا، أنا جديد');no.onclick=()=>{try{localStorage.setItem('ui_carry_no','1')}catch(e){}box.hidden=true};
+    const row=el('div','cc-acts');row.append(ok,no);box.append(i,row); box.hidden=false; return;
+  }
+  if(!cs||st==='on')return;
+  if(Date.now()-(+localStorage.getItem(LATER)||0)<3*864e5)return;
+  const later=el('button','btn','لاحقًا'); later.onclick=()=>{try{localStorage.setItem(LATER,Date.now())}catch(e){}box.hidden=true};
+  if(st==='off'){
+    box.append(el('b','','🔔 فعّل الإشعارات'),el('p','','عشان يوصلك تذكير أصحابك بالحلقة ودعاؤهم ومباركتهم على جوالك، حتى والموقع مسكّر.'));
+    const on=el('button','btn primary','🔔 فعّل الإشعارات');on.onclick=async()=>{await enablePush(on);if(pushState()==='on')box.hidden=true};
+    const row=el('div','cc-acts');row.append(on,later);box.append(row);
+  }else if(st==='ios'){
+    box.append(el('b','','🔔 عشان يوصلك تذكير أصحابك إشعار على الآيفون'));
+    const ol=el('ol','pb-steps');
+    [['زر المشاركة ',el('span','pb-ico','⬆︎'),' تحت الشاشة'],['اختار «إضافة إلى الشاشة الرئيسية» (إذا ما شفته انزل بالقائمة)'],['افتح «المتون» من الأيقونة الجديدة، وبيطلعلك فوق زر «فعّل الإشعارات»']]
+      .forEach(p=>{const li=el('li');li.append(...p.map(x=>typeof x==='string'?document.createTextNode(x):x));ol.append(li)});
+    ol.firstChild.prepend(document.createTextNode('اكبس '));
+    box.append(ol);
+    const note=el('p','pb-note','تقدمك وحلقاتك بينتقلوا معك للأيقونة لحالهم.'); box.append(note);
+    carry().then(code=>{if(code){const c=el('span','',code);c.setAttribute('data-noi18n','');note.append(document.createTextNode(' وإذا ما انتقلوا، اكتب هناك هالرمز: '),c)}}).catch(()=>{});
+    box.append(later);
+  }else if(st==='old'){
+    box.append(el('b','','🔔 الإشعارات بدها تحديث للآيفون'),el('p','','حدّث الآيفون لـ iOS 16.4 أو أحدث، وبعدين بتقدر تفعّل الإشعارات من هون.'),later);
+  }else if(st==='denied'){
+    box.append(el('b','','🔕 الإشعارات مقفلة'),el('p','','افتح إعدادات الموقع بالمتصفح (القفل جنب العنوان) واسمح بالإشعارات، عشان يوصلك تذكير أصحابك.'),later);
+  }else{
+    box.append(el('b','','🔔 متصفحك هاد ما بيدعم الإشعارات'),el('p','','إذا فتحت الموقع من جوّا إنستغرام أو فيسبوك، افتحه بـ Chrome أو Safari عشان يوصلك تذكير أصحابك.'),later);
+  }
+  box.hidden=false;
 }
 // the offer to turn them on, where it fits: in a circle and on the home card
 function pushOffer(){
@@ -171,8 +227,12 @@ async function card(box){
   const go=el('button','btn'+(cs.length?'':' primary'),cs.length?'حلقة جديدة أو انضمام':'➕ اعمل حلقة أو انضم لوحدة'); go.type='button'; go.onclick=open; box.append(go);
 }
 
-// an invitation link: home.html#join=CODE
-function fromHash(){const m=location.hash.match(/#join=([A-Za-z0-9-]+)/);if(!m)return;history.replaceState(null,'',location.pathname+location.search);setTimeout(()=>join(m[1]),400)}
+// an invitation link: home.html#join=CODE; the iPhone icon's first start: home.html#link=SYNCCODE (see carry)
+function fromHash(){
+  const l=location.hash.match(/#link=([A-Za-z0-9-]+)/);
+  if(l){history.replaceState(null,'',location.pathname+location.search);// only the icon itself takes it: a shared copy of the link must not link someone else
+    if(STANDALONE&&window.SYNC&&!SYNC.linked())SYNC.link(l[1]).then(()=>location.reload()).catch(()=>{});return}
+  const m=location.hash.match(/#join=([A-Za-z0-9-]+)/);if(!m)return;history.replaceState(null,'',location.pathname+location.search);setTimeout(()=>join(m[1]),400)}
 
-window.CIRCLES={available:!!URL_,open,join,openCircle,setStatus,card,fromHash};
+window.CIRCLES={available:!!URL_,open,join,openCircle,setStatus,card,banner,fromHash};
 })();

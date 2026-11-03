@@ -76,6 +76,15 @@ a.btn{text-decoration:none;text-align:center}
 .cc-bk .bar{grid-column:1/-1;height:6px}
 .cc-acts{display:flex;flex-wrap:wrap;gap:6px}
 .cc-acts .btn{font-size:13px;padding:6px 10px}
+/* the notifications banner at the top (circles.js banner) */
+.pushbar{background:var(--gold-soft);border:1.5px solid var(--gold);display:flex;flex-direction:column;gap:8px}
+.pushbar b{font-size:16px}
+.pushbar p{margin:0;font-size:14px;line-height:1.7}
+.pushbar .pb-steps{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:6px;font-size:14.5px;line-height:1.6}
+.pushbar .pb-ico{display:inline-block;border:1.5px solid currentColor;border-radius:6px;padding:0 6px;font-weight:700}
+.pushbar .pb-note{color:var(--muted);font-size:12.5px}
+.pushbar .pb-note span{font-family:monospace;font-weight:700;color:var(--ink,inherit);direction:ltr;unicode-bidi:isolate}
+.pushbar .cc-acts .btn{font-size:14px;padding:8px 14px}
 </style>
 </head>
 <body>
@@ -86,6 +95,7 @@ a.btn{text-decoration:none;text-align:center}
     <p id="dayLbl"></p>
   </header>
 
+  <section class="card pushbar" id="pushBar" hidden></section>
   <a class="hero" id="hero" hidden></a>
   <section class="card">
     <div class="chapstat" id="todaySum"></div>
