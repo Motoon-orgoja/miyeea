@@ -4,8 +4,8 @@
 // only preset cheers, so nothing written by one member reaches another except the nickname and the circle's name.
 // Every call is POST /c/<action> with a JSON body:
 //   new {mid,tok,name,cname,stat} → {id}          join {id,mid,tok,name,stat} → circle
-//   get {id,mid,tok} → circle + my cheers         stat {ids,mid,tok,name,stat} → {ok}
-//   cheer {id,mid,tok,to,kind} → {ok}             leave {id,mid,tok,who?} → {ok}     rename {id,mid,tok,cname} → {ok}
+//   get {id,mid,tok} → circle + my cheers + sent (what I sent today)   stat {ids,mid,tok,name,stat} → {ok}
+//   cheer {id,mid,tok,to,kind} → {ok, sent: false if already sent today}             leave {id,mid,tok,who?} → {ok}     rename {id,mid,tok,cname} → {ok}
 //   sub {mid,tok,sub:{endpoint,keys:{p256dh,auth}}, drop?} → {ok}   (this device's push subscription, or drop it)
 // A new cheer is also sent as a push notification to the devices the member subscribed (notify, given by the worker).
 const ALPH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', MAXM = 50, KINDS = ['dua', 'nudge', 'mabrook'];
@@ -62,13 +62,13 @@ export async function circles(action, b, db, notify) {
     return view(id);
   }
   const m = await me(id);
-  if (action === 'get') { const v = await view(id); v.cheers = await db.takeCheers(id, b.mid); return v }
+  if (action === 'get') { const v = await view(id); v.cheers = await db.takeCheers(id, b.mid); v.sent = await db.sentToday(id, b.mid, day()); return v }
   if (action === 'cheer') {
     if (!KINDS.includes(b.kind) || !hex.test(b.to || '') || b.to === b.mid || !await db.member(id, b.to)) throw new E(400, 'cheer');
     // one cheer of each kind from one member to another a day
     const added = await db.addCheer(id, b.to, b.mid, m.name, b.kind, day(), now);
     if (added && notify) { const c = await db.circle(id); await notify(b.to, { t: c.name, b: m.name + ' ' + SAY[b.kind], u: 'home.html' }) }
-    return { ok: true };
+    return { ok: true, sent: added };
   }
   if (action === 'rename') {
     const c = await db.circle(id); if (c.owner !== b.mid) throw new E(403, 'owner');
@@ -102,6 +102,7 @@ export function d1(D) {
     updateMember: (cid, mid, name, stat, at) => run('UPDATE members SET name=?,stat=?,at=? WHERE cid=? AND mid=?', name, stat, at, cid, mid),
     delMember: async (cid, mid) => { await run('DELETE FROM members WHERE cid=? AND mid=?', cid, mid); await run('DELETE FROM cheers WHERE cid=? AND (tomid=? OR frommid=?)', cid, mid, mid) },
     addCheer: async (cid, to, from, name, kind, d, at) => (await run('INSERT OR IGNORE INTO cheers(cid,tomid,frommid,fromname,kind,day,at) VALUES(?,?,?,?,?,?,?)', cid, to, from, name, kind, d, at)).meta.changes > 0,
+    sentToday: async (cid, from, d) => (await D.prepare('SELECT tomid,kind FROM cheers WHERE cid=? AND frommid=? AND day=?').bind(cid, from, d).all()).results.map(x => [x.tomid, x.kind]),
     subTh: async mid => (await one('SELECT th FROM subs WHERE mid=? LIMIT 1', mid) || {}).th,
     subs: async mid => (await D.prepare('SELECT ep,p256dh,auth FROM subs WHERE mid=?').bind(mid).all()).results,
     // a member keeps at most 5 devices: the newest
@@ -131,6 +132,7 @@ export function memory() {
     updateMember: async (cid, mid, name, stat, at) => Object.assign(M.get(k(cid, mid)), { name, stat, at }),
     delMember: async (cid, mid) => { M.delete(k(cid, mid)) },
     addCheer: async (cid, to, from, name, kind, d, at) => { if (H.some(h => h.cid === cid && h.to === to && h.from === from && h.kind === kind && h.d === d)) return false; H.push({ cid, to, from, name, kind, d, at, seen: 0 }); return true },
+    sentToday: async (cid, from, d) => H.filter(h => h.cid === cid && h.from === from && h.d === d).map(h => [h.to, h.kind]),
     subTh: async mid => ([...S.values()].find(s => s.mid === mid) || {}).th,
     subs: async mid => [...S.values()].filter(s => s.mid === mid),
     putSub: async (mid, th, ep, p256dh, auth, at) => { S.set(ep, { mid, th, ep, p256dh, auth, at }) },

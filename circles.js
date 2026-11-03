@@ -42,7 +42,8 @@ function today_(s){
   return s.td?['mid','بلّش · باقي '+ar(s.open)]:['off','لسا ما بلّش'];
 }
 const ago=t=>{const m=Math.round((Date.now()-t)/6e4);return m<2?'هلأ':m<60?'قبل '+ar(m)+' دقيقة':m<1440?'قبل '+ar(Math.round(m/60))+' ساعة':'قبل '+ar(Math.round(m/1440))+' يوم'};
-const CHEER={dua:['🤲','ادعيله','دعالك'],nudge:['🔔','ذكّره بالورد','ذكّرك بالورد'],mabrook:['🎉','بارك الله فيك','بارك لك']};
+// [icon, button, what the friend reads, the button once sent today]: each kind goes once a day to each member
+const CHEER={dua:['🤲','ادعيله','دعالك','دعيتله اليوم ✓'],nudge:['🔔','ذكّره بالورد','ذكّرك بالورد','ذكّرته اليوم ✓'],mabrook:['🎉','بارك الله فيك','بارك لك','باركتله اليوم ✓']};
 
 /* push notifications: a cheer reaches the friend's device even when the site is closed (push.js in sync-worker/).
    The iPhone allows it only to the site added to the home screen (iOS 16.4 and later). */
@@ -190,7 +191,7 @@ function render(v,fresh){
   const ms=v.members.slice().sort((a,b)=>{const r=x=>({done:0,mid:1,off:2})[today_(x.stat)[0]];return r(a)-r(b)||(b.stat.s||0)-(a.stat.s||0)});
   const done=ms.filter(x=>today_(x.stat)[0]==='done').length;
   b.append(el('div','chapstat',ar(done)+' من '+ar(ms.length)+' خلّصوا وردهم اليوم'));
-  const box=el('div','cc-list'); b.append(box);
+  const box=el('div','cc-list'), sent=new Set((v.sent||[]).map(([to,k])=>to+'|'+k)); b.append(box);
   ms.forEach(x=>{
     const s=x.stat||{}, [k,t]=today_(s), row=el('div','cc-m'+(x.mid===m.mid?' me':''));
     const top=el('div','cc-top'); top.append(el('b','',x.name+(x.mid===m.mid?' (إنت)':'')+(x.mid===v.owner?' ★':'')),el('span','cc-st '+k,t)); row.append(top);
@@ -199,14 +200,15 @@ function render(v,fresh){
     (s.bk||[]).forEach(([title,d,tot])=>{const p=el('div','cc-bk');p.append(el('span','',title),el('small','',ar(d)+' من '+ar(tot)));const bar=el('div','bar'),i=el('i');i.style.width=Math.max(d?2:0,Math.min(100,d/Math.max(1,tot)*100))+'%';bar.append(i);p.append(bar);row.append(p)});
     if(x.mid!==m.mid){
       const acts=el('div','cc-acts');
-      (k==='done'?['mabrook','dua']:['nudge','dua']).forEach(kind=>{const c=el('button','btn','');c.textContent=CHEER[kind][0]+' '+CHEER[kind][1];
-        c.onclick=async()=>{c.disabled=true;try{await api('cheer',{id:v.id,to:x.mid,kind});c.textContent=CHEER[kind][0]+' وصلته ✓'}catch(e){toast(errText(e));c.disabled=false}};acts.append(c)});
+      (k==='done'?['mabrook','dua']:['nudge','dua']).forEach(kind=>{const c=el('button','btn',''),was=()=>{c.textContent=CHEER[kind][0]+' '+CHEER[kind][3];c.disabled=true};
+        c.textContent=CHEER[kind][0]+' '+CHEER[kind][1]; if(sent.has(x.mid+'|'+kind))was();
+        c.onclick=async()=>{c.disabled=true;try{const r=await api('cheer',{id:v.id,to:x.mid,kind});was();if(r.sent===false)toast('بعتله هاد اليوم قبل، وبيوصل مرة وحدة باليوم')}catch(e){toast(errText(e));c.disabled=false}};acts.append(c)});
       if(mine){const rm=el('button','btn','إخراج');rm.onclick=async()=>{if(!confirm('بدك تطلّع «'+x.name+'» من الحلقة؟'))return;try{await api('leave',{id:v.id,who:x.mid});openCircle(v.id)}catch(e){toast(errText(e))}};acts.append(rm)}
       row.append(acts);
     }
     box.append(row);
   });
-  b.append(el('p','ui-hint',SHARE_NOTE));
+  b.append(el('p','ui-hint','كل تشجيع بيوصل لصاحبك مرة وحدة باليوم، عشان ما يصير إزعاج.'),el('p','ui-hint',SHARE_NOTE));
   const foot=el('div','cc-acts');
   if(mine){const rn=el('button','btn','✏️ غيّر اسم الحلقة');rn.onclick=async()=>{const n=prompt('اسم الحلقة',v.name);if(!n||!n.trim())return;try{await api('rename',{id:v.id,cname:n.trim()});openCircle(v.id)}catch(e){toast(errText(e))}};foot.append(rn)}
   const lv=el('button','btn bad','اطلع من الحلقة'); lv.onclick=async()=>{if(!confirm('بدك تطلع من «'+v.name+'»؟'))return;try{await api('leave',{id:v.id})}catch(e){if(e.st!==403&&e.st!==404){toast(errText(e));return}}setList(list().filter(c=>c.id!==v.id));toast('طلعت من الحلقة');open()};

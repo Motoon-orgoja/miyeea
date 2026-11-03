@@ -348,4 +348,9 @@
 "🔕 الإشعارات مقفلة":{"fus":"🔕 الإشعارات معطّلة","en":"🔕 Notifications are blocked"},
 "افتح إعدادات الموقع بالمتصفح (القفل جنب العنوان) واسمح بالإشعارات، عشان يوصلك تذكير أصحابك.":{"fus":"افتح إعدادات الموقع في المتصفح (القفل بجانب العنوان) واسمح بالإشعارات، لتصلك تذكيرات أصحابك.","en":"Open the site settings in your browser (the lock next to the address) and allow notifications, so your friends' reminders reach you."},
 "🔔 متصفحك هاد ما بيدعم الإشعارات":{"fus":"🔔 متصفحك هذا لا يدعم الإشعارات","en":"🔔 This browser doesn't support notifications"},
-"إذا فتحت الموقع من جوّا إنستغرام أو فيسبوك، افتحه بـ Chrome أو Safari عشان يوصلك تذكير أصحابك.":{"fus":"إن فتحت الموقع من داخل إنستغرام أو فيسبوك، فافتحه في Chrome أو Safari لتصلك تذكيرات أصحابك.","en":"If you opened the site inside Instagram or Facebook, open it in Chrome or Safari to get your friends' reminders."}}
+"إذا فتحت الموقع من جوّا إنستغرام أو فيسبوك، افتحه بـ Chrome أو Safari عشان يوصلك تذكير أصحابك.":{"fus":"إن فتحت الموقع من داخل إنستغرام أو فيسبوك، فافتحه في Chrome أو Safari لتصلك تذكيرات أصحابك.","en":"If you opened the site inside Instagram or Facebook, open it in Chrome or Safari to get your friends' reminders."},
+"دعيتله اليوم ✓":{"fus":"دعوتَ له اليوم ✓","en":"Prayed for today ✓"},
+"ذكّرته اليوم ✓":{"fus":"ذكّرتَه اليوم ✓","en":"Reminded today ✓"},
+"باركتله اليوم ✓":{"fus":"باركتَ له اليوم ✓","en":"Congratulated today ✓"},
+"بعتله هاد اليوم قبل، وبيوصل مرة وحدة باليوم":{"fus":"أرسلتَ هذا إليه اليوم من قبل، وهو يصل مرة واحدة في اليوم","en":"You already sent this today — it goes once a day"},
+"كل تشجيع بيوصل لصاحبك مرة وحدة باليوم، عشان ما يصير إزعاج.":{"fus":"كل تشجيع يصل إلى صاحبك مرة واحدة في اليوم، كي لا يكون إزعاجًا.","en":"Each kind of cheer reaches your friend once a day, so it never becomes a nuisance."}}
