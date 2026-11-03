@@ -13,7 +13,9 @@ export default {
     const cors = { 'Access-Control-Allow-Origin': ORIGINS.includes(origin) ? origin : ORIGINS[0], 'Access-Control-Allow-Methods': 'GET,PUT,POST,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '86400', 'Vary': 'Origin' };
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
     if (new URL(req.url).pathname.startsWith('/c/')) {
-      const db = d1(env.CIRCLES), vapid = env.VAPID_JWK && { jwk: JSON.parse(env.VAPID_JWK), subject: 'https://motoon-orgoja.github.io/miyeea/' };
+      // a broken key only turns the notifications off, never the circles
+      let vapid = null; try { vapid = { jwk: JSON.parse(env.VAPID_JWK.replace(/^﻿/, '')), subject: 'https://motoon-orgoja.github.io/miyeea/' } } catch (e) { }
+      const db = d1(env.CIRCLES);
       // the push goes out after the answer, so the sender doesn't wait for it
       const notify = vapid && ((mid, msg) => ctx.waitUntil(pushTo(db, mid, msg, (s, m) => sendPush(s, m, vapid))));
       return handle(req, db, cors, notify);
