@@ -141,6 +141,12 @@ started.forEach(r=>{
 });
 if(!started.length)$('progList').append(el('div','empty','بيظهر هون تقدمك بكل متن.'));
 // the grid runs oldest to newest, a column per week; RTL puts the newest week on the left
+/* circles: my status for friends to see, and the card listing my circles */
+if(window.CIRCLES&&CIRCLES.available){
+  CIRCLES.setStatus({s:streak,d30:last30,td:days.has(T),open:active.length?open:-1,v:verses,u:units,
+    bk:active.slice(0,4).map(r=>[r.b.title,r.done,r.total])});
+  const cc=$('circleCard'); cc.hidden=false; CIRCLES.card(cc); CIRCLES.fromHash(); addEventListener('hashchange',CIRCLES.fromHash);
+}
 const grid=$('heat'), start=addDays(T,-7*11-((new Date(T+'T12:00:00Z').getUTCDay()+1)%7));
 for(let day=start;day<=T;day=addDays(day,1)){const c=el('i',(days.has(day)?'on':'')+(day===T?' now':''));c.title=dayName(day);grid.append(c)}
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});

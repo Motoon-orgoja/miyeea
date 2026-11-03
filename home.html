@@ -61,6 +61,21 @@ a.btn{text-decoration:none;text-align:center}
 .hero b{font-size:20px;line-height:1.5}
 .hero span{opacity:.9;font-size:13.5px}
 .hero i{font-style:normal;align-self:flex-end;margin-top:8px;background:rgba(255,255,255,.18);padding:8px 16px;border-radius:12px;font-weight:700}
+/* «حلقاتي» (circles.js) */
+.cc-head{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.cc-list{display:flex;flex-direction:column;gap:8px}
+.cc-m{background:var(--bg);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.cc-m.me{outline:1.5px solid var(--accent-soft)}
+.cc-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.cc-top b{font-size:15px}
+.cc-st{font-size:12px;font-weight:700;padding:2px 10px;border-radius:99px;white-space:nowrap}
+.cc-st.done{background:var(--accent-soft);color:var(--accent)}.cc-st.mid{background:var(--gold-soft);color:var(--gold)}.cc-st.off{background:var(--veil);color:var(--muted)}
+.cc-info{color:var(--muted);font-size:12px}
+.cc-bk{display:grid;grid-template-columns:1fr auto;gap:2px 8px;font-size:13px}
+.cc-bk small{color:var(--muted)}
+.cc-bk .bar{grid-column:1/-1;height:6px}
+.cc-acts{display:flex;flex-wrap:wrap;gap:6px}
+.cc-acts .btn{font-size:13px;padding:6px 10px}
 </style>
 </head>
 <body>
@@ -81,6 +96,8 @@ a.btn{text-decoration:none;text-align:center}
     <div class="eyebrow">متون ما بلّشت فيها بعد · اضغط على أي واحد لتبلّش</div>
     <div class="ui-col" id="restList"></div>
   </section>
+
+  <section class="card" id="circleCard" hidden></section>
 
   <section class="card">
     <div class="eyebrow">إحصائياتك</div>
@@ -105,6 +122,7 @@ a.btn{text-decoration:none;text-align:center}
 <script src="data/ajurrumiyya.js"></script><script>BOOKS.push(BOOK)</script>
 <script src="data/zubad.js"></script><script>BOOKS.push(BOOK)</script>
 <script src="data/usul.js"></script><script>BOOKS.push(BOOK)</script>
+<script src="circles.js"></script>
 <script src="home.js"></script>
 </body>
 </html>

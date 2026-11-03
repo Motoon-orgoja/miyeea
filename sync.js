@@ -96,5 +96,5 @@ function unlink(){_rm.call(LS,LINK);_rm.call(LS,LAST)}
 async function pullNow(){try{const n=await sync();if(n>0)location.reload()}catch(e){}}
 if(linked()){addEventListener('load',()=>setTimeout(pullNow,300));document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')pullNow();else if(pushT){clearTimeout(pushT);pushT=null;sync().catch(()=>{})}})}
 
-window.SYNC={available:!!SYNC_URL,linked,code:()=>LS.getItem(LINK)||'',last:()=>+(LS.getItem(LAST)||0),newSecret,link,unlink,sync,exportCode,importCode,readCode,snapshot,merge};
+window.SYNC={available:!!SYNC_URL,url:SYNC_URL,linked,code:()=>LS.getItem(LINK)||'',last:()=>+(LS.getItem(LAST)||0),newSecret,link,unlink,sync,exportCode,importCode,readCode,snapshot,merge};
 })();
