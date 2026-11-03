@@ -657,5 +657,16 @@ function certificate(c){
   draw();
 }
 
+/* the iPhone (above all the home-screen app) can leave the bars fixed at the bottom where the keyboard pushed them,
+   halfway up the screen, after it closes. --vvfix is how far the visible bottom lies below the layout bottom, and
+   those bars move down by it (ui.css); closing the keyboard also makes the page lay itself out again. */
+if(window.visualViewport&&/iPad|iPhone|iPod/.test(navigator.userAgent)){
+  const vv=visualViewport, root=document.documentElement;
+  const fix=()=>{const d=Math.round(vv.offsetTop+vv.height-innerHeight);root.style.setProperty('--vvfix',(d>0?d:0)+'px')};
+  vv.addEventListener('resize',fix); vv.addEventListener('scroll',fix); addEventListener('scroll',fix,{passive:true});
+  addEventListener('focusout',()=>setTimeout(()=>{scrollTo(scrollX,scrollY);fix()},300));
+  fix();
+}
+
 window.UI={similar,quiz,play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,openSearch,report,certificate,recSave,recPatch,recShare,openRecordings,BOOKS};
 })();
