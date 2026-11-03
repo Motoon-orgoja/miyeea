@@ -183,3 +183,20 @@ select{font:15px var(--ui);color:var(--ink);background:var(--bg);border:1px soli
 .tp>summary{font-size:13.5px;font-weight:500;padding:5px 0}
 .tq{margin:0;font-weight:700;color:var(--accent);font-size:13.5px}
 .ta{margin:4px 0 8px;font-family:var(--verse);font-size:17px;line-height:1.9}
+
+/* «وضّحلي» / «كلمات الباب» / «اختبر فهمك» (prose-engine.js); a wrong answer is marked gold, never red */
+.sharh.exp{border-color:var(--gold);background:var(--gold-soft)}
+.sharh.exp>summary,.sharh.words>summary{color:var(--gold);font-weight:700}
+.qzcard{border:1.5px solid var(--accent);border-radius:14px;padding:12px 14px;margin:10px 0;display:flex;flex-direction:column;gap:6px;background:var(--accent-soft)}
+.qzcard b{font-size:16px}
+.qzcard .note{margin:0}
+.qz-k{color:var(--muted);font-weight:700}
+.qz-q{font-size:17px;line-height:1.9;font-weight:600;margin:6px 0 12px}
+.qz-cs{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.qz-c{text-align:start;white-space:normal;line-height:1.7;padding:10px 14px}
+.qz-c.right{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.qz-c.wrong{background:var(--gold-soft);border-color:var(--gold)}
+.qz-w{border-radius:12px;padding:10px 14px;margin:6px 0 12px;background:var(--bg)}
+.qz-w>b{font-size:16px}.qz-w.ok>b{color:var(--accent)}.qz-w.no>b{color:var(--gold)}
+.qz-w h4{margin:8px 0 2px;color:var(--muted);font-size:13px}.qz-w p{margin:0;line-height:1.9}
+.qz-score{font-size:28px;font-weight:800;text-align:center;margin:10px 0 0;color:var(--accent)}

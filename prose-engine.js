@@ -242,6 +242,7 @@ function renderToday(){
     const b=S.blocks[CUR], nx=allLearned()&&MULTI?nextChapter():null;
     e.textContent=b?`ما شاء الله، «${CHI[CUR].title}» محفوظ 🤍 · مراجعته الجاية ${when(b.due)} (${stageTxt(b)})`:'خلصت ورد اليوم 🤍 · والجديد الجاي بكرة';
     box.append(e);
+    const qc=quizCard(CUR,true); if(qc)box.append(qc);
     if(nx){const go=document.createElement('button');go.className='btn primary';go.textContent='ابدأ الباب الجاي: «'+nx.title+'»';go.addEventListener('click',()=>{setCur(nx.id);save();renderAll()});box.append(go)}
     if(MULTI&&allLearned()){const pick=document.createElement('button');pick.className='btn';pick.textContent='اختر باب ثاني';pick.addEventListener('click',()=>{$('chapCard').hidden=false;renderChapters();$('chapCard').scrollIntoView({block:'start',behavior:'smooth'})});box.append(pick)}
     box.append(wardActions(null)); updateVoicebar(); return;
@@ -250,7 +251,7 @@ function renderToday(){
     const tg=document.createElement('div'); tg.className='row'; const pl=document.createElement('span'); pl.className='pill new'; pl.textContent='قبل الحفظ · اقرأ الباب كامل'; tg.append(pl);
     const nt=document.createElement('p'); nt.className='note'; nt.style.margin='0';
     nt.textContent='اقرأ «'+CHI[CUR].title+'» كامل مرة بتمهّل وافهمه، وبعدين بتحفظ نقاطه المركزية ('+ar(U.length)+') كسؤال وجواب.';
-    const rd=sharhEl('read:'+CUR); box.append(tg,nt);
+    const rd=sharhEl('read:'+CUR), wd=sharhEl('words:'+CUR); box.append(tg,nt); if(wd){wd.classList.add('words');box.append(wd)}
     if(rd){rd.open=true;rd.classList.add('readall');box.append(rd)}else{const w=document.createElement('p');w.className='note';w.textContent='عم يتحمّل نص الباب…';box.append(w)}
     const ok=document.createElement('button'); ok.className='btn primary'; ok.textContent='قرأته، يلّا نحفظ ✓';
     ok.addEventListener('click',()=>{snap('قرأت «'+CHI[CUR].title+'»');S.read[CUR]=today();save();renderAll();scrollTo(0,0)});
@@ -279,7 +280,7 @@ function renderToday(){
     const done=document.createElement('button'); done.className='btn primary'; done.textContent='حفظته ✓'; done.disabled=n<Math.min(3,S.goal);
     done.addEventListener('click',()=>{if(VS.on)vStop(true);mode._seen='';snap('حفظت '+u.label);learn(u.id);renderAll();undoToast('حفظته ✓')});
     side.append(done); c.append(t,side); box.append(c);
-    if(QA){const sh=sharhEl(u.id);if(sh)box.append(sh)}
+    if(QA){const ex=exEl(u.id);if(ex)box.append(ex);const sh=sharhEl(u.id);if(sh)box.append(sh)}
   }else{
     const show=document.createElement('button'); show.className='btn'; show.textContent=QA?'اكشف كل الأجوبة':'اكشف النص';
     show.addEventListener('click',()=>{if(VS.on)vStop(true);window.UI.reveal.stop();el.classList.add('open');applyMode(el,'full')});
@@ -339,14 +340,15 @@ function renderAll(){
   const b=S.blocks[CUR];
   st.textContent=b?`الباب محفوظ كامل ✓ · مراجعته: ${stageTxt(b)} · موعدها ${when(b.due)}`:`محفوظ ${ar(learnedIds().length)} من ${ar(U.length)} · لما تختم الباب بيصير مراجعة كاملة له ككتلة وحدة`;
   list.append(st);
-  if(QA){const rd=sharhEl('read:'+CUR);if(rd){rd.classList.add('readall');list.append(rd)}}
-  CHI[CUR].units.forEach(u=>{if(!U.includes(u)){const el=unitEl(u,{status:false});el.classList.add('off');applyMode(el,mode.all);const ra=document.createElement('div');ra.className='row';ra.append(repBtn(u));el.append(ra);const sh=sharhEl(u.id);if(sh)el.append(sh);list.append(el);return}
+  if(QA){const wd=sharhEl('words:'+CUR);if(wd){wd.classList.add('words');list.append(wd)}const rd=sharhEl('read:'+CUR);if(rd){rd.classList.add('readall');list.append(rd)}const qc=quizCard(CUR);if(qc)list.append(qc)}
+  CHI[CUR].units.forEach(u=>{if(!U.includes(u)){const el=unitEl(u,{status:false});el.classList.add('off');applyMode(el,mode.all);const ra=document.createElement('div');ra.className='row';ra.append(repBtn(u));el.append(ra);const ex=exEl(u.id);if(ex)el.append(ex);const sh=sharhEl(u.id);if(sh)el.append(sh);list.append(el);return}
     const el=unitEl(u,{status:true});applyMode(el,mode.all);
     const c=S.cards[u.id], acts=document.createElement('div'); acts.className='row';
     if(!c)acts.append(actBtn('➕ احفظه اليوم',()=>{addNew(u.id);goToday()}));
     else acts.append(actBtn('↩︎ رجّعه للحفظ',()=>{delete S.cards[u.id];const ch=CH.find(x=>x.units.includes(u));if(ch){delete S.blocks[ch.id];delete S.blockAhead[ch.id]}save()}));
     acts.append(repBtn(u));
     if(acts.childElementCount)el.append(acts);
+    const ex=exEl(u.id); if(ex)el.append(ex);
     const sh=sharhEl(u.id); if(sh)el.append(sh);
     list.append(el)});
   if(active==='all')voiceHost=list;
@@ -359,6 +361,73 @@ function renderAll(){
   renderChapters(); if(QA&&active==='map')renderMap();
   updateVoicebar();
 }
+/* ---------- «وضّحلي» and «اختبر فهمك» (QA books) ----------
+   Built by build-usul.js from tools/texts/usul/explain (EX-BRIEF.md) into the chapter's commentary file:
+   'ex:<point>' the point in plain words, 'words:<chapter>' its hard words, 'quiz:<chapter>' {items:[{k,q,c?,a,w,src}]},
+   exercises that make the reader apply the chapter to new cases. One at a time: a choice is checked at once; an open one
+   is thought through, revealed, and graded by the reader. S.quiz[chapter] = {best, last, day, wrong:[item index]} (percent). */
+function exEl(id){const e=sharhEl('ex:'+id);if(e)e.classList.add('exp');return e}
+const QK={case:'طبّق على مسألة',spot:'ميّز',why:'علّل',diff:'فرّق',tf:'صح أم خطأ؟',recall:'تذكّر'};
+function quizCard(cid,small){
+  const z=SHARH['quiz:'+cid]; if(!z||!z.items.length)return null;
+  const r=(S.quiz||{})[cid], box=document.createElement('div'); box.className='qzcard';
+  const h=document.createElement('b'); h.textContent='🧠 اختبر فهمك للباب'; box.append(h);
+  const p=document.createElement('p'); p.className='note';
+  p.textContent=r?'أحسن نتيجة إلك '+ar(r.best)+'٪'+(r.best>=80?' · متقن ✓':' · لسا بدها شغل، الإتقان من ٨٠٪')
+    :ar(z.items.length)+' تمارين بتخلّيك تطبّق قواعد الباب على مسائل جديدة وتفكّر فيها، مش بس تسترجع اللي حفظته.';
+  box.append(p);
+  const row=document.createElement('div'); row.className='row';
+  const go=document.createElement('button'); go.className='btn'+(small&&r?'':' primary'); go.textContent=r?'↻ أعد الاختبار':'ابدأ الاختبار';
+  go.addEventListener('click',()=>runQuiz(cid,z.items.map((_,i)=>i))); row.append(go);
+  if(r&&r.wrong&&r.wrong.length){const w=document.createElement('button');w.className='btn';w.textContent='أعد اللي غلطت فيه ('+ar(r.wrong.length)+')';w.addEventListener('click',()=>runQuiz(cid,r.wrong.slice(),true));row.append(w)}
+  box.append(row); return box;
+}
+function runQuiz(cid,idxs,again){
+  const items=SHARH['quiz:'+cid].items, b=window.UI.sheet('🧠 '+CHI[cid].title); let i=0; const wrong=[];
+  const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+  function explain(it,ok){
+    const w=el('div','qz-w'+(ok==null?'':ok?' ok':' no'));
+    if(ok!=null)w.append(el('b','',ok?'✓ صح':'✗ مش هيك'));
+    if(!it.c){w.append(el('h4','','الجواب'),el('p','',it.a))}
+    w.append(el('h4','','ليش؟'),el('p','',it.w));
+    if(it.src){const d=el('details','sharh');d.append(el('summary','','📖 من الكتاب'));it.src.split(/\n\n+/).forEach(t=>d.append(el('p','',t)));w.append(d)}
+    return w;
+  }
+  function next(ok){if(!ok)wrong.push(idxs[i]);i++;step()}
+  function step(){
+    b.replaceChildren(); b.scrollTop=0;
+    if(i>=idxs.length)return end();
+    const it=items[idxs[i]];
+    b.append(el('small','qz-k',ar(i+1)+' من '+ar(idxs.length)+' · '+(QK[it.k]||'')),el('p','qz-q',it.q));
+    const nx=el('button','btn primary',i+1<idxs.length?'التالي ←':'شوف النتيجة');
+    if(it.c){
+      const cs=el('div','qz-cs'); let done=false;
+      it.c.forEach((t,j)=>{const c=el('button','btn qz-c',t);c.addEventListener('click',()=>{if(done)return;done=true;const ok=j===it.a;
+        c.classList.add(ok?'right':'wrong');if(!ok)cs.children[it.a].classList.add('right');b.append(explain(it,ok));nx.onclick=()=>next(ok);b.append(nx);nx.scrollIntoView({block:'nearest',behavior:'smooth'})});cs.append(c)});
+      b.append(cs);
+    }else{
+      b.append(el('p','note','فكّر بالجواب وقوله أو اكتبه لحالك، وبعدين اكشفه وقارن.'));
+      const rv=el('button','btn primary','اكشف الجواب');
+      rv.addEventListener('click',()=>{rv.remove();b.append(explain(it,null));const g=el('div','row'),y=el('button','btn primary','جاوبتها صح ✓'),n=el('button','btn','غلطت أو نقصني ✗');
+        y.onclick=()=>next(true);n.onclick=()=>next(false);g.append(y,n);b.append(g);g.scrollIntoView({block:'nearest',behavior:'smooth'})});
+      b.append(rv);
+    }
+  }
+  function end(){
+    const q=S.quiz||(S.quiz={}), r=q[cid]||{best:0,wrong:[]};
+    if(again){const fixed=idxs.filter(x=>!wrong.includes(x));r.wrong=(r.wrong||[]).filter(x=>!fixed.includes(x))}
+    else{const pct=Math.round((idxs.length-wrong.length)*100/idxs.length);r.last=pct;r.best=Math.max(r.best||0,pct);r.wrong=wrong}
+    r.day=today(); q[cid]=r; save();
+    const pct=Math.round((idxs.length-wrong.length)*100/idxs.length);
+    b.append(el('p','qz-score',ar(idxs.length-wrong.length)+' من '+ar(idxs.length)),
+      el('p','note',pct>=80?'ما شاء الله، فاهم الباب 🤍':pct>=50?'منيح، ارجع للي غلطت فيه واقرأ «💡 وضّحلي» تحت نقاطه، وبعدين أعده.':'الباب بده قراءة تانية بتمهّل: اقرأ «📘 كلمات الباب» و«💡 وضّحلي» تحت كل نقطة، وبعدين جرّب مرة تانية.'));
+    const row=el('div','row');
+    if(wrong.length){const w=el('button','btn primary','أعد اللي غلطت فيه ('+ar(wrong.length)+')');w.onclick=()=>runQuiz(cid,wrong.slice(),true);row.append(w)}
+    const c=el('button','btn','سكّر');c.onclick=()=>{window.UI.closeSheet();renderAll()};row.append(c); b.append(row);
+  }
+  step();
+}
+
 /* ---------- the map (QA books): the book as a tree, باب › مبحث › مطلب › points; a point opens to its question and answer ---------- */
 function renderMap(){
   const box=$('mapBox'); if(!box)return; const open=new Set([...box.querySelectorAll('details[open]')].map(d=>d.dataset.k)); box.replaceChildren();
@@ -398,7 +467,7 @@ function renderChapters(){
       d.open=mine.some(x=>x.id===CUR); const sm=document.createElement('summary'); sm.textContent=gname+' ('+ar(mine.length)+(done?' · ختمت '+ar(done):'')+')';
       d.append(sm); list.append(d); box=d}
     const row=document.createElement('div'); row.className='prow'+(ch.id===CUR?' cur':'');
-    const info=document.createElement('div'); info.className='pmeta'; const t=document.createElement('b'); t.textContent=ch.title; const by=document.createElement('small'); by.textContent=ar(unitsOf(ch.id).length)+' · '+chapterStatus(ch); info.append(t,by);
+    const info=document.createElement('div'); info.className='pmeta'; const t=document.createElement('b'); t.textContent=ch.title; const by=document.createElement('small'); const qz=(S.quiz||{})[ch.id]; by.textContent=ar(unitsOf(ch.id).length)+' · '+chapterStatus(ch)+(qz?' · 🧠 '+ar(qz.best)+'٪'+(qz.best>=80?' متقن':''):''); info.append(t,by);
     const acts=document.createElement('div'); acts.className='pacts';
     if(!unitsOf(ch.id).length){}
     else if(ch.id!==CUR){const go=document.createElement('button');go.className='btn';go.textContent='احفظه هلأ';go.addEventListener('click',()=>{setCur(ch.id);save();$('chapCard').hidden=true;renderAll();scrollTo(0,0)});acts.append(go)}

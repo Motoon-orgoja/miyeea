@@ -79,7 +79,8 @@ if (process.argv.includes('--export')) {
 /* 3. units: the chapter's key points from tools/texts/usul/key/<id>.json (see KEY-BRIEF.md; check-key.js proves every
    piece is the book's own words). Under each one, «من الكتاب» shows the paragraphs it was taken from with their footnotes. */
 const plain = s => s.replace(/\*\*/g, '').replace(/\s+/g, ' ').trim();
-const sharh = {}, kd = path.join(__dirname, 'texts/usul/key'), qd = path.join(__dirname, 'texts/usul/q');
+const sharh = {}, kd = path.join(__dirname, 'texts/usul/key'), qd = path.join(__dirname, 'texts/usul/q'), xd = path.join(__dirname, 'texts/usul/explain');
+const EXFOOT = 'توضيح مساعد كُتب بالذكاء الاصطناعي ليقرّب كلام المؤلف، والمرجع هو نص الكتاب. وإن أشكل عليك شيء فاسأل شيخك.';
 const BOOK = {
   key: 'usul', app: 'mutoon', lsk: 'mutoon_usul_v2', title: 'تهذيب مسار الأصول',
   sub: 'إلى علم أصول فقه الحنفية · أ.د. صلاح محمد أبو الحاج · التعريفات والقواعد',
@@ -103,6 +104,9 @@ const BOOK = {
     if (!units.length) return null;
     // a chapter is reviewed as one block, so a big one is cut into even parts of at most PART points
     const PART = 9, k = Math.ceil(units.length / PART), size = Math.ceil(units.length / k);
+    // explain/<id>.json (EX-BRIEF.md): an exercise goes to the first part whose paragraphs reach its own
+    const xf = path.join(xd, c.id + '.json'), ex = fs.existsSync(xf) ? JSON.parse(fs.readFileSync(xf, 'utf8')) : null;
+    const ends = Array.from({ length: k }, (_, i) => i < k - 1 ? Math.max(...keys.slice(i * size, (i + 1) * size).flatMap(x => x.p || [])) : c.units.length);
     return Array.from({ length: k }, (_, i) => {
       const id = c.id + (i ? String.fromCharCode(97 + i) : ''), us = units.slice(i * size, (i + 1) * size);
       if (i) us.forEach(u => { sharh[id] = Object.assign(sharh[id] || {}, { [u.id]: sharh[c.id][u.id] }); delete sharh[c.id][u.id] });
@@ -115,6 +119,15 @@ const BOOK = {
         { src: c.title, ref: rp.length ? 'ص ' + ar(rp[0]) + (rp.length > 1 ? '–' + ar(rp[rp.length - 1]) : '') : '', url: '', text: rs.map(u => plain(u.t)).join('\n\n') },
         ...(rn.length ? [{ src: 'الحواشي', ref: '', url: '', text: rn.join('\n\n') }] : []),
       ] } });
+      if (ex) {
+        // the plain explanation of each point, the chapter's hard words, and the exercises whose paragraphs this part covers
+        us.forEach(u => { const pt = ex.pts[+u.id.split('_')[1] - 1]; if (pt) sharh[id]['ex:' + u.id] = { title: '💡 وضّحلي ببساطة', foot: EXFOOT, secs: [
+          { src: 'الفكرة', ref: '', url: '', text: pt.s }, ...(pt.e ? [{ src: 'مثال', ref: '', url: '', text: pt.e }] : [])] } });
+        if (ex.words.length) sharh[id]['words:' + id] = { title: '📘 كلمات تحتاجها لتفهم الباب', foot: EXFOOT, secs: ex.words.map(w => ({ src: w.w, ref: '', url: '', text: w.m })) };
+        const mine = ex.quiz.filter(q => (ends.findIndex(e => Math.min(...q.p) <= e) + 1 || k) - 1 === i);
+        if (mine.length) sharh[id]['quiz:' + id] = { items: mine.map(q => ({ k: q.k, q: q.q, ...(q.c ? { c: q.c } : {}), a: q.a, w: q.w,
+          src: [...new Set(q.p)].sort((x, y) => x - y).map(n => plain(c.units[n - 1].t)).join('\n\n') })) };
+      }
       return o;
     });
   }).filter(Boolean).flat(),
