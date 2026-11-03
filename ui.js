@@ -30,7 +30,15 @@ const BOOKS=[
   {key:'ajurrumiyya',c:'النحو',lsk:'mutoon_ajurrumiyya_v1',url:'ajurrumiyya.html',t:'متن الآجرومية',d:'مبادئ النحو'},
   {key:'zubad',c:'الفقه',lsk:'mutoon_zubad_v1',url:'zubad.html',t:'صفوة الزبد',d:'الفقه الشافعي نظمًا · ١٠٨٠ بيتًا'},
   {key:'usul',c:'أصول الفقه',lsk:'mutoon_usul_v2',url:'usul.html',t:'تهذيب مسار الأصول',d:'أصول الفقه الحنفي · ٣٦١ معلومة مركزية'},
+  {key:'umda',c:'الحديث',lsk:'mutoon_umda_v1',url:'umda.html',t:'عمدة الأحكام',d:'أحاديث الأحكام · ٤١٤ حديثًا'},
+  {key:'rahabiyya',c:'الفرائض',lsk:'mutoon_rahabiyya_v1',url:'rahabiyya.html',t:'الرحبية',d:'علم المواريث نظمًا · ١٧٦ بيتًا'},
+  {key:'durra',c:'القراءات والتجويد',lsk:'mutoon_durra_v1',url:'durra.html',t:'الدرة المضية',d:'القراءات الثلاث المتممة للعشر · ٢٤١ بيتًا'},
+  {key:'alfiyya',c:'النحو',lsk:'mutoon_alfiyya_v1',url:'alfiyya.html',t:'ألفية ابن مالك',d:'النحو والصرف · ١٠٠٢ بيت'},
+  {key:'sullam',c:'المنطق',lsk:'mutoon_sullam_v1',url:'sullam.html',t:'السُّلَّم المُنَوْرَق',d:'مبادئ المنطق · ١٤٤ بيتًا'},
+  {key:'lamiyya',c:'الصرف',lsk:'mutoon_lamiyya_v1',url:'lamiyya.html',t:'لامية الأفعال',d:'أبنية الأفعال وتصريفها · ١١٤ بيتًا'},
 ];
+// the order of fields in the texts sheet
+const FIELDS=['القراءات والتجويد','علوم القرآن','العقيدة','الحديث','مصطلح الحديث','الفقه','أصول الفقه','الفرائض','النحو','الصرف','المنطق','السيرة النبوية','الرقائق والأذكار'];
 
 /* ---------- small helpers ---------- */
 const ar=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
@@ -45,7 +53,7 @@ function toast(msg,action){
 }
 // a bottom sheet; returns its body to fill. Closing: the ✕, the backdrop, or Escape
 function sheet(title){
-  closeSheet();
+  closeSheet(); if(window.vvFix)vvFix();
   const bd=el('div','ui-backdrop'); bd.id='uiSheet';
   const s=el('div','ui-sheet'); s.setAttribute('role','dialog'); s.setAttribute('aria-modal','true'); s.setAttribute('aria-label',title);
   const h=el('div','ui-sheet-h'); h.append(el('b','',title)); const x=el('button','ui-x','✕'); x.setAttribute('aria-label','سكّر'); x.onclick=closeSheet; h.append(x);
@@ -225,17 +233,30 @@ function setPaused(key,on){P.paused=(P.paused||[]).filter(k=>k!==key);if(on)P.pa
 function openBooks(){
   const b=sheet('المتون');
   b.append(el('p','ui-hint','المتون اللي بتحفظها هلأ بتطلع بـ«وردي اليوم». أوقف اللي مش شغّال عليه، وتقدمك فيه بيضل محفوظ.'));
-  // grouped by field (سيرة، حديث، فقه…), in the order the fields first appear
-  const fields=[...new Set(BOOKS.map(x=>x.c||''))];
-  fields.flatMap(c=>BOOKS.filter(x=>(x.c||'')===c)).forEach((x,k,arr)=>{
-    if(x.c&&(k===0||arr[k-1].c!==x.c))b.append(el('div','ui-lbl',x.c))
+  // a filter box once the list is long; the texts being memorised come first, then every text grouped by field
+  // (in the order of FIELDS, then any other field in the order it first appears)
+  const q=el('input','ui-search'); q.type='search'; q.placeholder='🔍 دوّر على متن أو فن…';
+  if(BOOKS.length>12)b.append(q);
+  const list=el('div'); b.append(list);
+  const fields=[...new Set([...FIELDS,...BOOKS.map(x=>x.c||'')])].filter(c=>BOOKS.some(x=>(x.c||'')===c));
+  const norm=s=>s.replace(/[ً-ْـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي');
+  function draw(){
+    list.replaceChildren(); const w=norm(q.value.trim()), hit=x=>!w||norm(x.t+' '+x.d+' '+(x.c||'')).includes(w);
+    const mine=w?[]:BOOKS.filter(x=>started(x.key));
+    const rows=[...mine.map(x=>[x,'📖 اللي بحفظها']),...fields.flatMap(c=>BOOKS.filter(x=>(x.c||'')===c&&hit(x)&&!mine.includes(x)).map(x=>[x,c]))];
+    if(!rows.length)list.append(el('p','ui-hint','ما لقيت متن بهالاسم.'));
+    rows.forEach(([x,c],k)=>{if(c&&(k===0||rows[k-1][1]!==c))list.append(el('div','ui-lbl',c)); list.append(bookRow(x))});
+  }
+  q.oninput=draw; draw();
+}
+function bookRow(x){
     const row=el('div','ui-book'+(x.key===CUR?' cur':'')+(isPaused(x.key)?' paused':''));
     const a=el('a','ui-book-link');a.href=x.url;a.append(el('b','',x.t),el('small','',x.d));row.append(a);
     if(started(x.key)){const t=el('button','ui-switch'+(isPaused(x.key)?'':' on'));t.type='button';t.setAttribute('role','switch');
       const paint=()=>{const p=isPaused(x.key);t.classList.toggle('on',!p);t.setAttribute('aria-checked',String(!p));t.textContent=p?'موقوف':'فعّال';row.classList.toggle('paused',p)};
       t.onclick=()=>{setPaused(x.key,!isPaused(x.key));paint();toast(isPaused(x.key)?'وقّفته، ما رح يطلع بوردك':'رجع لوردك اليومي ✓')};paint();row.append(t)}
     else row.append(el('span','ui-new','ابدأ'));
-    b.append(row)});
+    return row;
 }
 // on a paused text's own page, say so and offer to bring it back
 function pausedBanner(){
@@ -659,14 +680,14 @@ function certificate(c){
 
 /* the iPhone (above all the home-screen app) can leave the bars fixed at the bottom where the keyboard pushed them,
    halfway up the screen, after it closes. --vvfix is how far the visible bottom lies below the layout bottom, and
-   those bars move down by it (ui.css); closing the keyboard also makes the page lay itself out again. */
+   those bars, and the dimmed backdrop under a sheet, move down by it (ui.css); closing the keyboard also makes the page lay itself out again. */
 if(window.visualViewport&&/iPad|iPhone|iPod/.test(navigator.userAgent)){
   const vv=visualViewport, root=document.documentElement;
   const fix=()=>{const d=Math.round(vv.offsetTop+vv.height-innerHeight);root.style.setProperty('--vvfix',(d>0?d:0)+'px')};
   vv.addEventListener('resize',fix); vv.addEventListener('scroll',fix); addEventListener('scroll',fix,{passive:true});
   addEventListener('focusout',()=>setTimeout(()=>{scrollTo(scrollX,scrollY);fix()},300));
-  fix();
+  fix(); window.vvFix=fix;
 }
 
-window.UI={similar,quiz,play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,openSearch,report,certificate,recSave,recPatch,recShare,openRecordings,BOOKS};
+window.UI={similar,quiz,play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,openSearch,report,certificate,recSave,recPatch,recShare,openRecordings,BOOKS,FIELDS};
 })();

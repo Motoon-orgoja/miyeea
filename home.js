@@ -1,7 +1,7 @@
 /* ---------- the day across every book ----------
    home.html loads each data/*.js and pushes its window.BOOK into BOOKS. Nothing here writes progress: it reads each page's
    saved state, works out what that page will ask for today (the same rules the engines apply), and links to it. */
-const PAGE={usul:'usul.html',zubad:'zubad.html',ajurrumiyya:'ajurrumiyya.html',nawawi:'nawawi.html',bayquniyya:'bayquniyya.html',tuhfa:'tuhfa.html',miyeea:'./',munajat:'munajat.html',shatibiyya:'shatibiyya.html',jazariyya:'jazariyya.html',riyad:'riyad.html',qudouri:'qudouri.html'};
+const PAGE={lamiyya:'lamiyya.html',sullam:'sullam.html',alfiyya:'alfiyya.html',durra:'durra.html',rahabiyya:'rahabiyya.html',umda:'umda.html',usul:'usul.html',zubad:'zubad.html',ajurrumiyya:'ajurrumiyya.html',nawawi:'nawawi.html',bayquniyya:'bayquniyya.html',tuhfa:'tuhfa.html',miyeea:'./',munajat:'munajat.html',shatibiyya:'shatibiyya.html',jazariyya:'jazariyya.html',riyad:'riyad.html',qudouri:'qudouri.html'};
 const $=id=>document.getElementById(id);
 const ar=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
 const today=()=>{try{return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Amman'}).format(new Date())}catch(e){return new Date().toISOString().slice(0,10)}};
@@ -116,7 +116,13 @@ if(held.length){const box=el('div','held');box.append(el('div','eyebrow','متو
 /* not started yet */
 $('restCard').hidden=!rest.length;
 // each text not started yet, with what it is about, as a tappable card
-rest.forEach(r=>{const a=el('a','ui-book');a.href=PAGE[r.b.key];const info=(window.UI&&UI.BOOKS.find(x=>x.key===r.b.key))||{};a.append(el('b','',r.b.title),el('small','',info.d||r.b.sub||''));$('restList').append(a)});
+// grouped by field; with many texts each field folds, so the page stays short
+const infoOf=r=>(window.UI&&UI.BOOKS.find(x=>x.key===r.b.key))||{}, FL=(window.UI&&UI.FIELDS)||[];
+const restFields=[...new Set([...FL,...rest.map(r=>infoOf(r).c||'')])].filter(c=>rest.some(r=>(infoOf(r).c||'')===c));
+restFields.forEach(c=>{const mine=rest.filter(r=>(infoOf(r).c||'')===c), fold=rest.length>8;
+  const box=el(fold?'details':'div','restfield'); box.append(fold?el('summary','',(c||'متون')+' · '+ar(mine.length)):el('div','ui-lbl',c));
+  mine.forEach(r=>{const a=el('a','ui-book');a.href=PAGE[r.b.key];a.append(el('b','',r.b.title),el('small','',infoOf(r).d||r.b.sub||''));box.append(a)});
+  $('restList').append(box)});
 
 /* statistics: one streak across every book, totals, per-book progress, and twelve weeks of activity */
 const days=new Set(); started.forEach(r=>r.days.forEach(d=>days.add(d)));

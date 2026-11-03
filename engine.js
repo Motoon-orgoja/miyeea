@@ -284,7 +284,7 @@ function vSharh(i){
   else if(P.sharhSrc){const a=document.createElement('p');a.className='sh-fn';a.textContent=P.sharhSrc.name+(e&&e.ref?' · '+e.ref:'');d.append(a)}
   return d;
 }
-if(!P.sharh)fetch('data/sharh/'+(MULTI?B.key+'-'+CUR:B.key)+'.json').then(r=>r.ok?r.json():null).then(j=>{
+if(!P.sharh&&B.sharh!==false)fetch('data/sharh/'+(MULTI?B.key+'-'+CUR:B.key)+'.json').then(r=>r.ok?r.json():null).then(j=>{
   if(!j||!j.v)return;
   P.sharh=[null].concat(j.v.map(x=>x&&x.t)); P.sharhRef=j.v;
   P.sharhSrc={name:j.name+(j.author?(/^د\./.test(j.author)?'، ':'، ل')+j.author:'')+(j.death?' (ت '+j.death+')':''),url:j.url};
