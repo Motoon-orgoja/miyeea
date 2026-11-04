@@ -57,10 +57,11 @@ const BOOKS=[
   {key:'ibnashir',c:'الفقه',lsk:'mutoon_ibnashir_v1',url:'ibnashir.html',t:'متن ابن عاشر',d:'العقيدة والفقه المالكي والتصوف · ٣١٧ بيتًا'},
   {key:'umdafiqh',c:'الفقه',lsk:'mutoon_umdafiqh_v1',url:'umdafiqh.html',t:'عمدة الفقه',d:'الفقه الحنبلي لابن قدامة · ٢٦ كتابًا'},
   {key:'ashmawiyya',c:'الفقه',lsk:'mutoon_ashmawiyya_v1',url:'ashmawiyya.html',t:'متن العشماوية',d:'فقه العبادات على مذهب مالك · ١٤ بابًا'},
-  {key:'qawaidusul',c:'أصول الفقه',lsk:'mutoon_qawaidusul_v1',url:'qawaidusul.html',t:'قواعد الأصول ومعاقد الفصول',d:'أصول الفقه · مقدمة وثلاثة أبواب · ٢٢ بابًا'},
-  {key:'akhsar',c:'الفقه',lsk:'mutoon_akhsar_v1',url:'akhsar.html',t:'أخصر المختصرات',d:'الفقه الحنبلي · ١٨ كتابًا و٧ أبواب و١٠٦ فصول'},
-  {key:'siraji',c:'الفرائض',lsk:'mutoon_siraji_v1',url:'siraji.html',t:'السراجية',d:'الفرائض · ١٠ أبواب و١٨ فصلًا'},
+  {key:'qawaidusul',c:'أصول الفقه',lsk:'mutoon_qawaidusul_v1',url:'qawaidusul.html',t:'قواعد الأصول ومعاقد الفصول',d:'أصول الفقه الحنبلي · ٢٢ فصلًا'},
+  {key:'akhsar',c:'الفقه',lsk:'mutoon_akhsar_v1',url:'akhsar.html',t:'أخصر المختصرات',d:'الفقه الحنبلي · ١٨ كتابًا'},
+  {key:'siraji',c:'الفرائض',lsk:'mutoon_siraji_v1',url:'siraji.html',t:'السراجية',d:'الفرائض على مذهب الحنفية · ١٠ أبواب'},
   {key:'risala',c:'الفقه',lsk:'mutoon_risala_v1',url:'risala.html',t:'الرسالة',d:'الفقه المالكي · المقدمة و٤٥ بابًا'},
+  {key:'zad',c:'الفقه',lsk:'mutoon_zad_v1',url:'zad.html',t:'زاد المستقنع',d:'الفقه الحنبلي · ٢٨ كتابًا و١٢٩ بابًا و١٢٨ فصلًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','usul','manar','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala']],
