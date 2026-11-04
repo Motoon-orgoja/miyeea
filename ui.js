@@ -75,6 +75,7 @@ const BOOKS=[
   {key:'wasitiyya',c:'العقيدة',lsk:'mutoon_wasitiyya_v1',url:'wasitiyya.html',t:'العقيدة الواسطية',d:'عقيدة أهل السنة والجماعة · ١٩٨ فقرة'},
   {key:'hairiyya',c:'العقيدة',lsk:'mutoon_hairiyya_v1',url:'hairiyya.html',t:'المنظومة الحائية',d:'العقيدة · ٣٣ بيتًا'},
   {key:'lumaa',c:'العقيدة',lsk:'mutoon_lumaa_v1',url:'lumaa.html',t:'لمعة الاعتقاد',d:'العقيدة · ٩٥ فقرة بترقيم ابن عثيمين'},
+  {key:'usultafsir',c:'علوم القرآن',lsk:'mutoon_usultafsir_v1',url:'usultafsir.html',t:'مقدمة في أصول التفسير',d:'علوم القرآن · ١١ فصلًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
