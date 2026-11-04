@@ -1,6 +1,6 @@
 // Extracts the plain matn of the three check copies (ketabonline API pages in raw/umdafiqh/):
 //   ko599   العدة شرح العمدة (دار الحديث ١٤٢٤ = shamela 10908): matn = blocks above «[العُدَّة شرح العُمْدة]»; (n) = مسألة numbers
-//   ko827   عمدة الفقه ت عزوز (المكتبة العصرية = shamela 11315): footnote paragraphs («1 أخرجه…») and inline note digits removed
+//   ko827   عمدة الفقه ت عزوز (المكتبة العصرية = shamela 11315): footnotes (from the first «1 أخرجه…» paragraph to the end of the page) and inline note digits removed
 //   ko38387 عمدة الفقه ت العبدلي والعتيبي (مكتبة الطرفين، الطائف): «& باب … &» titles
 // usage: node extract-others.js   -> out/idda.txt, out/azzuz.txt, out/abdali.txt (one block per line, «## » before titles)
 const fs = require('fs');
@@ -25,7 +25,7 @@ const load = k => JSON.parse(fs.readFileSync(__dirname + '/../raw/umdafiqh/ko' +
   for (const x of load(827)) {
     out.push('#PAGE ' + x.page);
     for (const b of blocks(x.content)) {
-      if (/^[0-9]+ /.test(b.s)) continue;           // footnote
+      if (/^([0-9]+ |\* )/.test(b.s)) break;           // the footnotes start: the rest of the page is notes
       if (b.t === 'T') { out.push('## ' + b.s); continue; }
       out.push(b.s.replace(/(["»)\]،.:]?) ?\b[0-9]{1,2}\b(?= |$|[.،])/g, '$1'));
     }
