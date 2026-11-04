@@ -70,6 +70,7 @@ const BOOKS=[
   {key:'thalatha',c:'العقيدة',lsk:'mutoon_thalatha_v1',url:'thalatha.html',t:'ثلاثة الأصول وأدلتها',d:'معرفة الرب والدين والنبي ﷺ بأدلتها · ٨٧ فقرة'},
   {key:'qawaidarba',c:'العقيدة',lsk:'mutoon_qawaidarba_v1',url:'qawaidarba.html',t:'القواعد الأربع',d:'التوحيد والشرك · ٤ قواعد في ٢٥ فقرة'},
   {key:'safariniyya',c:'العقيدة',lsk:'mutoon_safariniyya_v1',url:'safariniyya.html',t:'السفارينية',d:'العقيدة على مذهب أهل الأثر · ٢١٠ أبيات'},
+  {key:'iraqi',c:'مصطلح الحديث',lsk:'mutoon_iraqi_v1',url:'iraqi.html',t:'ألفية العراقي',d:'مصطلح الحديث · ١٠٠٢ بيت'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
