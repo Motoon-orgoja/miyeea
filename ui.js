@@ -56,6 +56,9 @@ const BOOKS=[
   {key:'nukhba',c:'مصطلح الحديث',lsk:'mutoon_nukhba_v1',url:'nukhba.html',t:'نخبة الفكر',d:'مصطلح الحديث لابن حجر · ٤٣ فقرة'},
   {key:'ibnashir',c:'الفقه',lsk:'mutoon_ibnashir_v1',url:'ibnashir.html',t:'متن ابن عاشر',d:'العقيدة والفقه المالكي والتصوف · ٣١٧ بيتًا'},
   {key:'umdafiqh',c:'الفقه',lsk:'mutoon_umdafiqh_v1',url:'umdafiqh.html',t:'عمدة الفقه',d:'الفقه الحنبلي لابن قدامة · ٢٦ كتابًا'},
+  {key:'ashmawiyya',c:'الفقه',lsk:'mutoon_ashmawiyya_v1',url:'ashmawiyya.html',t:'متن العشماوية',d:'فقه العبادات على مذهب مالك · ١٤ بابًا'},
+  {key:'qawaidusul',c:'أصول الفقه',lsk:'mutoon_qawaidusul_v1',url:'qawaidusul.html',t:'قواعد الأصول ومعاقد الفصول',d:'أصول الفقه · مقدمة وثلاثة أبواب · ٢٢ بابًا'},
+  {key:'akhsar',c:'الفقه',lsk:'mutoon_akhsar_v1',url:'akhsar.html',t:'أخصر المختصرات',d:'الفقه الحنبلي · ١٨ كتابًا و٧ أبواب و١٠٦ فصول'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','usul','manar','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala']],

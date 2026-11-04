@@ -1,0 +1,35 @@
+joined «بِـ: «» ص47
+dropped enumeration letter «أ» ص57
+dropped enumeration letter «ب» ص57
+dropped enumeration letter «أ» ص58
+dropped enumeration letter «ب» ص58
+dropped enumeration letter «ت» ص58
+dropped enumeration letter «ث» ص58
+dropped enumeration letter «أ» ص58
+dropped enumeration letter «ب» ص58
+dropped enumeration letter «أ» ص59
+dropped enumeration letter «ب» ص59
+joined «كَـ:» ص62
+joined «كَـ ﴿» ص67
+joined «كَـ ﴿» ص67
+dropped enumeration letter «أ» ص71
+dropped enumeration letter «ب» ص71
+joined «كَـ «» ص73
+joined «بِـ «» ص84
+joined «كَـ «» ص92
+joined «بِـ:» ص96
+joined «كَـ:» ص96
+dropped enumeration letter «أ» ص96
+dropped enumeration letter «ب» ص96
+dropped enumeration letter «ت» ص96
+dropped enumeration letter «ث» ص96
+joined «كَـ:» ص101
+joined «كَـ:» ص102
+joined «كَـ: ﴿» ص102
+joined «كـ: «» ص108
+joined «كَـ: ﴿» ص117
+joined «كَـ: «» ص117
+joined «بِـ: «» ص129
+dropped enumeration letter «أ» ص132
+dropped enumeration letter «ب» ص133
+joined «بِـ:» ص185
