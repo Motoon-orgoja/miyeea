@@ -16,7 +16,7 @@ const HON = [
   [/(^|[^َُِْ])عز وجل/g, '$1عَزَّ وَجَلَّ'], [/عليهما السلام/g, 'عَلَيْهِمَا السَّلَامُ'], [/عليهم السلام/g, 'عَلَيْهِمُ السَّلَامُ'], [/عليه السلام/g, 'عَلَيْهِ السَّلَامُ'],
   [/رحمه الله/g, 'رَحِمَهُ اللَّهُ'], [/تبارك وتعالى/g, 'تَبَارَكَ وَتَعَالَى'], [/سبحانه وتعالى/g, 'سُبْحَانَهُ وَتَعَالَى'],
 ];
-const HONV = 'صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ|رَضِيَ اللَّهُ عَنْهُمَا|رَضِيَ اللَّهُ عَنْهُمْ|رَضِيَ اللَّهُ عَنْهُنَّ|رَضِيَ اللَّهُ عَنْهَا|رَضِيَ اللَّهُ عَنْهُ|عَلَيْهِ السَّلَامُ|عَلَيْهِمَا السَّلَامُ|رَحِمَهُ اللَّهُ';
+const HONV = 'رَضِيَ اللَّهُ تَعَالَى عَنْهُمَا|رَضِيَ اللَّهُ تَعَالَى عَنْهَا|رَضِيَ اللَّهُ تَعَالَى عَنْهُ|عَزَّ وَجَلَّ|صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ|رَضِيَ اللَّهُ عَنْهُمَا|رَضِيَ اللَّهُ عَنْهُمْ|رَضِيَ اللَّهُ عَنْهُنَّ|رَضِيَ اللَّهُ عَنْهَا|رَضِيَ اللَّهُ عَنْهُ|عَلَيْهِ السَّلَامُ|عَلَيْهِمَا السَّلَامُ|رَحِمَهُ اللَّهُ';
 
 const clean = (h, n) => {
   let t = h.replace(/<a [\s\S]*?<\/a>/g, '')
@@ -28,12 +28,23 @@ const clean = (h, n) => {
   t = t.replace(/⦗[٠-٩]+⦘/g, ' ');                                     // printed page numbers
   t = t.replace(/(?<!و)\s\([٠-٩]+\)(?=\s|$|[.،,])/g, ' ').replace(/(?<!و)\s\([٠-٩]+\)$/g, '');   // stray footnote marks
   t = t.replace(/\[[٠-٩]+\]\s*-?/g, m => { log.misc.push(n + ': حذف ' + m.trim()); return ''; });   // editor's cross refs «[٩٧]-»
+  // the editor's verse references «﴾ [البقرة: ١١٥]» / «﴾ البقرة: ١١٥» are not text
+  t = t.replace(/(\}|﴾)((?:\s*الآية)?)\s*\[?\s*\(?[ء-يً-ْ]+:\s*[٠-٩]+\)?\]?/g, (m, a, b) => { log.misc.push(n + ': حذف الإحالة ' + m.slice(1).trim()); return a + b; });
+  // one-letter brackets: the editor restored a letter of the next/previous word — rejoin it
+  const LET = [[/\[أَ\] ونَهَارٍ/, 'أَوْ نَهَارٍ'], [/\[(?:وَ|و)\]\s*/, 'وَ'], [/\[أَ\]\s*/, 'أَ'], [/ـ\[ـهُ\]/, 'هُ'], [/\s*\[هُ\]/, 'هُ'], [/\[فـ\]\s*/, 'فَ']];
+  for (const [a, b] of LET) t = t.replace(new RegExp(a.source, 'g'), m => { log.brackets.push(n + '\t' + m.trim() + ' → ' + b + ' (حرف ملحق بالكلمة)'); return b; });
   // editor's brackets: words the editor added from the other manuscript / the source — keep the words, drop the brackets
   t = t.replace(/\[([^\]]*)\]/g, (m, x) => { log.brackets.push(n + '\t' + x); return x; });
+  // «وَ عَنْ», «وَ لَكِنْ»: a detached conjunction is a typing slip
+  t = t.replace(/(^|\s)وَ\s+(?=[ء-ي])/g, (m, a) => { log.misc.push(n + ': وصل «وَ» المنفصلة'); return a + 'وَ'; });
+  // two short pieces printed unvocalized
+  t = t.replace(/وأشار إلِيه البخاري/, () => { log.misc.push(n + ': شكل «وَأَشَارَ إِلَيْهِ الْبُخَارِيُّ» (غير مشكول في المصدر)'); return 'وَأَشَارَ إِلَيْهِ الْبُخَارِيُّ'; })
+    .replace(/(مِنَ التَّمْرِ) لا (يُعْلَمُ)/, (m, a, b) => { log.misc.push(n + ': شكل «لَا» (غير مشكولة)'); return a + ' لَا ' + b; });
   for (const [a, b] of HON) t = t.replace(a, b);
   // dashes printed around the honorifics are typography, not text
   t = t.replace(new RegExp('\\s*-\\s*(' + HONV + ')\\s*-?(?=[\\s:،,.;؛]|$)', 'g'), ' $1');
   t = t.replace(new RegExp('(' + HONV + ')\\s*-\\s*', 'g'), '$1 ');
+  t = t.replace(/بِـ\s*([(﴿])/g, 'بِ$1');   // «بِـ (ق)»: tatweel joining the preposition to a quoted sura name
   t = t.replace(/,/g, '،').replace(/;/g, '؛').replace(/\?/g, '؟');
   return t.replace(/\s+/g, ' ').replace(/\s+([.،؛:؟!»)\]﴾])/g, '$1').replace(/([«﴿(])\s+/g, '$1').replace(/»\s*\./g, '».').trim();
 };
@@ -45,7 +56,7 @@ const HEADFIX = [['كتَابُ', 'كِتَابُ'], [/^بَاب /, 'بَابُ 
   ['الْأَيْمَانُ وَالنُّذُورُ', 'الْأَيْمَانِ وَالنُّذُورِ'], [/:$/, '']];
 
 const paras = [];
-for (let p = 3; p <= 1522; p++) {
+for (let p = 2; p <= 1522; p++) {
   const d = fs.readFileSync(path.join(dir, p + '.html'), 'utf8').split('<hr')[0].split('class="hamesh"')[0];
   d.split(/<p[ >]/).slice(1).forEach(h => {
     h = h.split('</p>')[0];
@@ -140,6 +151,47 @@ for (const c of J.chapters) for (const x of c.hadiths) {
   for (const k of Object.keys(x)) delete x[k]; Object.assign(x, o);
 }
 const all = J.chapters.flatMap(c => c.hadiths);
+// word-level corrections (typing slips and plain lahn in the digital copy); each must apply exactly once
+const FIXES = [
+  [1265, 'الْأَ نْصَارِيِّ', 'الْأَنْصَارِيِّ', 'كلمة مقطوعة بمسافة'],
+  [1271, 'رَ ضِيَ', 'رَضِيَ', 'كلمة مقطوعة بمسافة'],
+  [1152, 'وتَقَدَّمَ', 'وَتَقَدَّمَ', 'واو بلا حركة'],
+  [1236, 'شَرِيكَ بْنُ', 'شَرِيكَ بْنَ', 'لحن: «ابن» نعت لاسم «أنّ» المنصوب'],
+  [1104, 'عِرْقًا', 'عَرَقًا', 'العَرَق: المِكْتَل (كما في حديث المجامع في رمضان)؛ «عِرْق» لا يستقيم معنى'],
+  [544, 'ِللْبُخَارِيِّ', 'لِلْبُخَارِيِّ', 'حركة اللام قبلها'],
+  [1066, 'إِرْسَالَه ُ', 'إِرْسَالَهُ', 'حركة منفصلة بمسافة'],
+  [1257, 'وَالْحَاكِم ُ', 'وَالْحَاكِمُ', 'حركة منفصلة بمسافة'],
+  [1312, 'ِبهَا', 'بِهَا', 'حركة الباء قبلها'],
+  [1327, 'عَمْرِو ٍ', 'عَمْرٍو', 'تنوين منفصل: عَمْرٍو'],
+  [1328, 'مَسْجِد ٍ بَنِي', 'مَسْجِدِ بَنِي', 'حركة منفصلة، والكلمة مضافة'],
+  [335, 'و: (', 'وَ: (', 'واو بلا حركة'],
+  // found by comparing the harakat with sunnah.com/bulugh (vocal.js); each is the only possible reading
+  [61, 'وَلَيَالِيَهِنَّ', 'وَلَيَالِيَهُنَّ', 'هاء الضمير بعد ياء مفتوحة مضمومة'],
+  [267, 'هَصَرَ ظَهْرَهِ', 'هَصَرَ ظَهْرَهُ', 'مفعول به، والهاء بعد فتح مضمومة'],
+  [272, 'يُخْتِمُ', 'يَخْتِمُ', 'خَتَمَ يَخْتِمُ (ثلاثي)'],
+  [305, 'يَقْنَتُونَ', 'يَقْنُتُونَ', 'قَنَتَ يَقْنُتُ'],
+  [1321, 'فَحَقَنَ دَمَهِ', 'فَحَقَنَ دَمَهُ', 'مفعول به، والهاء بعد فتح مضمومة'],
+  [1333, 'فَأَكلُهُ', 'فَأَكْلُهُ', 'سكون ناقص (مصدر: أَكْلُه حرام)'],
+  [289, 'وَلِلطَّبرَانِيِّ', 'وَلِلطَّبَرَانِيِّ', 'فتحة ناقصة'],
+  [1559, 'إِلهَ', 'إِلَهَ', 'فتحة ناقصة'],
+  [21, 'وعَنْ', 'وَعَنْ', 'فتحة ناقصة'],
+  [32, 'وأَحْمَدُ', 'وَأَحْمَدُ', 'فتحة ناقصة'],
+  [266, 'وهلِّلْهُ', 'وَهَلِّلْهُ', 'فتحتان ناقصتان'],
+  [326, 'لمُسْلِمٍ', 'لِمُسْلِمٍ', 'كسرة ناقصة'],
+  [330, 'فلْيُتِمَّ', 'فَلْيُتِمَّ', 'فتحة ناقصة'],
+  [1201, 'ومُحَيِّصَةَ', 'وَمُحَيِّصَةَ', 'فتحة ناقصة'],
+];
+// «بنِ/بنُ» printed without the sukun on the ba (1–2 per hadith): completed everywhere
+for (const h of all) for (const f of ['rawi', 'matn', 'takh']) if (h[f] && /(^|\s)بن[ِ]/.test(h[f])) {
+  h[f] = h[f].replace(/(^|\s)بن([ُِ])/g, (m, a, v) => { log.misc.push(h.n + ': بن' + v + ' → بْن' + v + ' (سكون ناقص)'); return a + 'بْن' + v; });
+}
+for (const h of all) for (const f of ['rawi', 'matn', 'takh']) if (h[f] && /(^|\s)بنُ/.test(h[f])) h[f] = h[f].replace(/(^|\s)بنُ/g, (m, a) => { log.misc.push(h.n + ': بنُ → بْنُ (سكون ناقص)'); return a + 'بْنُ'; });
+for (const [n, a, b, why] of FIXES) {
+  const h = all.find(x => x.n === n); let k = 0;
+  for (const f of ['rawi', 'matn', 'takh']) if (h[f] && h[f].includes(a)) { h[f] = h[f].replace(a, b); k++; }
+  if (k !== 1) throw new Error('fix ' + n + ' ' + a + ' applied ' + k);
+  log.misc.push(n + ': ' + a + ' → ' + b + ' (' + why + ')');
+}
 fs.writeFileSync(out, JSON.stringify(J, null, 1) + '\n');
 fs.writeFileSync(path.join(__dirname, 'out', 'build-log.txt'), [
   '# headings fixed', ...log.headfix, '', '# editor brackets kept (number\\tcontent)', ...log.brackets, '', '# misc', ...log.misc,
