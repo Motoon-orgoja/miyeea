@@ -59,6 +59,8 @@ if (fs.existsSync(T(key + '.txt'))) {
   const BOOK = { key, app: 'mutoon', lsk: 'mutoon_' + key + '_v1', title: M.title, unitWord: hadith ? 'حديث' : 'فقرة',
     sub: M.sub + ' · ' + count, source: J.source + (J.check ? ' · قوبل بـ: ' + J.check : ''), note: M.note || '', chapters };
   if (J.basmala) BOOK.basmala = J.basmala;
+  // a beginner's explanation of each chapter (tools/texts/explain/BRIEF.md): plain intro, one explanation per unit, tree, quiz
+  require('./explain-layer.js')(key, chapters, SH);
   const shDir = path.join(root, 'data', key + '-sharh');
   // every chapter gets a file (the page asks for each chapter's), or the book says it has none
   if (Object.keys(SH).length) { fs.mkdirSync(shDir, { recursive: true }); for (const c of chapters) fs.writeFileSync(path.join(shDir, c.id + '.json'), JSON.stringify(SH[c.id] || {})) }

@@ -267,6 +267,8 @@ function renderToday(){
   if(mode._seen!==key){mode.today=kind==='new'?'full':QA?'qa':'reveal';mode._seen=key}
   const el=kind==='new'?unitEl(u,{gloss:true}):blockEl(ids); applyMode(el,mode.today); voiceHost=el;
   modeBar('today',modes,renderToday);
+  // a text with explanations opens a chapter with its plain intro (a QA book shows it on the reading step)
+  if(!QA&&kind==='new'&&!learnedIds().length){const it=introEl(CUR);if(it)box.append(it)}
   box.append(tag,modes,el);
   // word-by-word self-recitation runs on the card shown, while the today tab is open
   if(mode.today==='reveal'&&active==='today')window.UI.reveal.start(el,'الفقرة كاملة');
@@ -280,7 +282,7 @@ function renderToday(){
     const done=document.createElement('button'); done.className='btn primary'; done.textContent='حفظته ✓'; done.disabled=n<Math.min(3,S.goal);
     done.addEventListener('click',()=>{if(VS.on)vStop(true);mode._seen='';snap('حفظت '+u.label);learn(u.id);renderAll();undoToast('حفظته ✓')});
     side.append(done); c.append(t,side); box.append(c);
-    if(QA){const ex=exEl(u.id);if(ex)box.append(ex);const sh=sharhEl(u.id);if(sh)box.append(sh)}
+    {const ex=exEl(u.id);if(ex)box.append(ex);const sh=sharhEl(u.id);if(sh)box.append(sh)}
   }else{
     const show=document.createElement('button'); show.className='btn'; show.textContent=QA?'اكشف كل الأجوبة':'اكشف النص';
     show.addEventListener('click',()=>{if(VS.on)vStop(true);window.UI.reveal.stop();el.classList.add('open');applyMode(el,'full')});
@@ -340,7 +342,8 @@ function renderAll(){
   const b=S.blocks[CUR];
   st.textContent=b?`الباب محفوظ كامل ✓ · مراجعته: ${stageTxt(b)} · موعدها ${when(b.due)}`:`محفوظ ${ar(learnedIds().length)} من ${ar(U.length)} · لما تختم الباب بيصير مراجعة كاملة له ككتلة وحدة`;
   list.append(st);
-  if(QA){const it=introEl(CUR);if(it){it.open=false;list.append(it)}const tr=treeEl(CUR);if(tr)list.append(tr);const wd=sharhEl('words:'+CUR);if(wd){wd.classList.add('words');list.append(wd)}const rd=sharhEl('read:'+CUR);if(rd){rd.classList.add('readall');list.append(rd)}const qc=quizCard(CUR);if(qc)list.append(qc)}
+  // the chapter's plain intro, tree, hard words and exercises, for any book that has them (the usul book, explain-layer.js)
+  {const it=introEl(CUR);if(it){it.open=false;list.append(it)}const tr=treeEl(CUR);if(tr)list.append(tr);const wd=sharhEl('words:'+CUR);if(wd){wd.classList.add('words');list.append(wd)}const rd=sharhEl('read:'+CUR);if(rd){rd.classList.add('readall');list.append(rd)}const qc=quizCard(CUR);if(qc)list.append(qc)}
   CHI[CUR].units.forEach(u=>{if(!U.includes(u)){const el=unitEl(u,{status:false});el.classList.add('off');applyMode(el,mode.all);const ra=document.createElement('div');ra.className='row';ra.append(repBtn(u));el.append(ra);const ex=exEl(u.id);if(ex)el.append(ex);const sh=sharhEl(u.id);if(sh)el.append(sh);list.append(el);return}
     const el=unitEl(u,{status:true});applyMode(el,mode.all);
     const c=S.cards[u.id], acts=document.createElement('div'); acts.className='row';
