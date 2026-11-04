@@ -1,0 +1,2033 @@
+reading @31 (T+Th): «وَصَوَّرَ» → «وصوَّره» [T]
+reading @148 (T+Th): «الْمُرَادِ بِهِ» → «» [T]
+reading @465 (T+M+Th): «وَيَعْتَبِرُ» → «يعتبرُ» [T]
+reading @471 (T+M+Th): «مَاهِيَّةِ» → «مائيَّةِ» [T]
+reading @483 (T+M+Th): «السَّمَوَاتِ» → «السَّمَاوَاتِ» [T]
+reading @486 (manual: لفظ المصحف «يَئُودُهُ» (T)): «يَؤُدُهُ» → «يَئُودُهُ» [T]
+reading @596 (T+M+Th): «وَحُلْوِهِ» → «حلوِّه» [T]
+reading @692 (T+M+Th): «عَلَيْهِ» → «عليهم،» [T]
+reading @698 (M+Th): «بِنَبِيِّهِ» → «بمحمد نبيه» [M]
+reading @751 (T+M+Th): «كِبَارِ» → «كبائرِ» [T]
+reading @789 (T+M+Th): «فَمَنْ» → «ومَن» [T]
+reading @1313 (T+M+Th): «دَمِ» → «» [T]
+reading @1383 (T+M+Th): «لِدَمٍ» → «كدمٍ» [T]
+reading @1461 (T+M+Th): «الطُّهْرِ» → «بالطُّهْرِ» [T]
+reading @1655 (T+M+Th): «الْخَصِيفُ» → «الحصيفُ» [T]
+reading @1722 (T+M+Th): «يَدَيْهِ» → «يدِه» [T]
+reading @1959 (T+M+Th): «عَظْمَاتِ» → «عظميْ» [T]
+reading @2036 (T+M+Th): «فِيهَا» → «فيهما» [T]
+reading @2223 (T+M+Th): «بِيَدَيْهِ» → «بيدِه؛» [T]
+reading @2244 (T+M+Th): «» → «ثلاثًا» [T]
+reading @2699 (T+M+Th): «وَرَجَا» → «ويرجو» [T]
+reading @2714 (T+M+Th): «السَّبْعَةِ» → «» [T]
+reading @2727 (T+M+Th): «بِتَيَمُّمٍ» → «يَتَيَمَّمُ» [T]
+reading @2746 (T+M+Th): «صَعِدَ» → «ظهر» [T]
+reading @2807 (T+M+Th): «كَفَّ يَدِهِ الْيُسْرَى» → «كفَّه» [T]
+reading @2891 (T+M+Th): «بِالطُّهْرِ» → «بالتطهُّرِ» [T]
+reading @2927 (T+M+Th): «بَعْدَ» → «» [T]
+reading @2946 (T+M+Th): «» → «إذا» [T]
+reading @3195 (T+M+Th): «إذْ» → «إذا» [T]
+reading @3649 (T+M+Th): «بَضْعَيْكَ» → «بِضَبْعَيْكَ» [T]
+reading @3893 (T+M+Th): «وَنَخْشَعُ» → «ونَخْنَعُ» [T]
+reading @4067 (T+M+Th): «الْمُقَرَّبِينَ» → «والمُقَرَّبِينَ،» [T]
+reading @4450 (T+M+Th): «» → «له» [T]
+reading @4500 (T+M+Th): «الثَّانِيَةِ» → «الثالِثَةِ» [T]
+reading @4505 (T+M+Th): «» → «ويُسَلِّمُ.» [T]
+reading @4646 (T+M+Th): «إنْ» → «وإنْ» [T]
+reading @4740 (T+M+Th): «يَتَنَبَّهَ» → «يَنْتَبِهَ» [T]
+reading @4939 (M+Th): «الْجُلُوسَ» → «السجود» [M]
+reading @5082 (T+M+Th): «وَاعْتِقَادَ» → «أوِ اعتقادَ» [T]
+reading @5113 (T+M+Th): «الْخَصِيفُ» → «الحَصِيفُ» [T]
+reading @5122 (T+M+Th): «الْخَصِيفُ» → «الحَصِيفُ،» [T]
+reading @5132 (T+M+Th): «وَوَجْهَهُ» → «أو وجْهَهُ» [T]
+reading @5157 (T+Th (tie, T)): «يُنْقِصُ» → «بنَقْصٍ» [T]
+reading @5272 (T+M+Th): «بَعْدَ» → «قَبْلَ» [T]
+reading @5312 (T+M+Th): «مِنْهَا» → «» [T]
+reading @5314 (T+M+Th): «» → «مِنْهَا» [T]
+reading @5375 (T+M+Th): «» → «سَلَّمَ» [T]
+reading @5435 (T+M+Th): «اثْنَيْنِ» → «اثْنَتَيْنِ» [T]
+reading @5501 (T+M+Th): «وَإِلَّا» → «وَإِنْ» [T]
+reading @5512 (T+M+Th): «تَخَافُ» → «يَخَافُ» [T]
+reading @5853 (T+M+Th): «وَإِنْ» → «إِنْ» [T]
+reading @6130 (T+M+Th): «لِدَمٍ خَفِيفٍ وَلْيَفْتِلْهُ إلَّا أَنْ يَسِيلَ أَوْ يَقْطُرَ وَلَا يَنْصَرِفُ» → «» [T]
+reading @6225 (T+M+Th): «عَشْرَ» → «عشرةَ» [T]
+reading @6235 (M+Th): «النَّصِّ» → «المص» [M]
+reading @6730 (T+M): «صَلَاةُ» → «وَصَلَاةُ» [T]
+reading @6820 (T+M+Th): «» → «بِقَدْرِ طَاقَتِهِمْ» [T]
+reading @7181 (T+M+Th): «صَلَاتِهِ» → «صلاةِ» [T]
+reading @7418 (T+M+Th): «رَقِيقًا» → «رَفِيقًا،» [T]
+reading @7636 (T+M+Th): «» → «بِهِ،» [T]
+reading @7764 (T+M+Th): «التَّمَثُّلُ» → «فِي التَّمْثِيلِ» [T]
+reading @7979 (T+M+Th): «مُنْقَلَبَنَا» → «مُتَقَلَّبَنَا» [T]
+reading @7987 (T+M+Th): «وَلِلْمُؤْمِنِينَ» → «وَالمُؤْمِنِينَ» [T]
+reading @8053 (T+M+Th): «يَبْتَغِينَ» → «يَبْغِينَ» [T]
+reading @8107 (T+M+Th): «وَيُقَرِّبُوا» → «وَيُقَرَّبُ» [T]
+reading @8127 (T+M+Th): «وَوُرِيَ» → «وَوُورِيَ،» [T]
+reading @8300 (T+M+Th): «الرَّجُلُ» → «الرِّجَالُ» [T]
+reading @8488 (T+M+Th): «وَقِيلَ» → «وَقَدْ قِيلَ:» [T]
+reading @8552 (M+Th): «وَتَعَالَى» → «» [M]
+reading @8826 (T+M+Th): «» → «فِيهِ» [T]
+reading @8893 (T+M+Th): «عَنْ» → «عَلَى» [T]
+reading @9366 (T+M+Th): «يَكُونَ» → «تَكُونَ» [T]
+reading @9408 (T+M+Th): «وَعَنْ» → «عَنْ» [T]
+reading @10146 (T+M+Th): «» → «أَوْ أَقِطٍ» [T]
+reading @10743 (T+M+Th): «» → «وَرَكَعَ،» [T]
+reading @10769 (T+M+Th): «وَالتَّقْصِيرُ» → «وَلِيُقَصِّرْ» [T]
+reading @10776 (T+M+Th): «وَلَا يَجُوزُ لَهَا الْحِلَاقُ وَتَأْخُذُ الْمَرْأَةُ مِنْ أَطْرَافِ شَعْرِهَا قَدْرَ الْأُنْمُلَةِ مِنْ جَمِيعِهِ طَوِيلِهِ وَقَصِيرِهِ وَالرَّجُلُ مِنْ قُرْبِ أَصْلِهِ» → «» [T]
+reading @11810 (M+Th): «ذَكَرْنَاهُ» → «ذكرنا» [M]
+reading @12234 (T+M+Th): «حَلَفَ وَاسْتَثْنَى» → «اسْتَثْنَى» [T]
+reading @12539 (T+M+Th): «وَهُوَ» → «أَوْ هُوَ» [T]
+reading @12722 (T+M): «بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ» → «» [T]
+reading @13012 (T+M+Th): «الْجَمْعُ فِي النِّكَاحِ بَيْنَ الأُخْتَيْنِ» → «» [T]
+reading @13364 (T+M+Th): «» → «وَلَا» [T]
+reading @13382 (T+M+Th): «» → «بِهَا» [T]
+reading @13685 (T+M+Th): «وَلَيْسَ» → «لَيْسَ» [T]
+reading @14412 (M+Th): «» → «ثلاثة أشهر واليائسة من المحيض» [M]
+reading @15121 (T+M+Th): «حَمْلِهَا» → «الحَمْلِ» [T]
+reading @15179 (T+M+Th): «تُفِيتُ» → «يُفِيتُ» [T]
+reading @15345 (T+M+Th): «» → «ما تُنْتَجُ» [T]
+reading @15911 (T+M+Th): «مَاتَ الرَّاكِبُ لِلدَّابَّةِ أَوْ السَّفِينَةِ» → «» [T]
+reading @15995 (M+Th): «وَلِلْعَمَلِ» → «وَالعَمَلُ» [T]
+reading @16070 (T+M+Th): «» → «كُلُّهُ» [T]
+reading @16106 (T+M+Th): «» → «وَتَنْقِيَةُ مَنَاقِعِ الشَّجَرِ» [T]
+reading @16111 (T+M+Th): «وَتَنْقِيَةُ مَنَاقِعِ الشَّجَرِ» → «» [T]
+reading @16186 (M+Th): «وَكَانَتْ» → «وإذا كانت» [M]
+reading @16445 (T+M+Th): «يَرْضَ» → «يَمْرَضْ،» [T]
+reading @16795 (T+M+Th): «أَبٍ» → «لِأَبٍ» [T]
+reading @16912 (T+M+Th): «ابْنَيْنِ» → «بَنِينَ» [T]
+reading @16941 (T+M): «الْوَدِيعَةِ» → «والوديعةِ» [T]
+reading @16951 (T+M+Th): «» → «قَدْ» [T]
+reading @17190 (T+M+Th): «يَصَدَّقَ» → «يَتَصَدَّقَ» [T]
+reading @17196 (M+Th): «تَعَالَى» → «» [M]
+reading @17431 (T+M+Th): «رَدَّ» → «رَدَدْتُ» [T]
+reading @17793 (T+M+Th): «» → «دِيَةِ» [T]
+reading @17937 (T+M+Th): «خَمْسَةٌ» → «مُخَمَّسَةٌ:» [T]
+reading @17942 (T+M+Th): «ذَكَرْنَاهُ» → «ذَكَرْنَا» [T]
+reading @17944 (T+M+Th): «ابْنَ» → «بَنُو» [T]
+reading @17946 (M+Th): «ذَكَرًا» → «ذكورا» [M]
+reading @18025 (T+M+Th): «» → «الدِّيَةُ،» [T]
+reading @18030 (T+M+Th): «يُكْسَرُ» → «يَنْكَسِرُ» [T]
+reading @18486 (T+M+Th): «حَدًّا» → «» [T]
+reading @19126 (T+M+Th): «وَلَا» → «» [T]
+reading @19813 (T+M+Th): «» → «آبَارِ» [T]
+reading @19886 (T+M+Th): «التَّقْلِيسِ» → «التَّفْلِيسِ» [T]
+reading @19995 (T+M+Th): «» → «إِلَى» [T]
+reading @20051 (T+M+Th): «عَنْ» → «عَلَى» [T]
+reading @20194 (T+M+Th): «» → «مِنْهُ» [T]
+reading @20408 (M+Th): «وَالِاثْنَيْنِ» → «والاثنتين» [M]
+reading @20433 (T+M+Th): «» → «وَابنةُ» [T]
+reading @20841 (T+M+Th): «» → «لِأَبٍ،» [T]
+reading @21736 (T+M+Th): «» → «صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ.» [T]
+reading @21977 (M+Th): «الصَّلَاةُ وَالسَّلَامُ» → «السلام» [M]
+reading @22309 (M+Th): «الصَّلَاةُ وَالسَّلَامُ» → «السلام» [M]
+reading @22436 (T+M+Th): «» → «وَعَلَيْهِ» [T]
+reading @22546 (M+Th): «الصَّلَاةُ وَالسَّلَامُ» → «السلام» [M]
+reading @22560 (M+Th): «الصَّلَاةُ وَالسَّلَامُ» → «السلام» [M]
+reading @22880 (M+Th): «» → «صلى الله عليه وسلم» [M]
+reading @23549 (T+M+Th): «يَسْتَقْبِلُهُ» → «يَسْتَقِيلُهُ،» [T]
+reading @24197 (T+M+Th): «» → «وَلَيْلَةٍ» [T]
+reading @24545 (T+M+Th): «» → «سَبَقَ هُوَ، وَإِنْ» [T]
+reading @24645 (M+Th): «الصَّلَاةُ وَالسَّلَامُ» → «السلام» [M]
+reading @24669 (M+Th): «وَعَلَى آلِهِ الصَّلَاةُ وَالسَّلَامُ» → «السلام» [M]
+reading @24791 (M+Th): «» → «فيه» [M]
+colophon (M+Th wording, T shakl): قَالَ أَبُو مُحَمَّدٍ عَبْدُ اللَّهِ بْنُ أَبِي زَيْدٍ: قَدْ أَتَيْنَا عَلَى مَا شَرَطْنَا أَنْ نَأْتِيَ بِهِ فِي كِتَابِنَا هَذَا مِمَّا يَنْتَفِعُ بِهِ إِنْ شَاءَ اللَّهُ مَنْ رَغِبَ فِي تَعْلِيمِ ذَلِكَ مِنَ الصِّغَارِ، وَمَنِ احْتَاجَ إِلَيْهِ مِنَ الْكِبَارِ، وَفِيهِ مَا يُؤَدِّي الْجَاهِلَ إِلَى عِلْمِ مَا يَعْتَقِدُهُ مِنْ دِينِهِ، وَيَعْمَلُ بِهِ مِنْ فَرَائِضِهِ، وَيُفْهِمُ كَثِيرًا مِنْ أُصُولِ الْفِقْهِ وَفُنُونِهِ، وَمِنَ السُّنَنِ وَالرَّغَائِبِ وَالْآدَابِ. وَأَنَا أَسْأَلُ اللَّهَ عَزَّ وَجَلَّ أَنْ يَنْفَعَنَا وَإِيَّاكَ بِمَا عَلَّمَنَا، وَيُعِينَنَا وَإِيَّاكَ عَلَى الْقِيَامِ بِحَقِّهِ فِيمَا كَلَّفَنَا، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ الْعَلِيِّ الْعَظِيمِ، وَصَلَّى اللَّهُ عَلَى سَيِّدِنَا مُحَمَّدٍ نَبِيِّهِ وَعَلَى آلِهِ وَصَحْبِهِ وَسَلَّمَ تَسْلِيمًا كَثِيرًا.
+colophon as T prints it: قَالَ أَبُو مُحَمَّدٍ عَبْدُ اللهِ بْنُ أَبِي زَيْدٍ: قَدْ أَتَيْنَا عَلَى مَا شَرَطْنَا فِي كِتَابِنَا هَذَا مِمَّا يَنْتَفِعُ بِهِ -إِنْ شَاءِ اللهُ- مَنْ رَغِبَ فِي تَعْلِيمِهِ ذَلِكَ مِنَ الصِّغَارِ وَمَنِ احْتَاجَ إِلَيْهِ مِنَ الكِبَارِ، وَفِيهِ مَا يُؤَدِّي الجَاهِلَ إِلَى عِلْمِ مَا يَعْتَقِدُهُ مِنْ دِينِهِ وَمَا يَعْمَلُ بِهِ مِنْ فَرَائِضِهِ وَمَا يُفْهِمُ كَثِيرًا مِنْ أُصُولِ الفِقْهِ وَفُنُونِهِ وَالسُّنَنِ وَالرَّغَائِبِ وَالآدَابِ. وَأَنَا أَسْأَلُ اللهَ أَنْ يَنْفَعَنَا وَإِيَّاكَ بِمَا عَلَّمَنَا، وَيُعِينَنَا وَإِيَّاكَ عَلَى القِيَامِ بِحَقِّه، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ العَلِيِّ العَظِيمِ. وَصَلَّى اللهُ عَلَى سَيِّدِنَا مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ تَسْلِيمًا كَثِيرًا.
+voc (manual, witness word): وصوَّره → وَصَوَّرَهُ
+voc (manual, witness word): يعتبرُ → يَعْتَبِرُ
+voc (manual, witness word): مائيَّةِ → مَائِيَّةِ
+voc (manual, witness word): حلوِّه → حُلْوِهِ
+voc (manual, witness word): عليهم → عَلَيْهِمْ
+voc (manual, witness word): بمحمد → بِمُحَمَّدٍ
+voc (manual, witness word): نبيه → نَبِيِّهِ
+voc (manual, witness word): كبائرِ → كَبَائِرِ
+voc (manual, witness word): ومَن → وَمَنْ
+voc (manual, witness word): كدمٍ → كَدَمٍ
+voc (manual, witness word): الْحصيفُ → الْحَصِيفُ
+voc (manual, witness word): يدِه → يَدِهِ
+voc (manual, witness word): عظميْ → عَظْمَيْ
+voc (manual, witness word): فيهما → فِيهِمَا
+voc (manual, witness word): بيدِه → بِيَدِهِ
+voc (manual, witness word): ثلاثًا → ثَلَاثًا
+voc (manual, witness word): ويرجو → وَيَرْجُو
+voc (manual, witness word): ظهر → ظَهَرَ
+voc (manual, witness word): كفَّه → كَفَّهُ
+voc (manual, witness word): بِالتطهُّرِ → بِالتَّطَهُّرِ
+voc (manual, witness word): إذا → إِذَا
+voc (manual, witness word): إذا → إِذَا
+voc (manual, witness word): ونَخْنَعُ → وَنَخْنَعُ
+voc (manual, witness word): له → لَهُ
+voc (manual, witness word): الثالِثَةِ → الثَّالِثَةِ
+voc (manual, witness word): ويُسَلِّمُ → وَيُسَلِّمُ
+voc (manual, witness word): وإنْ → وَإِنْ
+voc (manual, witness word): السجود → السُّجُودَ
+voc (manual, witness word): أوِ → أَوْ
+voc (manual, witness word): اعتقادَ → اعْتِقَادَ
+voc (manual, witness word): أو → أَوْ
+voc (manual, witness word): وجْهَهُ → وَجْهَهُ
+voc (manual, witness word): بنَقْصٍ → بِنَقْصٍ
+voc (manual, witness word): عشرةَ → عَشْرَةَ
+voc (manual, witness word): المص → المص
+voc (manual, witness word): صلاةِ → صَلَاةِ
+voc (manual, witness word): ذكرنا → ذَكَرْنَا
+voc (manual, witness word): ثلاثة → ثَلَاثَةُ
+voc (manual, witness word): أشهر → أَشْهُرٍ
+voc (manual, witness word): واليائسة → وَالْيَائِسَةُ
+voc (manual, witness word): من → مِنَ
+voc (manual, witness word): المحيض → الْمَحِيضِ
+voc (manual, witness word): ما → مَا
+voc (manual, witness word): وإذا → وَإِذَا
+voc (manual, witness word): كانت → كَانَتْ
+voc (manual, witness word): وَالْوديعةِ → وَالْوَدِيعَةِ
+voc (manual, witness word): ذكورا → ذُكُورًا
+voc (manual, witness word): والاثنتين → وَالِاثْنَتَيْنِ
+voc (manual, witness word): وَابنةُ → وَابْنَةُ
+voc (manual, witness word): السلام → السَّلَامُ
+voc (manual, witness word): السلام → السَّلَامُ
+voc (manual, witness word): السلام → السَّلَامُ
+voc (manual, witness word): السلام → السَّلَامُ
+voc (manual, witness word): صلى → صَلَّى
+voc (manual, witness word): الله → اللَّهُ
+voc (manual, witness word): عليه → عَلَيْهِ
+voc (manual, witness word): وسلم → وَسَلَّمَ
+voc (manual, witness word): السلام → السَّلَامُ
+voc (manual, witness word): السلام → السَّلَامُ
+voc (manual, witness word): فيه → فِيهِ
+ayah not placed: بِ﴿الشَّمْسِ وَضُحَاهَا﴾
+Quran spans bracketed: 37
+quote: «وَيْلٌ لِلْأَعْقَابِ مِنْ النَّارِ»،
+quote: «مَنْ تَوَضَّأَ فَأَحْسَنَ الْوُضُوءَ، ثُمَّ رَفَعَ طَرَفَهُ إلَى السَّمَاءِ، فَقَالَ: أَشْهَدُ أَنْ لَا إلَهَ إلَّا الل
+quote: «اللَّهُمَّ اجْعَلْنِي مِنْ التَّوَّابِينَ، وَاجْعَلْنِي مِنْ الْمُتَطَهِّرِينَ».
+quote: «أَبْرِدُوا بِالصَّلَاةِ؛ فَإِنَّ شِدَّةَ الْحَرِّ مِنْ فَيْحِ جَهَنَّمَ»،
+quote: «مَنْ كَانَ يُؤْمِنُ بِاَللَّهِ وَالْيَوْمِ الْآخَرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُت»،
+quote: «مِنْ حُسْنِ إسْلَامِ الْمَرْءِ تَرْكُهُ مَا لَا يَعْنِيه».
+quote: «إنَّ الَّذِي حَرَّمَ شُرْبَهَا حَرَّمَ بَيْعَهَا»،
+quote: «مَنْ كَانَ يُؤْمِنُ بِاَللَّهِ وَالْيَوْمِ الْآخَرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ»،
+quote: «مِنْ حُسْنِ إسْلَامِ الْمَرْءِ تُرْكُهُ مَا لَا يَعْنِيه»،
+quote: «لَا تَغْضَبُ»،
+quote: «الْمُؤْمِنُ يُحِبُّ لِأَخِيهِ الْمُؤْمِنِ مَا يُحِبُّ لِنَفْسِهِ».
+quote: «السَّفَرُ قِطْعَةٌ مِنْ الْعَذَابِ».
+quote: «إنْ كَانَ فَفِي الْمَسْكَنِ وَالْمَرْأَةِ وَالْفَرَسِ»،
+quote: «الرُّؤْيَا الْحَسَنَةُ مِنْ الرَّجُلِ الصَّالِحِ جُزْءٌ مِنْ سِتَّةٍ وَأَرْبَعِينَ جُزْءًا مِنْ النُّبُوَّةِ»،
+quote: «عِلْمٌ لَا يَنْفَعُ وَجَهَالَةٌ لَا تَضُرُّ»،
+quotations marked: 15
+fill from T: الْخِيرَةِ → الْخِيَرَةِ
+fill from T: فَإِنَّك → فَإِنَّكَ
+fill from T: سَأَلْتنِي → سَأَلْتَنِي
+fill from T: لَك → لَكَ
+fill from T: رَغِبْت → رَغِبْتَ
+fill from T: فَأَجَبْتُك → فَأَجَبْتُكَ
+fill from T: وَلَك → وَلَكَ
+fill from T: إلَيْهِ. → إِلَيْهِ.
+fill from T: إيصَالُ → إِيصَالُ
+fill from T: مَثَّلْت → مَثَّلْتُ
+fill from T: لَك → لَكَ
+fill from T: إلَيْهِ → إِلَيْهِ
+fill from T: لَك → لَكَ
+fill from T: شَرَطْت → شَرَطْتُ
+fill from T: لَك → لَكَ
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: مَكَان → مَكَانٍ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: ﴿أَلا → ﴿أَلَا
+fill from T: لا → لَا
+fill from T: الآخِرَةِ﴾. → الْآخِرَةِ﴾.
+fill from T: إغْمَاء → إغْمَاءٍ
+fill from T: إنْ → إِنْ
+fill from T: يَبْدَأ → يَبْدَأَ
+fill from T: يُلَاقِيه → يُلَاقِيِه
+fill from T: إلَى → إِلَى
+fill from T: يُوعِبهَا → يُوعِبُهَا
+fill from T: إلَى → إِلَى
+fill from T: اسْتَقْبَلْت → اسْتَقْبَلْتَ
+fill from T: بِوَجْهِك → بِوَجْهِكَ
+fill from T: رَأْسَك → رَأْسَكَ
+fill from T: نَظَرْت → نَظَرْتَ
+fill from T: بِبَصَرِك → بِبَصَرِكَ
+fill from T: بِبَصَرِك → بِبَصَرِكَ
+fill from T: بَصَرِك → بَصَرِكَ
+fill from T: صَوْتِك → صَوْتِكَ
+fill from T: كُنْت → كُنْتَ
+fill from T: زِدْت → زِدْتَ
+fill from T: كُنْت → كُنْتَ
+fill from T: قُلْت: → قُلْتَ:
+fill from T: كُنْت → كُنْتَ
+fill from T: شِئْت: → شِئْتَ:
+fill from T: رَبِّي → رَبِّيَ
+fill from T: رَأْسَك → رَأْسَكَ
+fill from T: كُنْت → كُنْتَ
+fill from T: شِئْت → شِئْتَ
+fill from T: ظَلَمْت → ظَلَمْتُ
+fill from T: وَعَمِلْت → وَعَمِلْتُ
+fill from T: شِئْت، → شِئْتَ،
+fill from T: شِئْت، → شِئْتَ،
+fill from T: رَأْسَك → رَأْسَكَ
+fill from T: جُلُوسِك → جُلُوسِكَ
+fill from T: يَدَيْك → يَدَيْكَ
+fill from T: رُكْبَتَيْك. → رُكْبَتَيْكَ.
+fill from T: فَعَلْت → فَعَلْتَ
+fill from T: يَدَيْك، → يَدَيْكَ،
+fill from T: ذَكَرْت → ذَكَرْتُ
+fill from T: لَك، → لَكَ،
+fill from T: قَرَأْت → قَرَأْتَ
+fill from T: أَنَّك → أَنَّكَ
+fill from T: شِئْت → شِئْتَ
+fill from T: وَنَسْتَغْفِرُك، → وَنَسْتَغْفِرُكَ،
+fill from T: بِك، → بِكَ،
+fill from T: عَلَيْك → عَلَيْكَ
+fill from T: لَك، → لَكَ،
+fill from T: وَلَك → وَلَكَ
+fill from T: وَإِلَيْك → وَإِلَيْكَ
+fill from T: عَذَابَك → عَذَابَكَ
+fill from T: جَلَسْت → جَلَسْتَ
+fill from T: نَصَبْت → نَصَبْتَ
+fill from T: رِجْلَك → رِجْلَكَ
+fill from T: وَثَنَيْت → وَثَنَيْتَ
+fill from T: وَأَفْضَيْت → وَأَفْضَيْتَ
+fill from T: رِجْلِك → رِجْلِكَ
+fill from T: شِئْت → شِئْتَ
+fill from T: حَنَيْت → حَنَيْتَ
+fill from T: فَجَعَلْت → فَجَعَلْتَ
+fill from T: عَلَيْك → عَلَيْكَ
+fill from T: سَلَّمْت → سَلَّمْتَ
+fill from T: أَجُزْأَك. → أَجُزْأَكَ.
+fill from T: شِئْت: → شِئْتَ:
+fill from T: صَلَّيْت → صَلَّيْتَ
+fill from T: وَرَحِمْت → وَرَحِمْتَ
+fill from T: وَبَارَكْت → وَبَارَكْتَ
+fill from T: إنَّك → إنَّكَ
+fill from T: نَبِيُّك، → نَبِيُّكَ،
+fill from T: بِرَأْسِك → بِرَأْسِكَ
+fill from T: صَلَاةَ → صَلَاَةَ
+fill from T: إصْلَاحَ → إِصْلَاَحَ
+fill from T: إصْلَاحِ → إِصْلَاِحِ
+fill from T: صَلَاتِهِ، → صَلَاِتِهِ،
+fill from T: إمَامٍ → إِمَامٍ
+fill from T: فِي → فِيِ
+fill from T: مَكَان → مَكَانٍ
+fill from T: إسْفَارٌ → إِسْفَارٌ
+fill from T: إذَا → إِذَا
+fill from T: إلَيْهَا. → إِلَيْهَا.
+fill from T: إذَا → إِذَا
+fill from T: إغْمَائِهِ، → إِغْمَائِهِ،
+fill from T: إنَّهَا → إِنَّهَا
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: إيمَاءً، → إِيمَاءً،
+fill from T: إذَا → إِذَا
+fill from T: إيَّاهُ → إِيَّاهُ
+fill from T: إنْ → إِنْ
+fill from T: إلَى → إِلَى
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: وَلِلرَّاعِفِ → وَلِلْرَّاعِفِ
+fill from T: إذَا → إِذَا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: ﴿وَظِلالُهُمْ → ﴿وَظِلَالُهُمْ
+fill from T: وَالآصَالِ﴾، → وَالْآصَالِ﴾،
+fill from T: إسْرَائِيلَ → إِسْرَائِيلَ
+fill from T: لِلأَذْقَانِ → لِلْأَذْقَانِ
+fill from T: لا → لَا
+fill from T: إِلا → إِلَّا
+fill from T: لا → لَا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَيْنَا، → إِلَيْنَا،
+fill from T: إلَّا → إِلَّا
+fill from T: إلَيْهَا → إِلَيْهَا
+fill from T: إقَامَةَ → إِقَامَةَ
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَيْهَا، → إِلَيْهَا،
+fill from T: أَتَاك → أَتَاكَ
+fill from T: إلَيْهَا → إِلَيْهَا
+fill from T: ثَلَاثَةِ → ثَلَاَثَةِ
+fill from T: إلَيْهَا → إِلَيْهَا
+fill from T: إلَيْنَا → إِلَيْنَا
+fill from T: إنْ → إِنْ
+fill from T: إذَا → إِذَا
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إقَامَةٌ، → إِقَامَةٌ،
+fill from T: رَبِّك → رَبِّكَ
+fill from T: إلَى → إِلَى
+fill from T: صَلَاةِ → صَلَاِةِ
+fill from T: إلَى → إِلَى
+fill from T: إذَا → إِذَا
+fill from T: إنْ → إِنْ
+fill from T: إلَهَ → إِلَهَ
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إلَى → إِلَى
+fill from T: إقَامَةٍ، → إِقَامَةٍ،
+fill from T: رَبِّك → رَبِّكَ
+fill from T: إقَامَةَ. → إِقَامَةَ.
+fill from T: إذَا → إِذَا
+fill from T: إلَهَ → إِلَهَ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَى → إِلَى
+fill from T: إنْ → إِنْ
+fill from T: إدْرَاجًا → إِدْرَاجًا
+fill from T: إنَّ → إِنَّ
+fill from T: بِك → بِكَ
+fill from T: إلَى → إِلَى
+fill from T: عِنْدَك، → عِنْدَكَ،
+fill from T: إلَّا → إِلَّا
+fill from T: إلَى → إِلَى
+fill from T: إذَا → إِذَا
+fill from T: صَلَّيْت → صَلَّيْتَ
+fill from T: وَرَحِمْت → وَرَحِمْتَ
+fill from T: وَبَارَكْت → وَبَارَكْتَ
+fill from T: إبْرَاهِيمَ → إِبْرَاهِيمَ
+fill from T: إبْرَاهِيمَ، → إِبْرَاهِيمَ،
+fill from T: إنَّك → إِنَّكَ
+fill from T: إنَّهُ → إِنَّهُ
+fill from T: عَبْدُك → عَبْدُكَ
+fill from T: عَبْدِك → عَبْدِكَ
+fill from T: أَمَتِك، → أَمَتِكَ،
+fill from T: خَلَقْته → خَلَقْتَهُ
+fill from T: وَرَزَقْته، → وَرَزَقْتَهُ،
+fill from T: تُحْيِيه، → تُحْيِيهِ،
+fill from T: إنَّا → إِنَّا
+fill from T: جِوَارِك → جِوَارِكَ
+fill from T: إنَّك → إِنَّكَ
+fill from T: قِه → قِهِ
+fill from T: إنْ → إِنْ
+fill from T: إحْسَانِهِ، → إِحْسَانِهِ،
+fill from T: إنَّهُ → إِنَّهُ
+fill from T: بِك → بِكَ
+fill from T: إلَى → إِلَى
+fill from T: رَحْمَتِك، → رَحْمَتِكَ،
+fill from T: اللَّهُمَّ → الَّلَّهُمَّ
+fill from T: إنَّك → إِنَّكَ
+fill from T: أَحْيَيْته → أَحْيَيْتَهُ
+fill from T: تَوَفَّيْته → تَوَفَّيْتَهُ
+fill from T: بِلِقَائِك، → بِلِقَائِكَ،
+fill from T: قُلْت: → قُلْتَ:
+fill from T: إنَّهَا → إِنَّهَا
+fill from T: أَمَتُك، → أَمَتُكَ،
+fill from T: أَنَّك → أَنَّكَ
+fill from T: وَيَلِي → وَيَلِيَ
+fill from T: إنْ → إِنْ
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: الصَّلَاةِ → الصَّلَاِةِ
+fill from T: إنَّهُ → إِنَّهُ
+fill from T: عَبْدُك → عَبْدُكَ
+fill from T: خَلَقْته → خَلَقْتَهُ
+fill from T: وَرَزَقْته، → وَرَزَقْتَهُ،
+fill from T: تُحْيِيه، → تُحْيِيهِ،
+fill from T: إبْرَاهِيمَ، → إِبْرَاهِيمَ،
+fill from T: أَحْيَيْته → أَحْيَيْتَهُ
+fill from T: تَوَفَّيْته → تَوَفَّيْتَهُ
+fill from T: إنْ → إِنْ
+fill from T: إلَيْنَا. → إِلَيْنَا.
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إذَا → إِذَا
+fill from T: الأَطْفَالُ → الْأَطْفَالُ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَيْنَا. → إِلَيْنَا.
+fill from T: إطْعَامُ → إِطْعَامُ
+fill from T: إلَيْنَا، → إِلَيْنَا،
+fill from T: إلَّا → إِلَّا
+fill from T: إيمَانًا → إِيمَانًا
+fill from T: قُمْت → قُمْتَ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَيْنَا → إِلَيْنَا
+fill from T: جَامِع → جَامِعَ
+fill from T: إلَى → إِلَى
+fill from T: إنْ → إِنْ
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إمَامَ → إِمَامَ
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إذَا → إِذَا
+fill from T: إنْ → إِنْ
+fill from T: بِعْتهَا → بِعْتَهَا
+fill from T: بَعْد → بَعْدَ
+fill from T: زَكَّيْته → زَكَّيْتَهُ
+fill from T: إلَّا → إِلَّا
+fill from T: بِيَدِك → بِيَدِكَ
+fill from T: فَإِنَّك → فَإِنَّكَ
+fill from T: عُرُوضَك → عُرُوضَكَ
+fill from T: بِيَدِك → بِيَدِكَ
+fill from T: إلَّا → إِلَّا
+fill from T: يَوْمئِذٍ → يَوْمِئِذٍ
+fill from T: إذَا → إِذَا
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إَلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إحْدَى → إِحْدَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إحْدَى → إِحْدَى
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إلَى → إِلَى
+fill from T: إحْدَى → إِحْدَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إذَا → إِذَا
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: إخْرَاجُهَا → إِخْرَاجُهَا
+fill from T: إذَا → إِذَا
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إمَّا → إِمَّا
+fill from T: إذْ → إِذْ
+fill from T: إلَى → إِلَى
+fill from T: لَك → لَكَ
+fill from T: إنَّ → إِنَّ
+fill from T: لَك، → لَكَ،
+fill from T: لَك، → لَكَ،
+fill from T: إلَى → إِلَى
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: يَوْمئِذٍ → يَوْمَئِذٍ
+fill from T: طُلُوعِ → طُلُوُعِ
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إنْ → إِنْ
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إطْعَامِ → إِطْعَامِ
+fill from T: إحْرَامِهَا، → إِحْرَامِهَا،
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إلَى → إِلَى
+fill from T: إذَا → إِذَا
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إنْ → إِنْ
+fill from T: إلَى → إِلَى
+fill from T: إنْ → إِنْ
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إنَاثِهَا، → إِنَاثِهَا،
+fill from T: إنَاثِهَا، → إِنَاثِهَا،
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إمَامَ → إِمَامَ
+fill from T: إلَيْهِمْ → إِلَيْهِمْ
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إرْسَالِ → إِرْسَالِ
+fill from T: إنْ → إِنْ
+fill from T: إذَا → إِذَا
+fill from T: إنْ → إِنْ
+fill from T: إذَا → إِذَا
+fill from T: إذَا → إِذَا
+fill from T: إلَيْنَا → إِلَيْنَا
+fill from T: إلَّا → إِلَّا
+fill from T: كَلْبُك → كَلْبُكَ
+fill from T: بَازُك → بَازُكَ
+fill from T: إذَا → إِذَا
+fill from T: أَرْسَلْته → أَرْسَلْتَهُ
+fill from T: قُدْرَتِك → قُدْرَتِكَ
+fill from T: أَدْرَكْته → أَدْرَكْتَهُ
+fill from T: إنْفَاذِهَا → إِنْفَاذِهَا
+fill from T: إلَّا → إِلَّا
+fill from T: صِدْته → صِدْتَهُ
+fill from T: بِسَهْمِك → بِسَهْمِكَ
+fill from T: رُمْحِك → رُمْحِكَ
+fill from T: أَدْرَكْت → أَدْرَكْتَ
+fill from T: إذَا → إِذَا
+fill from T: سَهْمُك → سَهْمُكَ
+fill from T: عَنْك، → عَنْكَ،
+fill from T: إنَّمَا → إِنَّمَا
+fill from T: عَنْك → عَنْكَ
+fill from T: إذَا → إِذَا
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إذْنِ → إِذْنِ
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: فَعَلْت، → فَعَلْتُ،
+fill from T: إثْمَ، → إِثْمَ،
+fill from T: إلَى → إِلَى
+fill from T: إطْعَامُ → إِطْعَامُ
+fill from T: إلَيْنَا → إِلَيْنَا
+fill from T: إطْعَامًا → إِطْعَامًا
+fill from T: إلَيْنَا. → إِلَيْنَا.
+fill from T: فَعَلْت → فَعَلْتُ
+fill from T: إنْ → إِنْ
+fill from T: أَشْرَكْت → أَشْرَكْتُ
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إبْرَاهِيمَ → إِبْرَاهِيمَ
+fill from T: إلَى → إِلَى
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إنْكَاحُ → إِنْكَاحُ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: وَخَالاتُكُمْ → وَخَالَاتُكُمْ
+fill from T: الأَخِ → الْأَخِ
+fill from T: الأُخْتِ﴾ → الْأُخْتِ﴾
+fill from T: قَوْله → قَوْلُهُ
+fill from T: اللاتِي → اللاَّتِي
+fill from T: اللاتِي → اللاَّتِي
+fill from T: اللاتِي → اللاَّتِي
+fill from T: فَلا → فَلَا
+fill from T: الأُخْتَيْنِ → الْأُخْتَيْنِ
+fill from T: إِلا → إِلاَّ
+fill from T: ﴿وَلا → ﴿وَلَا
+fill from T: إمَائِهِنَّ → إِمَائِهِنَّ
+fill from T: إمَاءٍ → إِمَاءٍ
+fill from T: إنْ → إِنْ
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: حَبْلُك → حَبْلُكِ
+fill from T: غَارِبِك → غَارِبِكِ
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إلَى → إِلَى
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَى → إِلَى
+fill from T: إلَيْنَا. → إِلَيْنَا.
+fill from T: إنْ → إِنْ
+fill from T: إذَا → إِذَا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إخْوَةٌ → إِخْوَةٌ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إحْدَادٌ، → إِحْدَادٌ،
+fill from T: إنَّهُ → إِنَّهُ
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَيْهِ → إِلَيْهِ
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إلَى → إِلَى
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إخْدَامُ → إِخْدَامُ
+fill from T: إذَا → إِذَا
+fill from T: إنْ → إِنْ
+fill from T: إمَّا → إِمَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إدَامٍ → إِدَامٍ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إدَامٍ → إِدَامٍ
+fill from T: إلَّا → إِلَّا
+fill from T: إجَارَةٍ → إِجَارَةٍ
+fill from T: إلَى → إِلَى
+fill from T: إذَا → إِذَا
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إجَارَةٍ → إِجَارَةٍ
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إذَا → إِذَا
+fill from T: إذَا → إِذَا
+fill from T: إذَا → إِذَا
+fill from T: إمَّا → إِمَّا
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إلَى → إَلَى
+fill from T: إلَيْنَا → إِلَيْنَا
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إلَى → إِلَى
+fill from T: لَك → لَكَ
+fill from T: عِنْدَك → عِنْدَكَ
+fill from T: عَلَيْك → عَلَيْكَ
+fill from T: بِعْت → بِعْتَ
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إذَا → إِذَا
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إنْ → إِنْ
+fill from T: إذَا → إِذَا
+fill from T: إلَّا → إِلَّا
+fill from T: إخْرَاجِ → إِخْرَاجِ
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إنْ → إِنْ
+fill from T: إذَا → إِذَا
+fill from T: إذَا → إِذَا
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إتْلَافُ → إِتْلَافُ
+fill from T: إنْ → إِنْ
+fill from T: إلَى → إِلَى
+fill from T: إذَا → إِذَا
+fill from T: أَعْتَقْت → أَعْتَقْتِ
+fill from T: إذَا → إِذَا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إَلَّا
+fill from T: إنْ → إِنْ
+fill from T: إذَا → إِذَا
+fill from T: إنْ → إِنْ
+fill from T: إلَيْهِ → إِلَيْهِ
+fill from T: إلَّا → إِلَّا
+fill from T: إمَّا → إِمَّا
+fill from T: إذَا → إِذَا
+fill from T: إنْ → إِنْ
+fill from T: إلَى → إِلَى
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إلَيْك → إِلَيْكَ
+fill from T: إلَّا → إِلَّا
+fill from T: ذَهَبْت → ذَهَبْتْ
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: الْأَمْيَالِ → الْأَمْيَاِلِ
+fill from T: إنْ → إِنْ
+fill from T: ثَدْيِي → ثَدْيِيِ
+fill from T: إلَى → إِلَى
+fill from T: إلَيْهِ → إِلَيْهِ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إنَّ → إِنَّ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: مُتَتَابِعِينَ، → مُتَتَابِعِيْنَ،
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إقْرَارٌ، → إِقْرَارٌ،
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: قَاعِدِينَ، → قَاعِدِيْنَ،
+fill from T: إذَا → إِذَا
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: إقْرَارَ → إِقْرَارَ
+fill from T: إنْ → إِنْ
+fill from T: إذَا → إِذَا
+fill from T: إلَهَ → إِلَهَ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: رَدَدْت → رَدَدْتُ
+fill from T: إلَيْك → إِلَيْكَ
+fill from T: وَكَّلْتنِي → وَكَّلْتَنِي
+fill from T: إلَيْك → إِلَيْكَ
+fill from T: وَدِيعَتَك، → وَدِيعَتَكَ،
+fill from T: قِرَاضَك → قِرَاضَكَ
+fill from T: دَفَعْت → دَفَعْتُ
+fill from T: إلَى → إِلَى
+fill from T: أَمَرْتنِي، → أَمَرْتَنِي،
+fill from T: إلَّا → إِلَّا
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إلَيْهِ → إِلَيْهِ
+fill from T: إذَا → إِذَا
+fill from T: إذَا → إِذَا
+fill from T: إلَيْهِ → إِلَيْهِ
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إمَاءَهُمْ، → إِمَاءَهُمْ،
+fill from T: إلَى → إِلَى
+fill from T: إلَيْهِ → إِلَيْهِ
+fill from T: إقْرَارُ → إِقْرَارُ
+fill from T: إلَيْنَا، → إِلَيْنَا،
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إنْ → إِنْ
+fill from T: إذَا → إِذَا
+fill from T: إذَا → إِذَا
+fill from T: إلَّا → إِلَّا
+fill from T: إخْوَةً → إِخْوَةً
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إلَّا → إِلَّا
+fill from T: إخْوَةٌ → إِخْوَةٌ
+fill from T: إخْوَةٌ → إِخْوَةٌ
+fill from T: إخْوَةٌ → إِخْوَةٌ
+fill from T: إلَّا → إِلَّا
+fill from T: أَبِيك → أَبِيكَ
+fill from T: إخْوَةٌ → إِخْوَةٌ
+fill from T: إنْ → إِنْ
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إخْوَةٌ → إِخْوَةٌ
+fill from T: إمَّا → إِمَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَيْهِمْ، → إِلَيْهِمْ،
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَيْهِنَّ → إِلَيْهِنَّ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَيْهَا → إِلَيْهَا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَيْهَا → إِلَيْهَا
+fill from T: إيمَانًا → إِيمَانًا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إنَّ → إِنَّ
+fill from T: إلَيْنَا → إِلَيْنَا
+fill from T: إلَيْنَا → إِلَيْنَا
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: لِيَصْمُت»، → لِيَصْمُتْ»،
+fill from T: إسْلَامِ → إِسْلَامِ
+fill from T: يَعْنِيه». → يَعْنِيهِ».
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إيمَانِهِ، → إِيمَانِهِ،
+fill from T: إحْصَانِهِ، → إِحْصَانِهِ،
+fill from T: يَدَك → يَدَكَ
+fill from T: لَك → لَكَ
+fill from T: بِقَدَمَيْك → بِقَدَمَيْكَ
+fill from T: لَك. → لَكَ.
+fill from T: بِفَرْجِك → بِفَرْجِكَ
+fill from T: جَسَدِك → جَسَدِكَ
+fill from T: لَك؛ → لَكَ؛
+fill from T: إلَى → إِلَى
+fill from T: إيَّاهُ. → إِيَّاهُ.
+fill from T: لَك → لَكَ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَى → إِلَى
+fill from T: إذَا → إِذَا
+fill from T: إلَى → إِلَى
+fill from T: إذَا → إِذَا
+fill from T: إذَا → إِذَا
+fill from T: إلَيْنَا → إِلَيْنَا
+fill from T: يَوْمئِذٍ → يَوْمَئِذٍ
+fill from T: «إنَّ → «إِنَّ
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إذَا → إِذَا
+fill from T: إذَا → إِذَا
+fill from T: إذَا → إِذَا
+fill from T: إذَا → إِذَا
+fill from T: إلَى → إِلَى
+fill from T: ظَلَمَك، → ظَلَمَكَ،
+fill from T: حَرَمَك، → حَرَمَكَ،
+fill from T: قَطَعَك، → قَطَعَكَ،
+fill from T: إسْلَامِ → إِسْلَامِ
+fill from T: يَعْنِيه»، → يَعْنِيهِ»،
+fill from T: لَك → لَكَ
+fill from T: لَك، → لَكَ،
+fill from T: إلَّا → إِلَّا
+fill from T: إحْضَارِ → إِحْضَارِ
+fill from T: إلَى → إِلَى
+fill from T: إصْرَارٍ، → إِصْرَارٍ،
+fill from T: إلَيْهِ، → إِلَيْهِ،
+fill from T: إلَيْهِ → إِلَيْهِ
+fill from T: إلَى → إِلَى
+fill from T: إلَيْهِ → إِلَيْهِ
+fill from T: إلَى → إِلَى
+fill from T: رَبِّك → رَبِّكَ
+fill from T: عَلَيْك → عَلَيْكَ
+fill from T: لَك → لَكَ
+fill from T: لِغَيْرِك → لِغَيْرِكَ
+fill from T: ذَنْبِك → ذَنْبِكَ
+fill from T: أَمْرِك؛ → أَمْرِكَ؛
+fill from T: أَجَلِك. → أَجَلِكَ.
+fill from T: إحْفَاؤُهُ، → إِحْفَاؤُهُ،
+fill from T: إذَا → إِذَا
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: إزَارَهُ → إِزَارَهُ
+fill from T: إلَى → إِلَى
+fill from T: إذَا → إِذَا
+fill from T: اشْتِمَالِك → اشْتِمَالِكَ
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: أَكَلْت → أَكَلْتَ
+fill from T: شَرِبْت → شَرِبْتَ
+fill from T: عَلَيْك → عَلَيْكَ
+fill from T: بِيَمِينِك، → بِيَمِينِكَ،
+fill from T: فَرَغْت → فَرَغْتَ
+fill from T: يَدَك → يَدَكَ
+fill from T: بَطْنَك: → بَطْنَكَ:
+fill from T: أَكَلْت → أَكَلْتَ
+fill from T: غَيْرِك → غَيْرِكَ
+fill from T: أَكَلْت → أَكَلْتَ
+fill from T: يَلِيك، → يَلِيكَ،
+fill from T: شُرْبِك، → شُرْبِكَ،
+fill from T: فِيك، → فِيكَ،
+fill from T: إنْ → إِنْ
+fill from T: شِئْت، → شِئْتَ،
+fill from T: طَعَامَك، → طَعَامَكَ،
+fill from T: فَاك → فَاكَ
+fill from T: طَعَامِك، → طَعَامِكَ،
+fill from T: غَسَلْت → غَسَلْتَ
+fill from T: يَدَك → يَدَكَ
+fill from T: بِأَسْنَانِك → بِأَسْنَانِكَ
+fill from T: إذَا → إِذَا
+fill from T: شَرِبْت → شَرِبْتَ
+fill from T: يَمِينِك، → يَمِينِكَ،
+fill from T: إنَّ → إِنَّ
+fill from T: أَهْلِك → أَهْلِكَ
+fill from T: أَطْعَمْتهمْ، → أَطْعَمْتَهُمْ،
+fill from T: يَدُك → يَدُكَ
+fill from T: إلَّا → إِلَّا
+fill from T: إذَا → إِذَا
+fill from T: دُعِيت → دُعِيتَ
+fill from T: إلَى → إِلَى
+fill from T: إنْ → إِنْ
+fill from T: إلَى → إِلَى
+fill from T: رَدِّك: → رَدِّكَ:
+fill from T: عَلَيْك، → عَلَيْكَ،
+fill from T: إنْ → إِنْ
+fill from T: عَلَيْك، → عَلَيْكَ،
+fill from T: لَك → لَكَ
+fill from T: رَجَعْت، → رَجَعْتَ،
+fill from T: إذَا → إِذَا
+fill from T: إلَّا → إِلَّا
+fill from T: بِك → بِكَ
+fill from T: وَبِك → وَبِكَ
+fill from T: وَبِك → وَبِكَ
+fill from T: وَبِك → وَبِكَ
+fill from T: وَإِلَيْك → وَإِلَيْكَ
+fill from T: وَإِلَيْك → وَإِلَيْكَ
+fill from T: عِبَادِك → عِبَادِكَ
+fill from T: عِنْدَك → عِنْدَكَ
+fill from T: بِرَحْمَتِك → بِرَحْمَتِكَ
+fill from T: إنَّك → إِنَّكَ
+fill from T: بِاسْمِك → بِاسْمِكَ
+fill from T: وَضَعْت → وَضَعْتُ
+fill from T: وَبِاسْمِك → وَبِاسْمِكَ
+fill from T: إنْ → إِنْ
+fill from T: أَمْسَكْت → أَمْسَكْتَ
+fill from T: أَرْسَلْتهَا → أَرْسَلْتَهَا
+fill from T: عِبَادِك، → عِبَادِكَ،
+fill from T: إنِّي → إِنِّي
+fill from T: أَسْلَمْت → أَسْلَمْتُ
+fill from T: إلَيْك، → إِلَيْكَ،
+fill from T: وَأَلْجَأْت → وَأَلْجَأْتُ
+fill from T: إلَيْك، → إِلَيْكَ،
+fill from T: وَفَوَّضْت → وَفَوَّضْتُ
+fill from T: إلَيْك، → إِلَيْكَ،
+fill from T: وَوَجَّهْت → وَوَجَّهْتُ
+fill from T: إلَيْك، → إِلَيْكَ،
+fill from T: مِنْك → مِنْكَ
+fill from T: إلَيْك، → إِلَيْكَ،
+fill from T: مِنْك → مِنْكَ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَيْك، → إِلَيْكَ،
+fill from T: أَسْتَغْفِرُك → أَسْتَغْفِرُكَ
+fill from T: إلَيْك، → إِلَيْكَ،
+fill from T: آمَنْت → آمَنْتُ
+fill from T: بِكِتَابِك → بِكِتَابِكَ
+fill from T: أَنْزَلْت → أَنْزَلْتَ
+fill from T: أَرْسَلْت. → أَرْسَلْتَ.
+fill from T: قَدَّمْت → قَدَّمْتُ
+fill from T: أَخَّرْت، → أَخَّرْتُ،
+fill from T: أَسْرَرْت → أَسْرَرْتُ
+fill from T: أَعْلَنْت، → أَعْلَنْتُ،
+fill from T: إلَهِي → إِلَهِي
+fill from T: إلَهَ → إِلَهَ
+fill from T: إلَّا → إِلَّا
+fill from T: عَذَابَك → عَذَابَكَ
+fill from T: عِبَادَك. → عِبَادَكَ.
+fill from T: إنِّي → إِنِّي
+fill from T: بِك → بِكَ
+fill from T: إلَهَ → إِلَهَ
+fill from T: إلَّا → إِلَّا
+fill from T: عَلِمْت → عَلِمْتُ
+fill from T: إلَّا → إِلَّا
+fill from T: إنْ → إِنْ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إنَّ → إِنَّ
+fill from T: إنِّي → إِنِّي
+fill from T: بِك → بِكَ
+fill from T: إذَا → إِذَا
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَّا → إِلَّا
+fill from T: «إنْ → «إِنْ
+fill from T: إزَارِهِ → إِزَارِهِ
+fill from T: إلَّا → إِلَّا
+fill from T: إلَّا → إِلَّا
+fill from T: إنِّي → إِنِّي
+fill from T: بِك → بِكَ
+fill from T: رَأَيْت → رَأَيْتُ
+fill from T: إلَى → إِلَى
+fill from T: إلَيْهِمْ، → إِلَيْهِمْ،
+fill from T: إنْ → إِنْ
+fill from T: إنَّمَا → إِنَّمَا
+fill from T: إنْ → إِنْ
+fill from T: إذَا → إِذَا
+fill from T: إلَيْنَا → إِلَيْنَا
+fill from T: إنَّ → إِنَّ
+fill from T: وَأُولَى → وَأُوْلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَيْهِ → إِلَيْهِ
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+fill from T: إلَيْهَا. → إِلَيْهَا.
+fill from T: إلَى → إِلَى
+fill from T: إلَى → إِلَى
+filled from T: 900
+fill from K: رَجَوْته → رَجَوْتُهُ
+fill from K: يُلَاقِيِه → يُلَاقِيِهِ
+fill from K: وَيُجْرِي → وَيُجْرِيَ
+fill from K: وَيَنْوِيه. → وَيَنْوِيهِ.
+fill from K: الْأُولَيَيْنِ → الْأُوَّلَيَيْنِ
+fill from K: يُصَلِّي → يُصَلِّيَ
+fill from K: فَيُصَلِّيهَا → فَيُصَلِّيَهَا
+fill from K: صَلُّوا → صَلُّوْا
+fill from K: يُورَثُ → يُوَرَثُ
+fill from K: وَالدِّيَةُ → وَالِدِّيَةُ
+filled from K: 10
+vocfix counts: {"1-hamza-kasra":191,"2-wasl-fatha":24,"7-lam-amr":4,"5-wasl-vowel":15,"6-lam-alif":6,"3-sakinayn":500}
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَيْهِ → إِلَيْهِ
+voc 2-wasl-fatha: بِاَللَّهِ → بِاللَّهِ
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَيْهِ، → إِلَيْهِ،
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 2-wasl-fatha: بِاَللَّهِ → بِاللَّهِ
+voc 1-hamza-kasra: إلَهٌ → إِلَهٌ
+voc 1-hamza-kasra: إلَهَ → إِلَهَ
+voc 1-hamza-kasra: إلَيْهِ → إِلَيْهِ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَيْهِمْ → إِلَيْهِمْ
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إغْمَاءٍ → إِغْمَاءٍ
+voc 1-hamza-kasra: إيجَابِ → إِيجَابِ
+voc 1-hamza-kasra: إذَا → إِذَا
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إذَا → إِذَا
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إحْكَامِ → إِحْكَامِ
+voc 1-hamza-kasra: إنَّ → إِنَّ
+voc 1-hamza-kasra: إيجَابِ → إِيجَابِ
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إدْخَالِهِمَا → إِدْخَالِهِمَا
+voc 1-hamza-kasra: إدْخَالِهِمَا → إِدْخَالِهِمَا
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَيْهِ. → إِلَيْهِ.
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَيْهِمَا → إِلَيْهِمَا
+voc 1-hamza-kasra: إدْخَالُهُمَا → إِدْخَالُهُمَا
+voc 1-hamza-kasra: إبْهَامَيْهِ → إِبْهَامَيْهِ
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إذَا → إِذَا
+voc 7-lam-amr: فَلِيُبَالِغْ → فَلْيُبَالِغْ
+voc 1-hamza-kasra: إذَا → إِذَا
+voc 1-hamza-kasra: إحْكَامِ → إِحْكَامِ
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَهَ → إِلَهَ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إذَا → إِذَا
+voc 1-hamza-kasra: إذَا → إِذَا
+voc 1-hamza-kasra: إيَّاهُ، → إِيَّاهُ،
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إيَّاهُ → إِيَّاهُ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إذَا → إِذَا
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إذَا → إِذَا
+voc 1-hamza-kasra: إذَا → إِذَا
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إنَّمَا → إِنَّمَا
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 2-wasl-fatha: وَاَلَّذِي → وَالَّذِي
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَهَ → إِلَهَ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَهَ → إِلَهَ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَهَ → إِلَهَ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَهَ → إِلَهَ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَهَ → إِلَهَ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَهَ → إِلَهَ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَهَ → إِلَهَ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إمَامٍ، → إِمَامٍ،
+voc 1-hamza-kasra: إيَّاهَا → إِيَّاهَا
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إبْهَامَيْهِمَا → إِبْهَامَيْهِمَا
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إنَّا → إِنَّا
+voc 1-hamza-kasra: إيَّاكَ → إِيَّاكَ
+voc 1-hamza-kasra: إنَّ → إِنَّ
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَهَ → إِلَهَ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إبْرَاهِيمَ → إِبْرَاهِيمَ
+voc 1-hamza-kasra: إبْرَاهِيمَ، → إِبْرَاهِيمَ،
+voc 1-hamza-kasra: إنَّكَ → إِنَّكَ
+voc 1-hamza-kasra: إنِّي → إِنِّي
+voc 1-hamza-kasra: إلَيْهِ، → إِلَيْهِ،
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَهٌ → إِلَهٌ
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إلَهَ → إِلَهَ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إذَا → إِذَا
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إمَامٌ → إِمَامٌ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إذَا → إِذَا
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إذَا → إِذَا
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إيمَاءً → إِيمَاءً
+voc 1-hamza-kasra: إحْدَى → إِحْدَى
+voc 2-wasl-fatha: وَاَللَّهُ → وَاللَّهُ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 7-lam-amr: وَلِيُقَصِّرْ → وَلْيُقَصِّرْ
+voc 1-hamza-kasra: إنَاثِهَا → إِنَاثِهَا
+voc 2-wasl-fatha: وَاَللَّهُ → وَاللَّهُ
+voc 5-wasl-vowel: اُخْتُلِفَ → اخْتُلِفَ
+voc 5-wasl-vowel: اُخْتُلِفَ → اخْتُلِفَ
+voc 5-wasl-vowel: اُخْتُلِفَ → اخْتُلِفَ
+voc 1-hamza-kasra: إلَيْنَا → إِلَيْنَا
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إذَا → إِذَا
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَى → إِلَى
+voc 1-hamza-kasra: إذَا → إِذَا
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إذَا → إِذَا
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 2-wasl-fatha: بِاَللَّهِ → بِاللَّهِ
+voc 2-wasl-fatha: بِاَللَّهِ → بِاللَّهِ
+voc 2-wasl-fatha: بِاَللَّهِ → بِاللَّهِ
+voc 2-wasl-fatha: بِاَللَّهِ → بِاللَّهِ
+voc 1-hamza-kasra: إحْدَاهُمَا → إِحْدَاهُمَا
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 2-wasl-fatha: بِاَللَّهِ → بِاللَّهِ
+voc 2-wasl-fatha: بِاَللَّهِ، → بِاللَّهِ،
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إذْنِهَا → إِذْنِهَا
+voc 5-wasl-vowel: اُخْتُلِفَ → اخْتُلِفَ
+voc 2-wasl-fatha: وَاَللَّوَاتِي → وَاللَّوَاتِي
+voc 6-lam-alif: اللاَّتِي → اللَّاتِي
+voc 6-lam-alif: اللاَّتِي → اللَّاتِي
+voc 6-lam-alif: اللاَّتِي → اللَّاتِي
+voc 6-lam-alif: وَحَلائِلُ → وَحَلَائِلُ
+voc 6-lam-alif: أَصْلابِكُمْ → أَصْلَابِكُمْ
+voc 6-lam-alif: إِلاَّ → إِلَّا
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 2-wasl-fatha: وَاَلَّتِي → وَالَّتِي
+voc 2-wasl-fatha: وَاَلَّتِي → وَالَّتِي
+voc 2-wasl-fatha: بِاَللَّهِ → بِاللَّهِ
+voc 1-hamza-kasra: إذَا → إِذَا
+voc 2-wasl-fatha: وَاَلَّتِي → وَالَّتِي
+voc 5-wasl-vowel: اُخْتُلِفَ → اخْتُلِفَ
+voc 5-wasl-vowel: اُشْتُرِطَتْ → اشْتُرِطَتْ
+voc 5-wasl-vowel: اُشْتُرِيَ → اشْتُرِيَ
+voc 1-hamza-kasra: إلَّا → إِلَّا
+voc 1-hamza-kasra: إذْنِ → إِذْنِ
+voc 1-hamza-kasra: إلَيَّ → إِلَيَّ
+voc 5-wasl-vowel: اُخْتُلِفَ → اخْتُلِفَ
+voc 5-wasl-vowel: اُخْتُلِفَ → اخْتُلِفَ
+voc 5-wasl-vowel: اُدُّعِيَ → ادُّعِيَ
+voc 1-hamza-kasra: إذَا → إِذَا
+voc 2-wasl-fatha: فَاَللَّهُ → فَاللَّهُ
+voc 5-wasl-vowel: اُسْتُكْرِهَتْ → اسْتُكْرِهَتْ
+voc 1-hamza-kasra: إذَا → إِذَا
+voc 5-wasl-vowel: اُتُّبِعَ → اتُّبِعَ
+voc 2-wasl-fatha: بِاَللَّهِ → بِاللَّهِ
+voc 2-wasl-fatha: بِاَللَّهِ → بِاللَّهِ
+voc 5-wasl-vowel: اُسْتُحْلِفَ → اسْتُحْلِفَ
+voc 1-hamza-kasra: إلَيْهِمْ → إِلَيْهِمْ
+voc 1-hamza-kasra: إنَّهَا → إِنَّهَا
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إذَا → إِذَا
+voc 1-hamza-kasra: إنْ → إِنْ
+voc 1-hamza-kasra: إنَاثًا → إِنَاثًا
+voc 2-wasl-fatha: بِاَلَّذِينَ → بِالَّذِينَ
+voc 2-wasl-fatha: بِاَللَّهِ → بِاللَّهِ
+voc 2-wasl-fatha: بِاَللَّهِ → بِاللَّهِ
+voc 2-wasl-fatha: وَاَللَّهُ → وَاللَّهُ
+voc 5-wasl-vowel: اُخْتُلِفَ → اخْتُلِفَ
+voc 5-wasl-vowel: اُخْتُلِفَ → اخْتُلِفَ
+voc 7-lam-amr: فَلِيَقُلْ: → فَلْيَقُلْ:
+voc 2-wasl-fatha: بِاَللَّهِ. → بِاللَّهِ.
+voc 7-lam-amr: فَلِيَقُلْ: → فَلْيَقُلْ:
+voc 3-sakinayn: مِنْ السُّنَنِ → مِنَ
+voc 3-sakinayn: مِنْ الْآدَابِ → مِنَ
+voc 3-sakinayn: يَسْبِقْ الشَّرُّ → يَسْبِقِ
+voc 3-sakinayn: مِنْ الدِّينِ → مِنَ
+voc 3-sakinayn: عَلَيْهِمْ الْبُلُوغُ → عَلَيْهِمُ
+voc 3-sakinayn: مِنْ الِاعْتِقَادَاتِ، → مِنَ
+voc 3-sakinayn: مِنْ الطَّاعَاتِ. → مِنَ
+voc 3-sakinayn: لَهُمْ الصَّغَائِرَ → لَهُمُ
+voc 3-sakinayn: مِنْ الْكَبَائِرِ → مِنَ
+voc 3-sakinayn: هُمْ الْمُفْلِحُونَ﴾. → هُمُ
+voc 3-sakinayn: مِنْ الذَّكَرِ → مِنَ
+voc 3-sakinayn: أَوْ التَّذْكَارِ. → أَوِ
+voc 3-sakinayn: مِنْ الْبَوْلِ. → مِنَ
+voc 3-sakinayn: مِنْ الْمُلَامَسَةِ → مِنَ
+voc 3-sakinayn: أَوْ امْرَأَةٍ، → أَوِ
+voc 3-sakinayn: أَوْ انْقِطَاعِ → أَوِ
+voc 3-sakinayn: أَوْ الِاسْتِحَاضَةِ → أَوِ
+voc 3-sakinayn: أَوْ النِّفَاسِ، → أَوِ
+voc 3-sakinayn: رَأَتْ الْمَرْأَةُ → رَأَتِ
+voc 3-sakinayn: رَأَتْ الْجُفُوفَ → رَأَتِ
+voc 3-sakinayn: تَرَكَتْ الصَّلَاةَ، → تَرَكَتِ
+voc 3-sakinayn: مِنْ اللِّبَاسِ → مِنَ
+voc 3-sakinayn: عَنْ الصَّلَاةِ → عَنِ
+voc 3-sakinayn: مِنْ اللِّبَاسِ → مِنَ
+voc 3-sakinayn: مِنْ اللِّبَاسِ → مِنَ
+voc 3-sakinayn: مِنْ الْأَذَى → مِنَ
+voc 3-sakinayn: مِنْ الْمَخْرَجَيْنِ، → مِنَ
+voc 3-sakinayn: وَمَنْ اسْتَجْمَرَ → وَمَنِ
+voc 3-sakinayn: مِنْ الْأَمْرِ → مِنَ
+voc 3-sakinayn: وَإِنْ اسْتَاكَ → وَإِنِ
+voc 3-sakinayn: مِنْ الْمَاءِ، → مِنَ
+voc 3-sakinayn: أَوْ اثْنَتَيْنِ، → أَوِ
+voc 3-sakinayn: مِنْ النَّارِ»، → مِنَ
+voc 3-sakinayn: وَقَدْ اسْتَحَبَّ → وَقَدِ
+voc 3-sakinayn: مِنْ التَّوَّابِينَ، → مِنَ
+voc 3-sakinayn: مِنْ الْمُتَطَهِّرِينَ». → مِنَ
+voc 3-sakinayn: مِنْ الذُّنُوبِ، → مِنَ
+voc 3-sakinayn: مِنْ الْجَنَابَةِ → مِنَ
+voc 3-sakinayn: وَمِنْ الْحَيْضَةِ → وَمِنَ
+voc 3-sakinayn: فَإِنْ اقْتَصَرَ → فَإِنِ
+voc 3-sakinayn: مِنْ الْأَذَى، → مِنَ
+voc 3-sakinayn: يَجِدْ الْمَاءَ → يَجِدِ
+voc 3-sakinayn: يَجِدْ الْجُنُبُ → يَجِدِ
+voc 3-sakinayn: أَوْ الْحَائِضُ → أَوِ
+voc 3-sakinayn: مِنْ الْمَاءِ → مِنَ
+voc 3-sakinayn: مِنْ الْكَعْبَيْنِ → مِنَ
+voc 3-sakinayn: مِنْ الْقَشَبِ، → مِنَ
+voc 3-sakinayn: مِنْ الْقِبْلَةِ → مِنَ
+voc 3-sakinayn: زَالَتْ الشَّمْسُ → زَالَتِ
+voc 3-sakinayn: يَدْخُلْ الْوَقْتُ، → يَدْخُلِ
+voc 3-sakinayn: وَجَبَتْ الصَّلَاةُ → وَجَبَتِ
+voc 3-sakinayn: مِنْ الْإِقَامَةِ، → مِنَ
+voc 3-sakinayn: مِنْ اللَّيْلِ. → مِنَ
+voc 3-sakinayn: مِنْ النَّوْمِ، → مِنَ
+voc 3-sakinayn: مِنْ النَّوْمِ، → مِنَ
+voc 3-sakinayn: قَامَتْ الصَّلَاةُ، → قَامَتِ
+voc 3-sakinayn: مِنْ النَّوَافِلِ → مِنَ
+voc 3-sakinayn: تَمَّتْ السُّورَةُ → تَمَّتِ
+voc 3-sakinayn: مِنْ الْأَرْضِ، → مِنَ
+voc 3-sakinayn: عَنْ الْأَرْضِ → عَنِ
+voc 3-sakinayn: مِنْ الْأَرْضِ → مِنَ
+voc 3-sakinayn: مِنْ الْوَصْفِ. → مِنَ
+voc 3-sakinayn: عَنْ السَّهْوِ → عَنِ
+voc 3-sakinayn: رَكْعَتَيْ الْفَجْرِ → رَكْعَتَيِ
+voc 3-sakinayn: مِنْ الطِّوَالِ → مِنَ
+voc 3-sakinayn: مِنْ الْقِرَاءَةِ، → مِنَ
+voc 3-sakinayn: مِنْ السُّوَرِ → مِنَ
+voc 3-sakinayn: مِنْ السُّوَرِ → مِنَ
+voc 3-sakinayn: مِنْ الْوَصْفِ، → مِنَ
+voc 3-sakinayn: ﴿وَسَبِّحْ اسْمَ → ﴿وَسَبِّحِ
+voc 3-sakinayn: مِنْ الْإِشْفَاعِ → مِنَ
+voc 3-sakinayn: مِنْ اللَّيْلِ → مِنَ
+voc 3-sakinayn: مَنْ الْغَالِبُ → مَنِ
+voc 3-sakinayn: مِنْ النَّوَافِلِ → مِنَ
+voc 3-sakinayn: يَرْكَعْ الْفَجْرَ → يَرْكَعِ
+voc 3-sakinayn: أَوْ السُّجُودَ → أَوِ
+voc 3-sakinayn: كَانَتْ امْرَأَةٌ → كَانَتِ
+voc 3-sakinayn: مِنْ اثْنَتَيْنِ → مِنِ
+voc 3-sakinayn: أَوْ السَّلَامَ → أَوِ
+voc 3-sakinayn: أَوْ اعْتِقَادَ → أَوِ
+voc 3-sakinayn: مِنْ اللِّبَاسِ → مِنَ
+voc 3-sakinayn: أَوْ التَّشَهُّدَيْنِ → أَوِ
+voc 3-sakinayn: مِنْ الصُّبْحِ، → مِنَ
+voc 3-sakinayn: عَنْ الْقِرَاءَةِ → عَنِ
+voc 3-sakinayn: أَوْ الْقُنُوتِ → أَوِ
+voc 3-sakinayn: وَمَنْ انْصَرَفَ → وَمَنِ
+voc 3-sakinayn: مِنْ الصَّلَاةِ → مِنَ
+voc 3-sakinayn: مِنْ الْمَسْجِدِ → مِنَ
+voc 3-sakinayn: وَمَنْ اسْتَنْكَحَهُ → وَمَنِ
+voc 3-sakinayn: مِنْ اثْنَتَيْنِ → مِنِ
+voc 3-sakinayn: يُفَارِقْ الْأَرْضَ → يُفَارِقِ
+voc 3-sakinayn: يُعِدْ الْوُضُوءَ، → يُعِدِ
+voc 3-sakinayn: مِنْ الصَّلَوَاتِ. → مِنَ
+voc 3-sakinayn: مِنْ النَّهَارِ → مِنَ
+voc 3-sakinayn: صَلَّتْ الظُّهْرَ → صَلَّتِ
+voc 3-sakinayn: مِنْ اللَّيْلِ → مِنَ
+voc 3-sakinayn: صَلَّتْ الْمَغْرِبَ → صَلَّتِ
+voc 3-sakinayn: مِنْ النَّهَارِ → مِنَ
+voc 3-sakinayn: مِنْ اللَّيْلِ → مِنَ
+voc 3-sakinayn: صَلَّتْ الصَّلَاةَ → صَلَّتِ
+voc 3-sakinayn: مِنْ النَّهَارِ → مِنَ
+voc 3-sakinayn: مِنْ اللَّيْلِ → مِنَ
+voc 3-sakinayn: قَضَتْ الصَّلَاةَ → قَضَتِ
+voc 3-sakinayn: مِنْ اللَّيْلِ؛ → مِنَ
+voc 3-sakinayn: مِنْ الرُّكُوعِ، → مِنَ
+voc 3-sakinayn: مِنْ الثَّوْبِ، → مِنَ
+voc 3-sakinayn: مِنْ الْأَنْفَالِ → مِنَ
+voc 3-sakinayn: مِنْ الْمِيلِ. → مِنَ
+voc 3-sakinayn: مِنْ النَّهَارِ → مِنَ
+voc 3-sakinayn: مِنْ اللَّيْلِ → مِنَ
+voc 3-sakinayn: عَنْ السَّعْيِ → عَنِ
+voc 3-sakinayn: أَوْ امْرَأَةٌ → أَوِ
+voc 3-sakinayn: بِهِمْ الرَّكْعَةَ → بِهِمُ
+voc 3-sakinayn: حَانَتْ الصَّلَاةُ. → حَانَتِ
+voc 3-sakinayn: وَسَبِّحْ ﴿اسْمَ → وَسَبِّحِ
+voc 3-sakinayn: وَلْيَذْكُرْ اللَّهَ → وَلْيَذْكُرِ
+voc 3-sakinayn: فَلْيُكَبِّرْ النَّاسُ → فَلْيُكَبِّرِ
+voc 3-sakinayn: مِنْ الْيَوْمِ → مِنَ
+voc 3-sakinayn: مِنْ الثِّيَابِ. → مِنَ
+voc 3-sakinayn: خَسَفَتْ الشَّمْسُ → خَسَفَتِ
+voc 3-sakinayn: ﴿بِسَبِّحْ اسْمَ → ﴿بِسَبِّحِ
+voc 3-sakinayn: وَلْيَفْعَلْ النَّاسُ → وَلْيَفْعَلِ
+voc 3-sakinayn: لِمَنْ اسْتَطَاعَ، → لِمَنِ
+voc 3-sakinayn: عَنْ الصُّرَاخِ → عَنِ
+voc 3-sakinayn: مِنْ الرِّجَالِ → مِنَ
+voc 3-sakinayn: كَانَتْ امْرَأَةٌ → كَانَتِ
+voc 3-sakinayn: مِنْ الشَّقِّ، → مِنَ
+voc 3-sakinayn: مِنْ الصَّلَاةِ → مِنَ
+voc 3-sakinayn: مِنْ الْأَجْرِ، → مِنَ
+voc 3-sakinayn: مِنْ الْخَطَايَا → مِنَ
+voc 3-sakinayn: مِنْ الدَّنَسِ، → مِنَ
+voc 3-sakinayn: كَانَتْ امْرَأَةً → كَانَتِ
+voc 3-sakinayn: وَمِنْ السُّنَّةِ → وَمِنَ
+voc 3-sakinayn: عَنْ الْأَكْلِ → عَنِ
+voc 3-sakinayn: طَهُرَتْ الْحَائِضُ → طَهُرَتِ
+voc 3-sakinayn: وَإِنْ اسْتَقَاءَ → وَإِنِ
+voc 3-sakinayn: خَافَتْ الْحَامِلُ → خَافَتِ
+voc 3-sakinayn: أَوْ امْرَأَةٌ → أَوِ
+voc 3-sakinayn: مِنْ الصَّلَوَاتِ → مِنَ
+voc 3-sakinayn: مِنْ الْوَطْءِ، → مِنَ
+voc 3-sakinayn: وَمَنْ الْتَذَّ → وَمَنِ
+voc 3-sakinayn: مِنْ الِاعْتِكَافِ → مِنَ
+voc 3-sakinayn: فَلْيَبْتَدِئْ اعْتِكَافَهُ، → فَلْيَبْتَدِئِ
+voc 3-sakinayn: حَاضَتْ الْمُعْتَكِفَةُ، → حَاضَتِ
+voc 3-sakinayn: طَهُرَتْ الْحَائِضُ → طَهُرَتِ
+voc 3-sakinayn: مِنْ اللَّيْلَةِ → مِنَ
+voc 3-sakinayn: وَمَنْ اعْتَكَفَ → وَمَنِ
+voc 3-sakinayn: مِنْ اعْتِكَافِهِ → مِنِ
+voc 3-sakinayn: وَإِنْ اعْتَكَفَ → وَإِنِ
+voc 3-sakinayn: مِنْ الْمَعْدِنِ → مِنَ
+voc 3-sakinayn: مِنْ الْحَبِّ → مِنَ
+voc 3-sakinayn: مِنْ التَّمْرِ → مِنَ
+voc 3-sakinayn: عَنْ الْجَمِيعِ → عَنِ
+voc 3-sakinayn: مِنْ الْجُلْجُلَانِ → مِنَ
+voc 3-sakinayn: مِنْ الذَّهَبِ → مِنَ
+voc 3-sakinayn: مِنْ الْفِضَّةِ → مِنَ
+voc 3-sakinayn: مِنْ الْعَيْنِ، → مِنَ
+voc 3-sakinayn: مِنْ الْمَالِ، → مِنَ
+voc 3-sakinayn: أَوْ الْعَرْضُ → أَوِ
+voc 3-sakinayn: مِنْ الرِّبَاعِ → مِنَ
+voc 3-sakinayn: مِنْ الْحُلِيِّ. → مِنَ
+voc 3-sakinayn: مِنْ الْمَعْدِنِ → مِنَ
+voc 3-sakinayn: فَإِنْ انْقَطَعَ → فَإِنِ
+voc 3-sakinayn: مِنْ الْمَجُوسِ → مِنَ
+voc 3-sakinayn: عَنْ الْفَقِيرِ. → عَنِ
+voc 3-sakinayn: وَإِنْ اخْتَلَفُوا → وَإِنِ
+voc 3-sakinayn: مِنْ الْإِبِلِ → مِنَ
+voc 3-sakinayn: مِنْ الْإِبِلِ → مِنَ
+voc 3-sakinayn: مِنْ الْبَقَرِ → مِنَ
+voc 3-sakinayn: مِنْ الْمُسْلِمِينَ → مِنَ
+voc 3-sakinayn: عَنْ الْعَبْدِ → عَنِ
+voc 3-sakinayn: مَنْ اسْتَطَاعَ → مَنِ
+voc 3-sakinayn: مِنْ الْمُسْلِمِينَ → مِنَ
+voc 3-sakinayn: مِنْ الْمِيقَاتِ، → مِنَ
+voc 3-sakinayn: أَوْ الْمُعْتَمِرُ → أَوِ
+voc 3-sakinayn: عَنْ التَّلْبِيَةِ → عَنِ
+voc 3-sakinayn: فَلْيَدْخُلْ الْمَسْجِدَ → فَلْيَدْخُلِ
+voc 3-sakinayn: زَالَتْ الشَّمْسُ → زَالَتِ
+voc 3-sakinayn: مِنْ الذِّئَابِ → مِنَ
+voc 3-sakinayn: مِنْ الطَّيْرِ → مِنَ
+voc 3-sakinayn: مِنْ الْغِرْبَانِ → مِنَ
+voc 3-sakinayn: مِنْ الْبِلَادِ. → مِنَ
+voc 3-sakinayn: مِنْ الْكَعْبَيْنِ. → مِنَ
+voc 3-sakinayn: مِنْ التَّمَتُّعِ → مِنَ
+voc 3-sakinayn: وَمِنْ الْقِرَانِ، → وَمِنَ
+voc 3-sakinayn: مِنْ الْحِلِّ، → مِنَ
+voc 3-sakinayn: مِنْ النَّعَمِ → مِنَ
+voc 3-sakinayn: مِنْ الْحِلِّ، → مِنَ
+voc 3-sakinayn: لِمَنْ انْصَرَفَ → لِمَنِ
+voc 3-sakinayn: مِنْ الْأَطْعِمَةِ → مِنَ
+voc 3-sakinayn: مَنْ اسْتَطَاعَهَا، → مَنِ
+voc 3-sakinayn: مِنْ الْأَسْنَانِ → مِنَ
+voc 3-sakinayn: مِنْ الضَّأْنِ → مِنَ
+voc 3-sakinayn: مِنْ الْمَعْزِ → مِنَ
+voc 3-sakinayn: مِنْ الْمَعْزِ → مِنَ
+voc 3-sakinayn: مِنْ الْبَقَرِ → مِنَ
+voc 3-sakinayn: مِنْ الْإِبِلِ → مِنَ
+voc 3-sakinayn: مِنْ الْإِبِلِ → مِنَ
+voc 3-sakinayn: مِنْ الْأُضْحِيَّةِ: → مِنَ
+voc 3-sakinayn: وَلْيَقُلْ الذَّابِحُ: → وَلْيَقُلِ
+voc 3-sakinayn: مِنْ الْأُضْحِيَّةِ → مِنَ
+voc 3-sakinayn: مِنْ الْقَفَا → مِنَ
+voc 3-sakinayn: وَقَدْ اخْتُلِفَ → وَقَدِ
+voc 3-sakinayn: وَقَدْ اخْتُلِفَ → وَقَدِ
+voc 3-sakinayn: فَإِنْ اسْتَغْنَى → فَإِنِ
+voc 3-sakinayn: وَقَدْ اخْتُلِفَ → وَقَدِ
+voc 3-sakinayn: أَنْفَذَتْ الْجَوَارِحُ → أَنْفَذَتِ
+voc 3-sakinayn: عَنْ الْمَوْلُودِ → عَنِ
+voc 3-sakinayn: مِنْ الدَّمِ → مِنَ
+voc 3-sakinayn: مِنْهُمْ الْجِزْيَةُ → مِنْهُمُ
+voc 3-sakinayn: مِنْهُمْ الْجِزْيَةُ → مِنْهُمُ
+voc 3-sakinayn: مِنْ الْعَدُوِّ → مِنَ
+voc 3-sakinayn: مِنْ الْكَبَائِرِ → مِنَ
+voc 3-sakinayn: مِنْ الْوُلَاةِ. → مِنَ
+voc 3-sakinayn: مِنْ الْأَعْلَاجِ، → مِنَ
+voc 3-sakinayn: فَلْيَأْخُذْ الْإِمَامُ → فَلْيَأْخُذِ
+voc 3-sakinayn: مِنْ الْغَنِيمَةِ → مِنَ
+voc 3-sakinayn: لِمَنْ احْتَاجَ → لِمَنِ
+voc 3-sakinayn: عَنْ الْقِتَالِ → عَنِ
+voc 3-sakinayn: يَحْتَلِمْ الْقِتَالَ، → يَحْتَلِمِ
+voc 3-sakinayn: مِنْ الْعَدُوِّ → مِنَ
+voc 3-sakinayn: وَمَنْ اشْتَرَى → وَمَنِ
+voc 3-sakinayn: مِنْ الْخُمُسِ → مِنَ
+voc 3-sakinayn: مِنْ الْإِمَامِ، → مِنَ
+voc 3-sakinayn: مِنْ النَّفَلِ. → مِنَ
+voc 3-sakinayn: وَمَنْ اسْتَثْنَى → وَمَنِ
+voc 3-sakinayn: مِنْ الْمُسْلِمِينَ → مِنَ
+voc 3-sakinayn: مِنْ الْأَعْمَالِ → مِنَ
+voc 3-sakinayn: وَلْيَسْتَغْفِرْ اللَّهَ، → وَلْيَسْتَغْفِرِ
+voc 3-sakinayn: يَذْكُرْ الْمَقَامَ → يَذْكُرِ
+voc 3-sakinayn: عَنْ الْمَشْيِ → عَنِ
+voc 3-sakinayn: مِنْ الثُّغُورِ → مِنَ
+voc 3-sakinayn: أَوْ السُّلْطَانِ. → أَوِ
+voc 3-sakinayn: وَقَدْ اخْتُلِفَ → وَقَدِ
+voc 3-sakinayn: مِنْ الْأَبِ، → مِنَ
+voc 3-sakinayn: مِنْ الْأَخِ، → مِنَ
+voc 3-sakinayn: مِنْ الْعَصَبَةِ → مِنَ
+voc 3-sakinayn: مِنْ الْأَوْلِيَاءِ، → مِنَ
+voc 3-sakinayn: مِنْ الْعَصَبَةِ. → مِنَ
+voc 3-sakinayn: مِنْ النِّكَاحِ → مِنَ
+voc 3-sakinayn: مِنْ النِّكَاحِ → مِنَ
+voc 3-sakinayn: مِنْ النِّسَاءِ → مِنَ
+voc 3-sakinayn: مِنْ الْقَرَابَةِ، → مِنَ
+voc 3-sakinayn: مِنْ الرَّضَاعِ → مِنَ
+voc 3-sakinayn: مِنْ النَّسَبِ، → مِنَ
+voc 3-sakinayn: أَوْ الثَّانِيَةِ → أَوِ
+voc 3-sakinayn: مِنْ الْمَحِيضِ → مِنَ
+voc 3-sakinayn: عَنْ الَّتِي → عَنِ
+voc 3-sakinayn: مِنْ الْجُنُونِ → مِنَ
+voc 3-sakinayn: مِنْ الزَّمَانِ → مِنَ
+voc 3-sakinayn: مِنْ امْرَأَتِهِ → مِنِ
+voc 3-sakinayn: مِنْ الْعُيُوبِ → مِنَ
+voc 3-sakinayn: وَمَنْ اشْتَرَى → وَمَنِ
+voc 3-sakinayn: مِنْ اللَّبَنِ → مِنَ
+voc 3-sakinayn: مِنْ الْمَحِيضِ → مِنَ
+voc 3-sakinayn: أَوْ الْأَمَةِ → أَوِ
+voc 3-sakinayn: مِنْ الْوَفَاةِ → مِنَ
+voc 3-sakinayn: تَرْتَبْ الْكَبِيرَةُ → تَرْتَبِ
+voc 3-sakinayn: مِنْ الْوَفَاةِ → مِنَ
+voc 3-sakinayn: مِنْ الزِّينَةِ → مِنَ
+voc 3-sakinayn: مِنْ الْمُسْلِمِ → مِنَ
+voc 3-sakinayn: عَنْ الْحَيْضِ → عَنِ
+voc 3-sakinayn: وَمَنْ ابْتَاعَ → وَمَنِ
+voc 3-sakinayn: كَانَتْ الدَّارُ → كَانَتِ
+voc 3-sakinayn: مِنْ الْكِرَاءِ → مِنَ
+voc 3-sakinayn: مِنْ الْأَقَارِبِ، → مِنَ
+voc 3-sakinayn: وَإِنْ اتَّسَعَ → وَإِنِ
+voc 3-sakinayn: وَمِنْ الرِّبَا → وَمِنَ
+voc 3-sakinayn: مِنْ الْحُبُوبِ → مِنَ
+voc 3-sakinayn: مِنْ الْفَوَاكِهِ → مِنَ
+voc 3-sakinayn: مِنْ الْأَنْعَامِ → مِنَ
+voc 3-sakinayn: وَمَنْ ابْتَاعَ → وَمَنِ
+voc 3-sakinayn: مِنْ الْأَدْوِيَةِ → مِنَ
+voc 3-sakinayn: أَوْ التَّفَاضُلِ → أَوِ
+voc 3-sakinayn: وَمَنْ ابْتَاعَ → وَمَنِ
+voc 3-sakinayn: مِنْ الثَّمَنِ، → مِنَ
+voc 3-sakinayn: وَقَدْ اسْتَغَلَّهُ → وَقَدِ
+voc 3-sakinayn: أَوْ الَّتِي → أَوِ
+voc 3-sakinayn: مِنْ الْحَمْلِ → مِنَ
+voc 3-sakinayn: يَعْلَمْ الْبَائِعُ، → يَعْلَمِ
+voc 3-sakinayn: مِنْ الْبَائِعِ، → مِنَ
+voc 3-sakinayn: مِنْ الْمُبْتَاعِ → مِنَ
+voc 3-sakinayn: مِنْ الدَّيْنِ → مِنَ
+voc 3-sakinayn: كَانَتْ الزِّيَادَةُ → كَانَتِ
+voc 3-sakinayn: فَقَدْ اخْتُلِفَ → فَقَدِ
+voc 3-sakinayn: مِنْ الْحِيتَانِ، → مِنَ
+voc 3-sakinayn: مِنْ الْمُزَابَنَةِ، → مِنَ
+voc 3-sakinayn: إِنْ اشْتُرِطَتْ → إِنِ
+voc 3-sakinayn: مِنْ الْبَائِعِ → مِنَ
+voc 3-sakinayn: مِنْ الْجُنُونِ → مِنَ
+voc 3-sakinayn: مِنْ الْعُلَمَاءِ، → مِنَ
+voc 3-sakinayn: مِنْ الْعُقْدَةِ → مِنَ
+voc 3-sakinayn: مِنْ الثِّمَارِ، → مِنَ
+voc 3-sakinayn: مِنْ الْأَرْضِ. → مِنَ
+voc 3-sakinayn: يَفْتَرِقْ الْمُتَبَايِعَانِ. → يَفْتَرِقِ
+voc 3-sakinayn: وَمَنْ اكْتَرَى → وَمَنِ
+voc 3-sakinayn: فَمَاتَتْ انْفَسَخَ → فَمَاتَتِ
+voc 3-sakinayn: أَوْ السَّاكِنِ → أَوِ
+voc 3-sakinayn: وَمَنْ اكْتَرَى → وَمَنِ
+voc 3-sakinayn: فَمَاتَتْ الدَّابَّةُ → فَمَاتَتِ
+voc 3-sakinayn: يَنْفَسِخْ الْكِرَاءُ، → يَنْفَسِخِ
+voc 3-sakinayn: وَمَنْ اكْتَرَى → وَمَنِ
+voc 3-sakinayn: مِنْ الرِّبْحِ → مِنَ
+voc 3-sakinayn: مِنْ الْأَجْزَاءِ، → مِنَ
+voc 3-sakinayn: مِنْ الْغَرْبِ → مِنَ
+voc 3-sakinayn: مِنْ الدَّوَابِّ، → مِنَ
+voc 3-sakinayn: مِنْ الْجَمِيعِ → مِنَ
+voc 3-sakinayn: كَانَتْ الزَّرِيعَةُ → كَانَتِ
+voc 3-sakinayn: كَانَتْ الْأَرْضُ → كَانَتِ
+voc 3-sakinayn: أَوْ الْعَمَلُ → أَوِ
+voc 3-sakinayn: وَمَنْ ابْتَاعَ → وَمَنِ
+voc 3-sakinayn: عَنْ الْمُشْتَرِي → عَنِ
+voc 3-sakinayn: مِنْ الثَّمَنِ، → مِنَ
+voc 3-sakinayn: عَنْ الثُّلُثِ → عَنِ
+voc 3-sakinayn: فَمِنْ الْمُبْتَاعِ، → فَمِنَ
+voc 3-sakinayn: مِنْ الثِّمَارِ، → مِنَ
+voc 3-sakinayn: مِنْ الثُّلُثِ، → مِنَ
+voc 3-sakinayn: مِنْ الزَّكَاةِ، → مِنَ
+voc 3-sakinayn: يَقْرَبْ الْأَجَلَ، → يَقْرَبِ
+voc 3-sakinayn: مِنْ الْمَالِ → مِنَ
+voc 3-sakinayn: قَلَّتْ النُّجُومُ → قَلَّتِ
+voc 3-sakinayn: مِنْ التَّعْجِيزِ. → مِنَ
+voc 3-sakinayn: بُلُوغِهِمْ السَّعْيَ → بُلُوغِهِمُ
+voc 3-sakinayn: فَإِنْ ادَّعَى → فَإِنِ
+voc 3-sakinayn: أَوْ ابْنٍ → أَوِ
+voc 3-sakinayn: قُسِمَتْ النَّخْلُ → قُسِمَتِ
+voc 3-sakinayn: أَوْ الْأَرْضُ، → أَوِ
+voc 3-sakinayn: مِنْ الْبِنَاءِ → مِنَ
+voc 3-sakinayn: مِنْ الثُّلُثِ → مِنَ
+voc 3-sakinayn: أَوْ الْكَبِيرِ → أَوِ
+voc 3-sakinayn: مِنْ الْمَوْهُوبِ → مِنَ
+voc 3-sakinayn: وَإِنْ انْقَرَضَ → وَإِنِ
+voc 3-sakinayn: مِنْ الْمُرْتَهِنِ → مِنَ
+voc 3-sakinayn: مِنْ الرَّاهِنِ. → مِنَ
+voc 3-sakinayn: فَقَدْ اخْتُلِفَ → فَقَدِ
+voc 3-sakinayn: وَمَنْ اتَّجَرَ → وَمَنِ
+voc 3-sakinayn: أَوْ الْقِيمَةِ → أَوِ
+voc 3-sakinayn: وَإِنْ انْتَفَعَ → وَإِنِ
+voc 3-sakinayn: مِنْ الصَّحْرَاءِ، → مِنَ
+voc 3-sakinayn: وَمَنْ اسْتَهْلَكَ → وَمَنِ
+voc 3-sakinayn: وَقَدْ اخْتُلِفَ → وَقَدِ
+voc 3-sakinayn: أَوْ انْتَفَعَ → أَوِ
+voc 3-sakinayn: وَلَوْ ادُّعِيَ → وَلَوِ
+voc 3-sakinayn: مِنْ الْوُلَاةِ → مِنَ
+voc 3-sakinayn: عَلَيْهِمْ الْأَيْمَانُ، → عَلَيْهِمُ
+voc 3-sakinayn: مِنْ الدِّيَةِ → مِنَ
+voc 3-sakinayn: أَوْ امْرَأَةٍ، → أَوِ
+voc 3-sakinayn: وَإِنْ انْكَسَرَتْ → وَإِنِ
+voc 3-sakinayn: مِنْ الْمِيرَاثِ. → مِنَ
+voc 3-sakinayn: مِنْ الْأَمْيَاِلِ → مِنَ
+voc 3-sakinayn: عَنْ الْخَطَإِ → عَنِ
+voc 3-sakinayn: مِنْ الدِّيَةِ، → مِنَ
+voc 3-sakinayn: مِنْ الْإِبِلِ، → مِنَ
+voc 3-sakinayn: أَوْ الْعَيْنَيْنِ، → أَوِ
+voc 3-sakinayn: مِنْ الْإِبِلِ، → مِنَ
+voc 3-sakinayn: مِنْ الْإِبْهَامَيْنِ → مِنَ
+voc 3-sakinayn: مِنْ الْإِبِلِ. → مِنَ
+voc 3-sakinayn: مِنْ الْعَظْمِ، → مِنَ
+voc 3-sakinayn: وَطِئَتْ الدَّابَّةُ، → وَطِئَتِ
+voc 3-sakinayn: مِنْ الْمَالِ → مِنَ
+voc 3-sakinayn: مَنْ ارْتَدَّ → مَنِ
+voc 3-sakinayn: وَمَنْ امْتَنَعَ → وَمَنِ
+voc 3-sakinayn: مِنْ الزَّكَاةِ → مِنَ
+voc 3-sakinayn: مِنْ اللُّصُوصِ → مِنَ
+voc 3-sakinayn: مِنْ الْأَمْوَالِ، → مِنَ
+voc 3-sakinayn: أَحَدُهُمْ الصِّفَةَ → أَحَدُهُمُ
+voc 3-sakinayn: قَالَتْ امْرَأَةٌ → قَالَتِ
+voc 3-sakinayn: أَوْ الزِّنَا → أَوِ
+voc 3-sakinayn: مِنْ الْعُرُوضِ → مِنَ
+voc 3-sakinayn: مِنْ الْحِرْزِ، → مِنَ
+voc 3-sakinayn: مِنْ الْقَبْرِ، → مِنَ
+voc 3-sakinayn: مِنْ الْأَنْدَرِ. → مِنَ
+voc 3-sakinayn: مِنْ الْكُمِّ → مِنَ
+voc 3-sakinayn: مِنْ الْهُرْيِ → مِنَ
+voc 3-sakinayn: مِنْ الْمَغْنَمِ → مِنَ
+voc 3-sakinayn: مِنْ السَّرِقَةِ → مِنَ
+voc 3-sakinayn: مِنْ السَّرِقَةِ. → مِنَ
+voc 3-sakinayn: أَوْ الظِّنَّةُ، → أَوِ
+voc 3-sakinayn: مِنْ الْفُجُورِ، → مِنَ
+voc 3-sakinayn: مِنْ الْوِلَادَةِ → مِنَ
+voc 3-sakinayn: فَإِنْ اسْتَوَيَا → فَإِنِ
+voc 3-sakinayn: إِنْ اعْتَرَفَ → إِنِ
+voc 3-sakinayn: وَمَنْ اسْتَحَقَّ → وَمَنِ
+voc 3-sakinayn: مِنْ الْغَاصِبِ → مِنَ
+voc 3-sakinayn: أَفْسَدَتْ الْمَاشِيَةُ → أَفْسَدَتِ
+voc 3-sakinayn: مِنْ الزَّرْعِ → مِنَ
+voc 3-sakinayn: يَجُزْ الْقَسْمُ → يَجُزِ
+voc 3-sakinayn: مِنْ الَّذِينَ → مِنَ
+voc 3-sakinayn: مِنْ الرِّجَالِ → مِنَ
+voc 3-sakinayn: مِنْ النِّسَاءِ → مِنَ
+voc 3-sakinayn: مِنْ الزَّوْجَةِ → مِنَ
+voc 3-sakinayn: مِنْ ابْنِهَا → مِنِ
+voc 3-sakinayn: أَوْ اثْنَيْنِ → أَوِ
+voc 3-sakinayn: مِنْ الْإِخْوَةِ → مِنَ
+voc 3-sakinayn: أَوْ اثْنَانِ → أَوِ
+voc 3-sakinayn: مِنْ الْإِخْوَةِ → مِنَ
+voc 3-sakinayn: يَكُنْ ابْنٌ، → يَكُنِ
+voc 3-sakinayn: كَانَتْ ابْنَةُ → كَانَتِ
+voc 3-sakinayn: كَانَتْ الْبَنَاتُ → كَانَتِ
+voc 3-sakinayn: مِنْ الْأَخَوَاتِ → مِنَ
+vowel vote (T+K): تَعْلَمُهُمْ → تُعَلِّمُهُمْ
+vowel vote (T+K): عَلِمَ → عَلَّمَ
+vowel vote (T+K): وَرَغَّبَ → وَرَغِبَ
+vowel vote (T+K): الشَّيْءَ → الشَّيْءِ
+vowel vote (T+K): لِيَقْرَبَ → لِيَقْرُبَ
+vowel vote (T+K): وَكُلِّ → وَكُلُّ
+vowel vote (T+K): وَلِسَلَسِ → وَلِسَلِسِ
+vowel vote (T+K): وَيُحْصِنُ → وَيُحَصِّنُ
+vowel vote (T+K): يَعُدْ. → يُعِدْ.
+vowel vote (T+K): مِثْلُ → مِثْلَ
+vowel vote (T+K): مَنَابِتُ → مَنَابِتِ
+vowel vote (T+K): يُدَخِّلُهُمَا → يُدْخِلُهُمَا
+vowel vote (T+K): أَوَعَبَ → أَوْعَبَ
+vowel vote (T+K): طَرَفَهُ → طَرْفَهُ
+vowel vote (T+K): وَأَسَافِلِ → وَأَسَافِلَ
+vowel vote (T+K): غَسْلِهِ → غُسْلِهِ
+vowel vote (T+K): أَخَرَّ → أَخَّرَ
+vowel vote (T+K): أَوَعَبَ → أَوْعَبَ
+vowel vote (T+K): فَلِيَمُرَّ → فَلْيُمِرَّ
+vowel vote (T+K): مَرِيضٍ → مَرِيضٌ
+vowel vote (T+K): يَذْهَبَ → يَذْهَبُ
+vowel vote (T+K): الْقَشَبِ، → الْقَشْبِ،
+vowel vote (T+K): كَبَّرْتَ → كَبَّرَتْ
+vowel vote (T+K): الْعَظِيمَ → الْعَظِيمِ
+vowel vote (T+K): غَيْرُ → غَيْرَ
+vowel vote (T+K): مُلْحَقٌ، → مُلْحِقٌ،
+vowel vote (T+K): مُقْمِعَةٌ → مَقْمَعَةٌ
+vowel vote (T+K): وَأَحْسِبُ → وَأَحْسَبُ
+vowel vote (T+K): وَالشَّغْلِ → وَالشُّغْلِ
+vowel vote (T+K): كُلِّهَا → كُلُّهَا
+vowel vote (T+K): وِتْرَهُ → وَتْرَهُ
+vowel vote (T+K): فَأَكْثَرَ → فَأَكْثَرُ
+vowel vote (T+K): وَيَدْعُ → وَيَدَعُ
+vowel vote (T+K): وَيَفْتَتِحْ → وَيَفْتَتِحُ
+vowel vote (T+K): أَثْلَاثَ → أَثَلَاثَ
+vowel vote (T+K): مُخْتَلِفٍ → مُخْتَلَفٍ
+vowel vote (T+K): أَرْفَقُ → أَرْفَقَ
+vowel vote (T+K): وَسْطَ → وَسَطَ
+vowel vote (T+K): يَجُدْ → يَجِدُ
+vowel vote (T+K): خِضْخَاضٍ → خَضْخَاضٍ
+vowel vote (T+K): أَخْفَضُ → أَخْفَضَ
+vowel vote (T+K): الصَّلَاةِ، → الصَّلَاةُ،
+vowel vote (T+K): وَلِيُلْغِهَا، → وَلْيُلْغِهَا،
+vowel vote (T+K): أَيَّامُ → أَيَّامَ
+vowel vote (T+K): وَلِيُصَلِّ → وَلْيُصَلِّ
+vowel vote (T+K): جِلْسَةً، → جَلْسَةً،
+vowel vote (T+K): وَكَفْنِهِ → وَكَفَنِهِ
+vowel vote (T+K): وَيُجْعَلَ → وَيُجْعَلُ
+vowel vote (T+K): الْحُنُوطُ → الْحَنُوطُ
+vowel vote (T+K): الْمُعْتَرِكِ، → الْمُعْتَرَكِ،
+vowel vote (T+K): يَحْفِرَ → يُحْفَرَ
+vowel vote (T+K): صَلْبَةً: → صُلْبَةً:
+vowel vote (T+K): أُحُدِ → أُحُدٍ
+vowel vote (T+K): وَنَقِهِ → وَنَقِّهِ
+vowel vote (T+K): أَفْضَلَهُمْ، → أَفْضَلُهُمْ،
+vowel vote (T+K): لِوَالِدَيْهِ → لِوَالِدِيهِ
+vowel vote (T+K): يَوْمُ → يَوْمِ
+vowel vote (T+K): وَالْوِتْرِ → وَالْوَتْرِ
+vowel vote (T+K): وَالْوِتْرِ، → وَالْوَتْرِ،
+vowel vote (T+K): جَامِعَ → جَامَعَ
+vowel vote (T+K): وَذِكْرُ → وَذِكْرِ
+vowel vote (T+K): فَيَوْمُ → فَيَوْمَ
+vowel vote (T+K): وَالْعَيْنِ → وَالْعَيْنُ
+vowel vote (T+K): وَالْمَاشِيَةِ → وَالْمَاشِيَةُ
+vowel vote (T+K): فَلْيُزَكَّ → فَلْيُزَكِّ
+vowel vote (T+K): وَالْأَرْزِ → وَالْأُرْزُ
+vowel vote (T+K): وَحُبِّ → وَحَبِّ
+vowel vote (T+K): عَرَضٌ؛ → عَرْضٌ؛
+vowel vote (T+K): وَتُزْكِي → وَتُزَكِّي
+vowel vote (T+K): بَقِيَّةِ → بَقِيَّةَ
+vowel vote (T+K): لِلْقِنْيَةِ → لِلْقُنْيَةِ
+vowel vote (T+K): رُفِعَ → رَفَعَ
+vowel vote (T+K): تَجِرَ → تَجَرَ
+vowel vote (T+K): وَاحِدَةٌ → وَاحِدَةً
+vowel vote (T+K): مُجْتَمَعٍ، → مُجْتَمِعٍ،
+vowel vote (T+K): الدَّيْنَ → الدَّيْنُ
+vowel vote (T+K): زَكَاةُ → زَكَاةَ
+vowel vote (T+K): وَأَهْلُ → وَأَهْلِ
+vowel vote (T+K): وَأَهْلُ → وَأَهْلِ
+vowel vote (T+K): يُعَاوِدَهَا → يُعَاوِدُهَا
+vowel vote (T+K): سَنِّ → سِنِّ
+vowel vote (T+K): وَيَتَصَدَّقُ، → وَيُتَصَدَّقُ،
+vowel vote (T+K): وَيُجِيزُهُ → وَيُجِيزَهُ
+vowel vote (T+K): لِلشَّعَثِ → لِلشَّعْثِ
+vowel vote (T+K): يُزَوِّجَ → يُزَوِّجُ
+vowel vote (T+K): حُرِّمَتْ → حَرُمَتْ
+vowel vote (T+K): وَحُرِّمَتْ → وَحَرُمَتْ
+vowel vote (T+K): يُتْبِعَهَا → يُتْبِعُهَا
+vowel vote (T+K): الْمُعْتَرِضُ → الْمُعْتَرَضُ
+vowel vote (T+K): ثَلَاثَةُ → ثَلَاثَةَ
+vowel vote (T+K): وَالطَّلَاقِ → وَالطَّلَاقُ
+vowel vote (T+K): وَعِدَّةِ → وَعِدَّةُ
+vowel vote (T+K): تُنْكِحُ → تُنْكَحُ
+vowel vote (T+K): وَتَجْتَنِبَ → وَتَجْتَنِبُ
+vowel vote (T+K): تَخْتَضِبَ → تَخْتَضِبُ
+vowel vote (T+K): مُطَيِّبًا، → مُطَيَّبًا،
+vowel vote (T+K): يُخْتَمَرُ → يَخْتَمِرُ
+vowel vote (T+K): يُنْكَحْنَ، → يَنْكِحْنَ،
+vowel vote (T+K): سَوْقُهُ → سُوقُهُ
+vowel vote (T+K): النَّاقَةِ، → النَّاقَةُ،
+vowel vote (T+K): الزَّبِيبُ → الزَّبِيبِ
+vowel vote (T+K): يَقْبِضَ → يُقْبَضَ
+vowel vote (T+K): فَتَفْسَخُهُ → فَتَفْسَخَهُ
+vowel vote (T+K): بِالشَّرِكَةِ → بِالشِّرْكَةِ
+vowel vote (T+K): الشَّرِكَةُ → الشِّرْكَةُ
+vowel vote (T+K): بِخَرْصِهَا → بِخِرْصِهَا
+vowel vote (T+K): يَقْرَبِ → يَقْرُبِ
+vowel vote (T+K): الْأَجَلَ، → الْأَجَلُ،
+vowel vote (T+K): يَعْتِقُونَ → يُعْتَقُونَ
+vowel vote (T+K): يَعْتِقَ، → يُعْتَقَ،
+vowel vote (T+K): حَالًا، → حَالًّا،
+vowel vote (T+K): يَعْلَمُ → يُعْلَمُ
+vowel vote (T+K): الدَّيْنَ → الدَّيْنُ
+vowel vote (T+K): جَدِّهِ → جَدَّهُ
+vowel vote (T+K): جَدَّتِهِ → جَدَّتَهُ
+vowel vote (T+K): أَعْتَقْتِ → أَعْتَقَتِ
+vowel vote (T+K): وَالْحُبُسِ → وَالْحَبْسِ
+vowel vote (T+K): عَرْصَةَ → عَرْصَةِ
+vowel vote (T+K): وَالْغَائِبِ → وَالْغَائِبُ
+vowel vote (T+K): لِفَقِيرِ → لِفَقِيرٍ
+vowel vote (T+K): يُنْكِحْ → يُنْكَحْ
+vowel vote (T+K): يُكْلَبُ، → يَكْلَبُ،
+vowel vote (T+K): يَضْمَنْ → يَضْمَنُ
+vowel vote (T+K): الرَّهْنُ → الرَّهْنِ
+vowel vote (T+K): صَدَقَ، → صُدِّقَ،
+vowel vote (T+K): ذَهَبْتْ → ذَهَبَتْ
+vowel vote (T+K): فَرُبَّهَا → فَرَبُّهَا
+vowel vote (T+K): لُقْطَةَ → لُقَطَةً
+vowel vote (T+K): سَنَةً → سَنَةٌ
+vowel vote (T+K): وَأَخَذَ → وَأَخْذِ
+vowel vote (T+K): لِغَاصِبٍ → لِغَاصِبِ
+vowel vote (T+K): الْمَالُ → الْمَالِ
+vowel vote (T+K): وَيُشْرِبُ. → وَيَشْرَبُ.
+vowel vote (T+K): وَإِذًا → وَإِذَا
+vowel vote (T+K): قُسِّمَتْ → قُسِمَتْ
+vowel vote (T+K): نُصِيبُهُمْ → نَصِيبُهُمْ
+vowel vote (T+K): عَشْرَ → عَشَرَ
+vowel vote (T+K): خِلْفَةً → خَلِفَةً
+vowel vote (T+K): ثَدْيِيِ → ثَدْيَيِ
+vowel vote (T+K): عَشْرٌ → عُشْرٌ
+vowel vote (T+K): فِرَاشُهَا → فَرَاشُهَا
+vowel vote (T+K): مِثْلُ → مِثْلِ
+vowel vote (T+K): ثُلُثُ → ثُلُثَ
+vowel vote (T+K): وَتَقْتُلُ → وَتُقْتَلُ
+vowel vote (T+K): غُرَّةُ: → غُرَّةٌ:
+vowel vote (T+K): عَبْدٍ → عَبْدٌ
+vowel vote (T+K): دُونِ → دُونَ
+vowel vote (T+K): مُتَتَابِعِيْنَ، → مُتَتَابِعَيْنِ،
+vowel vote (T+K): وَيُؤَخَّرَ → وَيُؤَخَّرُ
+vowel vote (T+K): كُرْهًا، → كَرْهًا،
+vowel vote (T+K): يُسْلَمَ، → يُسْلِمَ،
+vowel vote (T+K): يَقْتُلُ → يَقْتُلْ
+vowel vote (T+K): الْإِمَامَ → الْإِمَامُ
+vowel vote (T+K): اجْتِهَادُهُ → اجْتِهَادَهُ
+vowel vote (T+K): يَقْدِرْ → يُقْدَرْ
+vowel vote (T+K): قُتِلَ → قَتْلَ
+vowel vote (T+K): بَيِّنَةُ → بَيِّنَةٌ
+vowel vote (T+K): شُهَدَاءِ، → شُهَدَاءَ،
+vowel vote (T+K): أَحْصَنَا → أُحْصِنَا
+vowel vote (T+K): يُحْصِنَا. → يُحْصَنَا.
+vowel vote (T+K): فَلْيَحُدَّ → فَلْيُحَدَّ
+vowel vote (T+K): فِضَّةٍ → فِضَّةً
+vowel vote (T+K): وَيُتْبَعُ → وَيُتَّبَعُ
+vowel vote (T+K): يُتْبَعُ → يُتَّبَعُ
+vowel vote (T+K): وَيُتْبَعُ → وَيُتَّبَعُ
+vowel vote (T+K): الزَّوْجُ → الزَّوْجِ
+vowel vote (T+K): وَقِيمَةُ → وَقِيمَةَ
+vowel vote (T+K): النَّقْضِ → النُّقْضِ
+vowel vote (T+K): وَيُجْبَرَ → وَيُجْبَرُ
+vowel vote (T+K): الْبَيْعَ → الْبَيْعِ
+vowel vote (T+K): أَجْبَرَ → أُجْبِرَ
+vowel vote (T+K): وَمُوَلَّاةُ → وَمَوْلَاةُ
+vowel vote (T+K): مَنْ → مِنْ
+vowel vote (T+K): غَيْرُهُ → غَيْرِهِ
+vowel vote (T+K): وَاحِدَةَ → وَاحِدَةً
+vowel vote (T+K): غَيْرُ → غَيْرَ
+vowel vote (T+K): أَفْضَلَ → أَفْضَلُ
+vowel vote (T+K): السُّدُسُ → السُّدُسَ
+vowel vote (T+K): ثُلُثُ → ثُلُثَ
+vowel vote (T+K): مِنْ → مَنْ
+vowel vote (T+K): وَجَدِّهَا؛ → وَجَدَّهَا؛
+vowel vote (T+K): بَابٌ → بَابُ
+vowel vote (T+K): جُمَلٌ → جُمَلٍ
+vowel vote (T+K): وَغُسْلُ → وَغَسْلُ
+vowel vote (T+K): أَرْفَقُ → أَرْفَقَ
+vowel vote (T+K): وَغُسْلُهُمْ → وَغَسْلُهُمْ
+vowel vote (T+K): وَرَجَبَ → وَرَجَبٍ
+vowel vote (T+K): تَعَمُّدِ → تَعَمُّدٍ
+vowel vote (T+K): حَرَجٍ، → حَرَجٌ،
+vowel vote (T+K): الْآخَرِ → الْآخِرِ
+vowel vote (T+K): وَتَسْتَعْمِلَ → وَتَسْتَعْمِلُ
+vowel vote (T+K): أَكَلَ → أَكْلَ
+vowel vote (T+K): الْمَالَ → الْمَالِ
+vowel vote (T+K): وَقْذَةٍ → وَقْذَةٌ
+vowel vote (T+K): يُنْتَفَعَ → يُنْتَفَعُ
+vowel vote (T+K): الْآخَرِ → الْآخِرِ
+vowel vote (T+K): تُرْكُهُ → تَرْكُهُ
+vowel vote (T+K): تَغْضَبُ»، → تَغْضَبْ»،
+vowel vote (T+K): وَفُرِضَ → وَفَرْضٌ
+vowel vote (T+K): يَكْرَهُ → يُكْرَهُ
+vowel vote (T+K): فِعْلَهُ، → فِعْلُهُ،
+vowel vote (T+K): طَرْفُ → طَرَفُ
+vowel vote (T+K): وَتَنَاوَلْ → وَتُنَاوِلُ
+vowel vote (T+K): مِنْ → مَنْ
+vowel vote (T+K): الْقَطَانِيّ، → الْقَطَانِيِّ،
+vowel vote (T+K): وَيَقُولَ → وَيَقُولُ
+vowel vote (T+K): يَقُولَ: → يَقُولُ:
+vowel vote (T+K): الْيَهُودُ → الْيَهُودَ
+vowel vote (T+K): إِنْ → إِنَّ
+vowel vote (T+K): وَمَرْفِقَيْهِ → وَمِرْفَقَيْهِ
+vowel vote (T+K): يُنْظَرُ → يَنْظُرُ
+vowel vote (T+K): وَيُتْرَكُ → وَيَتْرُكُ
+vowel vote (T+K): فَلْيَقُلْ: → فَلْيَقُلِ:
+vowel vote (T+K): سَبْقًا؛ → سَبَقًا؛
+vowel vote (T+K): غَيْرَ → غَيْرُ
+vowel vote (T+K): جَاعِلٍ → جَاعِلِ
+vowel vote (T+K): السَّبْقَ → السَّبَقِ
+vowel vote (T+K): جَاعِلَ → جَاعِلُ
+vowel vote (T+K): الشَّغْلِ → الشُّغْلِ
+vowel vote (T+K): وَأُوْلَى → وَأَوْلَى
+vowel vote (T+K): نَجَاةً؛ → نَجَاةٌ؛
+vowel vote changes: 221
+vowel (manual): قَرَأَتْ → قَرَأْتَ — خطاب للمصلي: «فَإِنْ كُنْتَ فِي الصُّبْحِ قَرَأْتَ جَهْرًا»
+vowel (manual): يَعْلَمُوا → يُعَلَّمُوا — المراد تعليم الصغار: «يَنْبَغِي أَنْ يُعَلَّمُوا مَا فَرَضَ اللَّهُ»
+vowel (manual): فَيَبِيدُ، → فَيَبِيدَ، — منصوب بعد فاء السببية في جواب النفي
+vowel (manual): فَيَنْفَدُ. → فَيَنْفَدَ. — كذلك
+vowel (manual): اللَّهَ → اللَّهُ — كلمة التوحيد: «لَا إِلَهَ إِلَّا اللَّهُ» بالرفع
+vowel (manual): أَيُّهَا → أَيِّهَا — مجرور بـ«مِنْ»
+vowel (manual): فَتُثْنِي → فَتَثْنِي — من ثَنَى يَثْنِي (يطوي رجله)
+vowel (manual): ﴿وَالشَّمْسُ → ﴿وَالشَّمْسِ — لفظ المصحف
+vowel (manual): وَطَيِّبِنَا → وَطَيِّبْنَا — فعل أمر في الدعاء
+vowel (manual): وَطَيِّبِهِ → وَطَيِّبْهُ — فعل أمر في الدعاء
+vowel (manual): وَمِخْيَطَ → وَمَخِيطَ — المَخِيط: الثوب المخيط (لا المِخْيَط: الإبرة)
+vowel (manual): غَنَمَ → غَنِمَ — الفعل غَنِمَ يَغْنَمُ
+vowel (manual): كُلِّهَا → كُلُّهَا — توكيد لـ«لُحُومُ» المرفوع
+vowel (manual): الْحُذَّاقِ، → الْحِذَاقِ، — الحِذاق: ختم الصبي القرآن
+vowel (manual): مَوْلَى → مَوْلًى — نكرة منونة
+vowel (manual): وَالَيْتُمْ → وَالْيُتْمُ — تصحيف في الشكل: «وَالْيُتْمُ مِنْ قِبَلِ الْأَبِ»
+vowel (manual): وَتَقْتُلُ → وَتُقْتَلُ — مبني للمجهول: «وَتُقْتَلُ الْجَمَاعَةُ بِالْوَاحِدِ»
+vowel (manual): اسْتُكْرِهَتْ → اسْتُكْرِهْتُ — من قول المرأة (متكلم)
+vowel (manual): احْتَمَلَتْ → احْتُمِلَتْ — مبني للمجهول: حُمِلت كرهًا
+vowel (manual): قَاعِدِيْنَ، → قَاعِدَيْنِ، — حال مثنى
+vowel (manual): وَاجْرُوهُ، → وَاجَرُوهُ، — من واجَرَ (آجَرَ)
+vowel (manual): الْمُشْتَرِكَةَ، → الْمُشْتَرَكَةَ، — اسم المسألة: المُشْتَرَكَة
+vowel (manual): الْمُشْتَرِكَةِ. → الْمُشْتَرَكَةِ. — كذلك
+vowel (manual): وَشَبَهِهِ، → وَشِبْهِهِ، — كما في سائر المتن «وَشِبْهِ ذَلِكَ»
+vowel (manual): الْعَزِيزِ → الْعَزِيزُ — نعت لـ«كِتَابُ» المرفوع
+vowel (manual): بِمُحْرِمٍ، → بِمَحْرَمٍ، — المَحْرَم: ذو الرحم المحرم
+vowel (manual): الْغَمْرِ، → الْغَمَرِ، — الغَمَر: ريح اللحم ودسمه
+vowel (manual): خَيَّاطَةٍ → خِيَاطَةٍ — مصدر خاط يخيط
+vowel (manual): جِئْنَاك → جِئْنَاكَ — خطاب لله تعالى في الدعاء
+vowel (manual): عَبْدِك → عَبْدِكَ — خطاب لله تعالى في الدعاء
+vowel (manual): أَمَتِك → أَمَتِكَ — كذلك
+vowel (manual): أَخَذْت → أَخَذْتَ — خطاب للمكلف: «فَإِذَا بِعْتَهَا … مِنْ يَوْمِ أَخَذْتَ ثَمَنَهَا»
+vowel (manual): دَفَعْت → دَفَعْتُ — من قول الوكيل: «رَدَدْتُ إِلَيْكَ … أَوْ دَفَعْتُ إِلَيْكَ ثَمَنَهُ»
+vowel (manual): رَدِّك → رَدِّكَ — خطاب
+vowel (manual): عَلَيْك → عَلَيْكَ — خطاب
+vowel (manual): يَرْحَمُك → يَرْحَمُكَ — خطاب
+vowel (manual): وَبِنَبِيِّك → وَبِنَبِيِّكَ — خطاب لله تعالى في الدعاء
+vowel (manual): الْعَالَمُ → الْعَالِمُ — من أسماء الله: العالِم (لا العالَم)
+vowel (manual): دَيْنِ → دِينِ — «مِنْ فَهْمِ دِينِ اللَّهِ وَشَرَائِعِهِ»
+vowel (manual): يَس~، → يس، — اسم السورة (حُذفت علامة ~ من الأساس)
+vowel (manual): زَيْدٍ: → زَيْدٍ — ترقيم: النقطتان بعد «وَأَرْضَاهُ»
+vowel (manual): وَأَرْضَاهُ → وَأَرْضَاهُ: — ترقيم
+vowel (manual): ثَمَنٌ؟. → ثَمَنٌ — ترقيم: السؤال ينتهي بعد «أَمْ لَا»
+vowel (manual): لَا → لَا؟ — ترقيم
+vowel (manual): اللَّهُ، → اللَّهُ. — ترقيم: نهاية الكتاب قبل كلمة المؤلف الختامية
+vowel differences left with T: 377
