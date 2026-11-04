@@ -79,6 +79,7 @@ const BOOKS=[
   {key:'adab',c:'الآداب والرقائق',lsk:'mutoon_adab_v1',url:'adab.html',t:'منظومة الآداب',d:'الآداب الشرعية · ٩٤٧ بيتًا'},
   {key:'durrabahiyya',c:'النحو',lsk:'mutoon_durrabahiyya_v1',url:'durrabahiyya.html',t:'الدرة البهية',d:'النحو · ٢٥٤ بيتًا'},
   {key:'qurra',c:'السيرة النبوية',lsk:'mutoon_qurra_v1',url:'qurra.html',t:'قرة الأبصار',d:'السيرة النبوية · ٣٩٨ بيتًا'},
+  {key:'jawharmaknun',c:'البلاغة',lsk:'mutoon_jawharmaknun_v1',url:'jawharmaknun.html',t:'الجوهر المكنون',d:'البلاغة · ٢٩١ بيتًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],

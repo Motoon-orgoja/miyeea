@@ -1,0 +1,2 @@
+const get=require('./get');
+(async()=>{for(const q of process.argv.slice(2)){for(let p=1;p<=3;p++){const j=JSON.parse(await get('https://backend.ketabonline.com/api/v2/books?q='+encodeURIComponent(q)+'&page='+p,{Accept:'application/json'}));if(!j.data||!j.data.length)break;for(const b of j.data)console.log(b.id,b.title.replace(/<\/?em>/g,''),'|',(b.authors||[]).map(a=>a.name).join(','),'|',(b.meta||[]).map(m=>m.value).join(';').slice(0,80));}}})();
