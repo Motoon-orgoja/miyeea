@@ -66,6 +66,7 @@ const BOOKS=[
   {key:'tuhfamuluk',c:'الفقه',lsk:'mutoon_tuhfamuluk_v1',url:'tuhfamuluk.html',t:'تحفة الملوك',d:'الفقه الحنفي · ١٠ كتب'},
   {key:'kanz',c:'الفقه',lsk:'mutoon_kanz_v1',url:'kanz.html',t:'كنز الدقائق',d:'الفقه الحنفي · ٥٧ كتابًا و١٤٢ بابًا و٥٩ فصلًا'},
   {key:'hadramiyya',c:'الفقه',lsk:'mutoon_hadramiyya_v1',url:'hadramiyya.html',t:'المقدمة الحضرمية',d:'الفقه الشافعي · ٤ كتب و١٥ بابًا و٩٨ فصلًا'},
+  {key:'maraqi',c:'أصول الفقه',lsk:'mutoon_maraqi_v1',url:'maraqi.html',t:'مراقي السعود',d:'أصول الفقه المالكي · ١٠٠١ بيت'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
