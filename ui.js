@@ -71,6 +71,7 @@ const BOOKS=[
   {key:'qawaidarba',c:'العقيدة',lsk:'mutoon_qawaidarba_v1',url:'qawaidarba.html',t:'القواعد الأربع',d:'التوحيد والشرك · ٤ قواعد في ٢٥ فقرة'},
   {key:'safariniyya',c:'العقيدة',lsk:'mutoon_safariniyya_v1',url:'safariniyya.html',t:'السفارينية',d:'العقيدة على مذهب أهل الأثر · ٢١٠ أبيات'},
   {key:'iraqi',c:'مصطلح الحديث',lsk:'mutoon_iraqi_v1',url:'iraqi.html',t:'ألفية العراقي',d:'مصطلح الحديث · ١٠٠٢ بيت'},
+  {key:'tawhid',c:'العقيدة',lsk:'mutoon_tawhid_v1',url:'tawhid.html',t:'كتاب التوحيد',d:'التوحيد وما ينافيه · ٦٦ بابًا مع مسائلها'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
