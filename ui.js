@@ -57,6 +57,9 @@ const BOOKS=[
   {key:'ibnashir',c:'الفقه',lsk:'mutoon_ibnashir_v1',url:'ibnashir.html',t:'متن ابن عاشر',d:'العقيدة والفقه المالكي والتصوف · ٣١٧ بيتًا'},
   {key:'umdafiqh',c:'الفقه',lsk:'mutoon_umdafiqh_v1',url:'umdafiqh.html',t:'عمدة الفقه',d:'الفقه الحنبلي لابن قدامة · ٢٦ كتابًا'},
 ];
+// the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
+const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','usul','manar','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala']],
+  ['شافعي',['abushuja','safina','hadramiyya','zubad','waraqat','imriti','rahabiyya']],['حنبلي',['umdafiqh','akhsar','zad','qawaidusul']]];
 // the order of fields in the texts sheet
 const FIELDS=['القراءات والتجويد','علوم القرآن','العقيدة','الحديث','مصطلح الحديث','الفقه','أصول الفقه','القواعد الفقهية','الفرائض','النحو','الصرف','المنطق','السيرة النبوية','الرقائق والأذكار','الآداب والرقائق'];
 
@@ -257,13 +260,21 @@ function openBooks(){
   // (in the order of FIELDS, then any other field in the order it first appears)
   const q=el('input','ui-search'); q.type='search'; q.placeholder='🔍 دوّر على متن أو فن…';
   if(BOOKS.length>12)b.append(q);
+  // two views: by field, or the four schools with each one's texts (the rest stay grouped by field after them)
+  let by='field'; try{by=localStorage.getItem('ui_booksBy')||'field'}catch(e){}
+  const tabs=el('div','ui-seg ui-by'), tb=[['field','حسب الفن'],['madh','حسب المذهب']].map(([k,t])=>{const x=el('button','',t);x.type='button';x.setAttribute('role','radio');x.onclick=()=>{by=k;try{localStorage.setItem('ui_booksBy',k)}catch(e){}paintTabs();draw()};tabs.append(x);return[k,x]});
+  const paintTabs=()=>tb.forEach(([k,x])=>x.setAttribute('aria-checked',String(k===by))); tabs.setAttribute('role','radiogroup'); paintTabs(); b.append(tabs);
+  // the daily tafsir ward lives on its own page
+  const tfl=el('a','ui-book-link');tfl.href='tafsir.html';tfl.append(el('b','','📖 ورد التفسير'),el('small','','آيات كل يوم مع التفاسير اللي بتختارها'));const tfr=el('div','ui-book'+(CUR==='tafsir'?' cur':''));tfr.append(tfl);b.append(tfr);
   const list=el('div'); b.append(list);
   const fields=[...new Set([...FIELDS,...BOOKS.map(x=>x.c||'')])].filter(c=>BOOKS.some(x=>(x.c||'')===c));
   const norm=s=>s.replace(/[ً-ْـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي');
   function draw(){
     list.replaceChildren(); const w=norm(q.value.trim()), hit=x=>!w||norm(x.t+' '+x.d+' '+(x.c||'')).includes(w);
-    const mine=w?[]:BOOKS.filter(x=>started(x.key));
-    const rows=[...mine.map(x=>[x,'📖 اللي بحفظها']),...fields.flatMap(c=>BOOKS.filter(x=>(x.c||'')===c&&hit(x)&&!mine.includes(x)).map(x=>[x,c]))];
+    const mine=w||by==='madh'?[]:BOOKS.filter(x=>started(x.key));
+    const madh=by==='madh'?MADHAHIB.flatMap(([m,ks])=>ks.map(k=>BOOKS.find(x=>x.key===k)).filter(x=>x&&hit(x)).map(x=>[x,'🕌 المذهب ال'+m])):[];
+    const taken=[...mine,...madh.map(r=>r[0])], rest=fields.flatMap(c=>BOOKS.filter(x=>(x.c||'')===c&&hit(x)&&!taken.includes(x)).map(x=>[x,(madh.length?'مشترك · ':'')+c]));
+    const rows=[...mine.map(x=>[x,'📖 اللي بحفظها']),...madh,...rest];
     if(!rows.length)list.append(el('p','ui-hint','ما لقيت متن بهالاسم.'));
     rows.forEach(([x,c],k)=>{if(c&&(k===0||rows[k-1][1]!==c))list.append(el('div','ui-lbl',c)); list.append(bookRow(x))});
   }

@@ -20,6 +20,7 @@
 <script src="sync.js"></script>
 <script src="ui.js"></script>
 <style>
+.tfcard{flex-direction:row;justify-content:space-between;align-items:center;text-decoration:none;color:var(--ink);gap:10px}.tfcard b{font-family:var(--verse);font-size:21px;flex:none}.tfcard span{font-size:12.5px;color:var(--muted);text-align:left}
 .restfield{display:flex;flex-direction:column;gap:8px}
 .restfield>summary{cursor:pointer;font-weight:700;padding:10px 4px;color:var(--ink);border-bottom:1px solid var(--line)}
 .restfield[open]>summary{color:var(--accent)}
@@ -100,6 +101,7 @@ a.btn{text-decoration:none;text-align:center}
 
   <section class="card pushbar" id="pushBar" hidden></section>
   <a class="hero" id="hero" hidden></a>
+  <a class="card tfcard" id="tfCard" href="tafsir.html"><b>📖 ورد التفسير</b><span id="tfState">آيات كل يوم مع تفسيرها من الكتب اللي بتختارها</span></a>
   <section class="card">
     <div class="chapstat" id="todaySum"></div>
     <div id="todayList"></div>
@@ -163,5 +165,7 @@ a.btn{text-decoration:none;text-align:center}
 <script src="data/ibnashir.js"></script><script>BOOKS.push(BOOK)</script>
 <script src="data/umdafiqh.js"></script><script>BOOKS.push(BOOK)</script>
 <script src="home.js"></script>
+<script>(function(){try{const s=JSON.parse(localStorage.getItem('mutoon_tafsir_v1')||'null');if(!s)return;const t=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Amman'}).format(new Date());
+  document.getElementById('tfState').textContent=s.day===t&&s.done?'قرأت ورد اليوم ✓':'ورد اليوم بانتظارك ←'}catch(e){}})()</script>
 </body>
 </html>

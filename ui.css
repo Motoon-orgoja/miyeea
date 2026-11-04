@@ -243,3 +243,6 @@ a.ui-hit small{color:var(--muted);font-size:calc(12px*var(--us,1))}
 .ann-tabs{justify-content:flex-start;margin:4px 0 8px}
 .modes.lanes{grid-template-columns:1fr 1fr;margin-bottom:10px}
 .modes.lanes button{font-size:calc(13.5px*var(--us))}
+
+/* the texts sheet's two views */
+.ui-seg.ui-by{margin-bottom:10px}

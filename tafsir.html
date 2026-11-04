@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0B7A55">
+<title>ورد التفسير</title>
+<link rel="preload" href="fonts/Amiri-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/NotoKufiArabic-500_800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts.css">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="المتون">
+<link rel="stylesheet" href="prose.css">
+<link rel="stylesheet" href="ui.css">
+<script src="i18n.js"></script>
+<script src="sync.js"></script>
+<script src="ui.js"></script>
+<style>
+.sura{font-family:var(--verse);font-size:22px;font-weight:700;text-align:center;color:var(--accent);background:var(--accent-soft);border-radius:12px;padding:6px}
+.basm{font-family:var(--verse);font-size:22px;text-align:center}
+.ayah{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-top:1px solid var(--line)}
+.atext{font-family:var(--verse);font-size:26px;line-height:2.1;margin:0;text-align:justify}
+.anum{color:var(--gold);font-size:22px;white-space:nowrap}
+details.tf{background:var(--bg);border-radius:12px;padding:8px 12px}
+details.tf>summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--accent)}
+.tfb p{font-family:var(--verse);font-size:19px;line-height:1.95;margin:8px 0 0;text-align:justify}
+.tfb p.note{font-family:var(--ui);font-size:12.5px}
+.tq{color:var(--accent);font-weight:700}
+.bk{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;cursor:pointer}
+.bk.on{border-color:var(--accent);background:var(--accent-soft)}
+.bkt{display:flex;flex-direction:column;flex:1;min-width:0}.bkt b{font-family:var(--verse);font-size:19px}.bkt small{color:var(--muted);font-size:12px}
+.btn.up{padding:4px 10px}
+.pick{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pick select,.pick input{font:inherit;font-size:16px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.pick input{width:90px}
+#logList>div{display:flex;justify-content:space-between;font-size:14px;padding:4px 0;border-bottom:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <nav class="books" aria-label="المتون"><a href="home.html" data-book="home">وردي اليوم</a><a href="tafsir.html" data-book="tafsir" aria-current="page">ورد التفسير</a></nav>
+    <h1>ورد التفسير</h1>
+    <p>آيات كل يوم، وتحت كل آية التفاسير اللي بتختارها</p>
+  </header>
+  <section class="card">
+    <div class="chapstat" id="wardState"></div>
+    <div class="ptitle" id="wardTitle"></div>
+    <div id="ward"></div>
+    <div class="row" id="wardBtns"></div>
+  </section>
+  <section class="card">
+    <div class="eyebrow">كم آية باليوم؟</div>
+    <div class="pick"><select id="per" aria-label="عدد الآيات باليوم"></select></div>
+    <div class="eyebrow">كتب التفسير اللي بتطلع تحت كل آية (بالترتيب، وبتقدر تختار أكثر من كتاب)</div>
+    <div id="books" style="display:flex;flex-direction:column;gap:8px"></div>
+    <label class="row note"><input type="checkbox" id="openFirst"> افتح أول تفسير تلقائيًا (الباقي بينفتح لما تضغط عليه)</label>
+    <div class="eyebrow">ابدأ من مكان معيّن</div>
+    <div class="pick"><select id="sura" aria-label="السورة"></select><input id="ayah" type="number" min="1" inputmode="numeric" aria-label="الآية"><button class="btn" id="go">انتقل</button></div>
+    <p class="note" style="margin:0">نص القرآن بالرسم العثماني والتفاسير من موقع quran.com (والجلالين من api.quran-tafseer.com)، منقولة بلفظها. بعض التفاسير بتشرح آيتين أو أكثر مع بعض، فبيطلع تفسيرها مرة وحدة.</p>
+  </section>
+  <section class="card">
+    <div class="eyebrow">سجلّك</div>
+    <div class="chapstat" id="logSum"></div>
+    <div id="logList"></div>
+  </section>
+</div>
+<script src="data/quran/index.js"></script>
+<script src="tafsir.js"></script>
+</body>
+</html>
