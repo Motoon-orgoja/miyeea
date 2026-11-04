@@ -1,0 +1,26 @@
+fix 13: «مِنْ كلُ أَمْجَدِ» -> «مِنْ كُلِّ أَمْجَدِ» («كلُ» بالضم لحن بعد «مِنْ» (ونقص الشدة)؛ في غذاء الألباب وموارد الظمآن «كُلِّ»)
+split 46: added «ـ» at the start of the 2nd hemistich
+split 70: added «ـ» at the start of the 2nd hemistich
+split 76: added «ـ» at the start of the 2nd hemistich
+split 113: added «ـ» at the start of the 2nd hemistich
+split 114: added «ـ» at the start of the 2nd hemistich
+fix 184: «{وَتَزَوَّدُوا}» -> «﴿وَتَزَوَّدُوا﴾» (قوسا الآية)
+fix 221: «و (يس)» -> «و«يس»» (القوسان التحريريان حول اسم السورة)
+split 280: added «ـ» at the start of the 2nd hemistich
+split 396: added «ـ» at the start of the 2nd hemistich
+split 470: added «ـ» at the start of the 2nd hemistich
+split 545: added «ـ» at the start of the 2nd hemistich
+fix 647: «أو الـ | الحريمَ» -> «أو الـ | حريمَ» (تكرار «ال» عند قسمة الكلمة بين الشطرين في نص الشاملة)
+split 647: added «ـ» at the start of the 2nd hemistich
+split 691: added «ـ» at the start of the 2nd hemistich
+split 706: added «ـ» at the start of the 2nd hemistich
+split 759: added «ـ» at the start of the 2nd hemistich
+split 767: added «ـ» at the start of the 2nd hemistich
+split 785: added «ـ» at the start of the 2nd hemistich
+split 792: added «ـ» at the start of the 2nd hemistich
+split 808: added «ـ» at the start of the 2nd hemistich
+split 810: added «ـ» at the start of the 2nd hemistich
+split 826: added «ـ» at the start of the 2nd hemistich
+split 836: added «ـ» at the start of the 2nd hemistich
+split 918: added «ـ» at the start of the 2nd hemistich
+split 936: added «ـ» at the start of the 2nd hemistich
