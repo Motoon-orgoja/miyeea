@@ -493,6 +493,8 @@ function renderChapters(){
     else if(ch.id!==CUR){const go=document.createElement('button');go.className='btn';go.textContent='احفظه هلأ';go.addEventListener('click',()=>{setCur(ch.id);save();$('chapCard').hidden=true;renderAll();scrollTo(0,0)});acts.append(go)}
     else{const x=document.createElement('span');x.className='pill new';x.textContent='الحالي';acts.append(x)}
     row.append(info,acts); box.append(row)});
+  // where the text comes from, and how it was vocalized
+  if(BOOK.source||BOOK.note){const p=document.createElement('p');p.className='note';p.textContent=(BOOK.note?BOOK.note+' ':'')+(BOOK.source?'المصدر: '+BOOK.source:'');list.append(p)}
 }
 // the setup screen's chapter picker, grouped like the list
 function fillChapPick(){

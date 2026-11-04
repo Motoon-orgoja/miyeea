@@ -48,6 +48,7 @@ const BOOKS=[
   {key:'waraqat',c:'أصول الفقه',lsk:'mutoon_waraqat_v1',url:'waraqat.html',t:'الورقات',d:'مبادئ أصول الفقه للجويني · ٢١ بابًا'},
   {key:'imriti',c:'أصول الفقه',lsk:'mutoon_imriti_v1',url:'imriti.html',t:'نظم الورقات',d:'نظم الورقات · ٢١١ بيتًا'},
   {key:'abushuja',c:'الفقه',lsk:'mutoon_abushuja_v1',url:'abushuja.html',t:'متن أبي شجاع',d:'الفقه الشافعي المختصر (الغاية والتقريب)'},
+  {key:'nuridah',c:'الفقه',lsk:'mutoon_nuridah_v1',url:'nuridah.html',t:'نور الإيضاح',d:'الفقه الحنفي: العبادات · ٩٩ بابًا وفصلًا'},
 ];
 // the order of fields in the texts sheet
 const FIELDS=['القراءات والتجويد','علوم القرآن','العقيدة','الحديث','مصطلح الحديث','الفقه','أصول الفقه','القواعد الفقهية','الفرائض','النحو','الصرف','المنطق','السيرة النبوية','الرقائق والأذكار','الآداب والرقائق'];
