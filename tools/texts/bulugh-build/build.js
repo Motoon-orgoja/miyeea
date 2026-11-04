@@ -44,7 +44,9 @@ const clean = (h, n) => {
   // dashes printed around the honorifics are typography, not text
   t = t.replace(new RegExp('\\s*-\\s*(' + HONV + ')\\s*-?(?=[\\s:،,.;؛]|$)', 'g'), ' $1');
   t = t.replace(new RegExp('(' + HONV + ')\\s*-\\s*', 'g'), '$1 ');
-  t = t.replace(/بِـ\s*([(﴿])/g, 'بِ$1');   // «بِـ (ق)»: tatweel joining the preposition to a quoted sura name
+  t = t.replace(/بِـ\s*([(﴿«])/g, 'bِ$1'.replace('b', 'ب'));
+  // «وَعَنْهَا؛ - أَنَّ», «عَنْهُمْ، - أَنَّهُمَا»: a stray dash after the punctuation
+  t = t.replace(/([؛،,;])\s+-\s+(?=[ء-ي])/g, (m, a) => { log.misc.push(n + ': حذف شرطة زائدة بعد «' + a + '»'); return a + ' '; });   // «بِـ (ق)»: tatweel joining the preposition to a quoted sura name
   t = t.replace(/,/g, '،').replace(/;/g, '؛').replace(/\?/g, '؟');
   return t.replace(/\s+/g, ' ').replace(/\s+([.،؛:؟!»)\]﴾])/g, '$1').replace(/([«﴿(])\s+/g, '$1').replace(/»\s*\./g, '».').trim();
 };
@@ -53,7 +55,7 @@ const HEAD = /^(كتاب|باب|أبواب|فصل|أحاديث في)/;
 // heading case endings that are plainly wrong in the source (lahn); fixed and logged
 const HEADFIX = [['كتَابُ', 'كِتَابُ'], [/^بَاب /, 'بَابُ '], [/^كِتَاب /, 'كِتَابُ '], ['الزَّكَاةُ', 'الزَّكَاةِ'], ['صَلَاةُ الْجُمُعَةِ', 'صَلَاةِ الْجُمُعَةِ'],
   ['صَوْمُ التَّطَوُّعِ', 'صَوْمِ التَّطَوُّعِ'], ['وَقَتْلُ الْمُرْتَدِّ', 'وَقَتْلِ الْمُرْتَدِّ'], ['الْجِزْيَةَ وَالْهُدْنَةَ', 'الْجِزْيَةِ وَالْهُدْنَةِ'],
-  ['الْأَيْمَانُ وَالنُّذُورُ', 'الْأَيْمَانِ وَالنُّذُورِ'], [/:$/, '']];
+  ['الْأَيْمَانُ وَالنُّذُورُ', 'الْأَيْمَانِ وَالنُّذُورِ'], ['أَحَادِيثَ فِي', 'أَحَادِيثُ فِي'], [/[:.،]+$/, '']];
 
 const paras = [];
 for (let p = 2; p <= 1522; p++) {
@@ -116,8 +118,10 @@ const fl = w => w.split('').map(c => c === ' ' ? '\\s+' : c + '[\\u064B-\\u0652\
 const TAKH = '(?:' + fl('و') + ')?(?:' + ['أخرجه', 'أخرجهما', 'أخرجاه', 'رواه', 'رواهما', 'متفق عليه', 'صححه', 'حسنه', 'ضعفه', 'إسناده', 'بإسناد', 'أخرج'].map(fl).join('|') + ')';
 const takhAt = s => {
   // takh = the attribution after the last closing quote mark (or, without quotes, the last sentence starting with a takh formula)
-  const close = Math.max(s.lastIndexOf('»'), s.lastIndexOf('﴾'));
-  const re = new RegExp('(^|[.»﴾؛:،]\\s*|\\s)(' + TAKH + ')(?=[\\s،.]|$)', 'g');
+  // …and after the last variant introduced by «زَادَ / وَفِي رِوَايَةٍ / وَفِي لَفْظٍ / وَفِي أُخْرَى» (the variant belongs to the matn)
+  let close = Math.max(s.lastIndexOf('»'), s.lastIndexOf('﴾'), s.lastIndexOf(')'));
+  for (const v of s.matchAll(new RegExp('(?:^|\\s)(?:' + ['وزاد', 'زاد', 'وفي رواية', 'وفي لفظ', 'وفي أخرى'].map(fl).join('|') + ')[^:.]{0,60}:', 'g'))) close = Math.max(close, v.index + v[0].length);
+  const re = new RegExp('(^|[.»﴾)؛:،]\\s*|\\s)((?:' + fl('وقد') + '\\s+)?' + TAKH + ')(?=[\\s،.]|$)', 'g');
   let mm, cands = [];
   while ((mm = re.exec(s))) cands.push(mm.index + mm[1].length);
   cands = cands.filter(i => i > close);
@@ -132,15 +136,16 @@ for (const c of J.chapters) for (const x of c.hadiths) {
   let s = x.matn; delete x.matn;
   const i = takhAt(s);
   let takh = '';
-  if (i > 0) { takh = s.slice(i).trim(); s = s.slice(0, i).trim(); } else stats.noTakh.push(x.n);
+  // an entry that is itself only an attribution note («وَقَدْ صَحَّحَهُ ابْنُ حِبَّانَ…») stays whole in matn
+  if (i > 0 && s.slice(0, i).trim().split(/\s+/).length > 1) { takh = s.slice(i).trim(); s = s.slice(0, i).trim(); } else stats.noTakh.push(x.n);
   s = s.replace(/\s*-\s*$/, '');
   let rawi = '';
-  let q = -1; for (const mm of s.matchAll(/«([^«»]*)»/g)) { if (mm[1].trim().split(/\s+/).length > 2) { q = mm.index; break; } } if (q < 0 && !/«[^«»]*»/.test(s)) q = s.indexOf('«');
+  let q = -1; for (const mm of s.matchAll(/«([^«»]*)»/g)) { if (mm[1].trim().split(/\s+/).length > 2) { q = mm.index; if (q > 0 && /\S/.test(s[q - 1])) q = -2; break; } } if (q < 0 && !/«[^«»]*»/.test(s)) q = s.indexOf('«');
   if (q > 0 && s.slice(0, q).split(' ').length <= 45) { rawi = s.slice(0, q).trim(); s = s.slice(q); }
   else if (q < 0) {
     const c2 = s.search(/:\s/);
     if (c2 > 0 && s.slice(0, c2).split(' ').length <= 25) { rawi = s.slice(0, c2 + 1).trim(); s = s.slice(c2 + 1).trim(); }
-    else { const r = s.match(new RegExp('^(.{0,200}?(?:' + HONV + '))\\s')); if (r) { rawi = r[1]; s = s.slice(r[0].length); } }
+    else { const r = s.match(new RegExp('^(.{0,200}?(?:' + HONV + ')[؛،]?)\\s')); if (r) { rawi = r[1]; s = s.slice(r[0].length); } }
   }
   if (!rawi) stats.noRawi.push(x.n);
   const pg = x.pg; delete x.pg;
@@ -156,7 +161,7 @@ const FIXES = [
   [1265, 'الْأَ نْصَارِيِّ', 'الْأَنْصَارِيِّ', 'كلمة مقطوعة بمسافة'],
   [1271, 'رَ ضِيَ', 'رَضِيَ', 'كلمة مقطوعة بمسافة'],
   [1152, 'وتَقَدَّمَ', 'وَتَقَدَّمَ', 'واو بلا حركة'],
-  [1236, 'شَرِيكَ بْنُ', 'شَرِيكَ بْنَ', 'لحن: «ابن» نعت لاسم «أنّ» المنصوب'],
+  [1236, 'شَرِيكَ بْنُ سَمْحَاءَ', 'شَرِيكَ بْنَ سَحْمَاءَ', 'لحن: «ابن» نعت لاسم «أنّ» المنصوب؛ والاسم «سَحْمَاء» كما عند الفحل وفي متن سبل السلام (تصحيف في الأساس والفقي)'],
   [1104, 'عِرْقًا', 'عَرَقًا', 'العَرَق: المِكْتَل (كما في حديث المجامع في رمضان)؛ «عِرْق» لا يستقيم معنى'],
   [544, 'ِللْبُخَارِيِّ', 'لِلْبُخَارِيِّ', 'حركة اللام قبلها'],
   [1066, 'إِرْسَالَه ُ', 'إِرْسَالَهُ', 'حركة منفصلة بمسافة'],
@@ -180,6 +185,8 @@ const FIXES = [
   [326, 'لمُسْلِمٍ', 'لِمُسْلِمٍ', 'كسرة ناقصة'],
   [330, 'فلْيُتِمَّ', 'فَلْيُتِمَّ', 'فتحة ناقصة'],
   [1201, 'ومُحَيِّصَةَ', 'وَمُحَيِّصَةَ', 'فتحة ناقصة'],
+  [1152, 'تُقَبِّحْ...]»', 'تُقَبِّحْ...»', 'قوس معقوف زائد'],
+  [278, 'يَفْتَتِحُونَ الصَّلَاةِ', 'يَفْتَتِحُونَ الصَّلَاةَ', 'لحن: مفعول به'],
 ];
 // «بنِ/بنُ» printed without the sukun on the ba (1–2 per hadith): completed everywhere
 for (const h of all) for (const f of ['rawi', 'matn', 'takh']) if (h[f] && /(^|\s)بن[ِ]/.test(h[f])) {

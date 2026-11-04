@@ -29,15 +29,17 @@ if (fs.existsSync(T(key + '.txt'))) {
   // the author's own word glosses after a hadith (gharib) are read, not memorised: they go to the chapter's commentary file
   const SH = {};
   // the author's introduction (intro: paragraphs) is the first chapter
-  if (J.intro && J.intro.length) J.chapters.unshift({ title: 'مقدمة المؤلف', paras: J.intro.filter(p => !/^بِسْمِ اللَّهِ/.test(p)) });
+  // (only when it is vocalized: an unvocalized one cannot be memorised reliably)
+  const voc = t => (t.match(/[ً-ْ]/g) || []).length / Math.max(1, t.replace(/[^ء-ي]/g, '').length);
+  if (J.intro && J.intro.length && voc(J.intro.join(' ')) > 0.4) J.chapters.unshift({ title: 'مقدمة المؤلف', paras: J.intro.filter(p => !/^بِسْمِ اللَّهِ/.test(p)) });
   const chapters = J.chapters.map((c, ci) => {
     const id = P + (ci + 1), units = [];
     if (c.hadiths) c.hadiths.forEach(h => {
-      hn++; const pieces = chunks(h.matn.trim(), 35);
+      hn++; const num = h.label || (h.n ? ar(h.n) : ar(hn)); const pieces = chunks(h.matn.trim(), 35);
       pieces.forEach((m, k) => {
         const segs = []; if (k === 0 && h.rawi) segs.push(['rawi', h.rawi.trim()]); segs.push(['matn', m]);
         if (k === pieces.length - 1 && h.takh) segs.push(['takh', h.takh.trim()]);
-        units.push({ id: id + '_' + (units.length + 1), label: 'الحديث ' + ar(hn) + (pieces.length > 1 ? ' · المقطع ' + ar(k + 1) + ' من ' + ar(pieces.length) : ''), segs });
+        units.push({ id: id + '_' + (units.length + 1), label: 'الحديث ' + num + (pieces.length > 1 ? ' · المقطع ' + ar(k + 1) + ' من ' + ar(pieces.length) : ''), segs });
       });
       if (h.gharib) (SH[id] = SH[id] || {})[units[units.length - 1].id] = { title: '📘 الغريب من كلام المؤلف', foot: '',
         secs: [{ src: M.title + ' · ' + M.nazim, text: h.gharib.trim() }] };

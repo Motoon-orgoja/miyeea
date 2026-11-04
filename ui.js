@@ -49,6 +49,9 @@ const BOOKS=[
   {key:'imriti',c:'أصول الفقه',lsk:'mutoon_imriti_v1',url:'imriti.html',t:'نظم الورقات',d:'نظم الورقات · ٢١١ بيتًا'},
   {key:'abushuja',c:'الفقه',lsk:'mutoon_abushuja_v1',url:'abushuja.html',t:'متن أبي شجاع',d:'الفقه الشافعي المختصر (الغاية والتقريب)'},
   {key:'nuridah',c:'الفقه',lsk:'mutoon_nuridah_v1',url:'nuridah.html',t:'نور الإيضاح',d:'الفقه الحنفي: العبادات · ٩٩ بابًا وفصلًا'},
+  {key:'bulugh',c:'الحديث',lsk:'mutoon_bulugh_v1',url:'bulugh.html',t:'بلوغ المرام',d:'أحاديث الأحكام · ١٥٨٢ حديثًا بترقيم الزهيري'},
+  {key:'qawaid',c:'القواعد الفقهية',lsk:'mutoon_qawaid_v1',url:'qawaid.html',t:'منظومة القواعد الفقهية',d:'منظومة القواعد الفقهية للسعدي · ٤٩ بيتًا'},
+  {key:'wardiyya',c:'الآداب والرقائق',lsk:'mutoon_wardiyya_v1',url:'wardiyya.html',t:'لامية ابن الوردي',d:'نصيحة الإخوان في الآداب · ٧٧ بيتًا'},
 ];
 // the order of fields in the texts sheet
 const FIELDS=['القراءات والتجويد','علوم القرآن','العقيدة','الحديث','مصطلح الحديث','الفقه','أصول الفقه','القواعد الفقهية','الفرائض','النحو','الصرف','المنطق','السيرة النبوية','الرقائق والأذكار','الآداب والرقائق'];

@@ -35,8 +35,32 @@ for (const c of J.chapters) {
 }
 A.forEach((t, i) => t.i = i);
 // ---- side B
-let L = fs.readFileSync(bf, 'utf8').split('\n');
-const fahl = /17757/.test(bf);
+// a directory = the sunnah.com pages (books 1–16): the Arabic text of each hadith, footnote marks dropped, one line per hadith «# n - …»
+let L;
+if (fs.statSync(bf).isDirectory()) {
+  L = ['CHECK [مقدمة المؤلف]']; let n = 0;
+  for (let b = 1; b <= 16; b++) {
+    const d = fs.readFileSync(require('path').join(bf, b + '.html'), 'utf8');
+    for (const m of d.matchAll(/<div class="arabicchapter arabic">([^<]*)<\/div>|<span class="arabic_text_details arabic">([\s\S]*?)<\/span><span class="arabic_sanad/g)) {
+      if (m[1] !== undefined) { L.push('### || AUTO ' + m[1]); continue; }
+      L.push('# ' + (++n) + ' - ' + m[2].replace(/<sup>[\s\S]*?<\/sup>/g, ' ').replace(/<[^>]+>/g, ' ').replace(/&[a-z]+;/g, ' ').replace(/[‏‎]/g, '').replace(/[{}]/g, ' '));
+    }
+  }
+  L.push('### |EDITOR|');
+} else if (/SubulSalam|Shamela0021590/.test(bf)) {
+  // «سبل السلام» (OpenITI Shamela0021590): only the Bulugh text inside <span class="matn">…</span>, plus the bab/kitab headings
+  const R = fs.readFileSync(bf, 'utf8').split('\n'); L = ['CHECK [مقدمة المؤلف]']; let inside = false, buf = '';
+  for (let l of R) {
+    if (!inside && /^### \|+ \[?\(?(باب|كتاب)/.test(l)) { L.push('### || AUTO ' + l.replace(/^### \|+ /, '').replace(/[[\]()]/g, '')); continue; }
+    if (l.includes('class="matn"')) { inside = true; l = l.split('class="matn">')[1] || ''; buf = ''; }
+    if (!inside) continue;
+    const end = l.includes('</span>'); if (end) l = l.split('</span>')[0];
+    buf += ' ' + l.replace(/^(~~|#)/, ' ');
+    if (end) { inside = false; const m = buf.match(/^\s*\((\d+)\)\s*-\s*/); L.push(m ? '# ' + m[1] + ' - ' + buf.slice(m[0].length) : buf); }
+  }
+  L.push('### |EDITOR|');
+} else L = fs.readFileSync(bf, 'utf8').split('\n');
+const fahl = /17757|SubulSalam|Shamela0021590/.test(bf) || fs.statSync(bf).isDirectory();
 let s0 = L.findIndex(l => fahl ? /CHECK \[مقدمة المؤلف\]/.test(l) : /<2[23]> كتاب الطهارة|كتاب الطهارة باب المياه/.test(l));
 let e0 = fahl ? L.findIndex((l, i) => i > s0 && /^### \|EDITOR\|/.test(l)) : L.length;
 const B = []; let hn = 0;

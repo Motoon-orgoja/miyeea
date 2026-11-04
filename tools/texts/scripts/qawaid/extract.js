@@ -4,7 +4,7 @@ const fs = require('fs'), path = require('path');
 const R = path.join(__dirname, '../../raw/qawaid');
 const txt = f => JSON.parse(fs.readFileSync(path.join(R, f), 'utf8')).map(p => String(p.content || '')
   .replace(/<br\s*\/?>/g, '\n').replace(/<\/p>/g, '\n').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ')).join('\n');
-const clean = s => s.replace(/[«»"]/g, '').replace(/\s+-\s+/g, ' ').replace(/\s+/g, ' ').trim();
+const clean = s => s.replace(/و «ألْ»/g, 'وألْ').replace(/[«»"]/g, '').replace(/\s+-\s+/g, ' ').replace(/\s+/g, ' ').trim();
 const out = (name, vs) => { fs.writeFileSync(path.join(R, name), vs.map(v => v.join(' | ')).join('\n') + '\n'); console.log(name, vs.length); };
 // S = Sa'di's own sharh, vocalized (ketabonline 102977): «N - a ... b»
 {

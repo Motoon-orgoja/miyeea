@@ -24,7 +24,8 @@ for (const l of fs.readFileSync(__dirname + '/out/wabl-matn.tsv', 'utf8').split(
 }
 const name = process.argv[2], B = [];
 let page = '';
-for (const l of fs.readFileSync(__dirname + '/out/' + name + '.txt', 'utf8').split('\n')) {
+if (name === 'quotes') for (const l of fs.readFileSync(__dirname + '/out/wabl-quotes.tsv', 'utf8').split('\n')) { const c = l.split('\t'); if (c[3]) B.push(...toks(c[3], 'Q' + c[2] + '/' + c[1])); }
+else for (const l of fs.readFileSync(__dirname + '/out/' + name + '.txt', 'utf8').split('\n')) {
   if (/^#PAGE/.test(l)) { page = l.split(' ')[1]; continue; }
   B.push(...toks(l.replace(/^## /, '').replace(/\((\d+)\)/g, ' ').replace(/\[مقدمة\]|\(متن العمدة\)/g, ' '), name[0].toUpperCase() + page));
 }
