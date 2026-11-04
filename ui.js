@@ -78,12 +78,13 @@ const BOOKS=[
   {key:'usultafsir',c:'علوم القرآن',lsk:'mutoon_usultafsir_v1',url:'usultafsir.html',t:'مقدمة في أصول التفسير',d:'علوم القرآن · ١١ فصلًا'},
   {key:'adab',c:'الآداب والرقائق',lsk:'mutoon_adab_v1',url:'adab.html',t:'منظومة الآداب',d:'الآداب الشرعية · ٩٤٧ بيتًا'},
   {key:'durrabahiyya',c:'النحو',lsk:'mutoon_durrabahiyya_v1',url:'durrabahiyya.html',t:'الدرة البهية',d:'النحو · ٢٥٤ بيتًا'},
+  {key:'qurra',c:'السيرة النبوية',lsk:'mutoon_qurra_v1',url:'qurra.html',t:'قرة الأبصار',d:'السيرة النبوية · ٣٩٨ بيتًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
-  ['شافعي',['abushuja','safina','hadramiyya','zubad','waraqat','imriti','rahabiyya']],['حنبلي',['umdafiqh','akhsar','zad','qawaidusul']]];
+  ['شافعي',['abushuja','safina','hadramiyya','umdasalik','zubad','waraqat','imriti','rahabiyya']],['حنبلي',['umdafiqh','akhsar','dalil','zad','qawaidusul']]];
 // the order of fields in the texts sheet
-const FIELDS=['القراءات والتجويد','علوم القرآن','العقيدة','الحديث','مصطلح الحديث','الفقه','أصول الفقه','القواعد الفقهية','الفرائض','النحو','الصرف','المنطق','السيرة النبوية','الرقائق والأذكار','الآداب والرقائق'];
+const FIELDS=['القراءات والتجويد','علوم القرآن','العقيدة','الحديث','مصطلح الحديث','الفقه','أصول الفقه','القواعد الفقهية','الفرائض','النحو','الصرف','البلاغة','المنطق','السيرة النبوية','الرقائق والأذكار','الآداب والرقائق'];
 
 /* ---------- small helpers ---------- */
 const ar=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
