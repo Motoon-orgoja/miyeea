@@ -1,6 +1,6 @@
 // Builds tools/texts/umdafiqh.json from the وبل الغمامة matn (out/wabl-matn.tsv) and the alignments made by collate.js
 // (out/align-idda.json, out/align-azzuz.json, out/align-quotes.json).
-// usage: node build.js   -> ../umdafiqh.json, out/decisions.tsv (every place where the base was changed or kept against the two copies)
+// usage: node build.js   -> ../umdafiqh.wabl.json (the وبل-wording edition; the published umdafiqh.json is built by vulgate-build.js), out/decisions.tsv (every place where the base was changed or kept against the two copies)
 //
 // Decision rule, per region where the base (W) differs from BOTH independent unvocalized copies (I = العدة, Z = عزوز):
 //   * I and Z read the same, and the commentator's own quotation «قوله …» (Q) inside وبل الغمامة reads like them too

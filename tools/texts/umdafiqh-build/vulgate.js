@@ -11,7 +11,7 @@ const O = __dirname + '/out/';
 const AR = /[ء-ي]/, MK = /[ً-ْ]/g;
 // ---- Z with its titles
 // misprints of Z that neither I nor W can mend in place (checked by hand)
-const ZFIX = [[/خصى رخص/, 'رخص'], [/بقضار/, 'بقضاء'], [/المسلئل/, 'المسائل'], [/فخذفه/, 'فحذفه'], [/فاقر/, 'فأقر'], [/إإلا/, 'إلا']];
+const ZFIX = [[/خصى رخص/, 'رخص'], [/بقضار/, 'بقضاء'], [/المسلئل/, 'المسائل'], [/فخذفه/, 'فحذفه'], [/فاقر/, 'فأقر'], [/إإلا/, 'إلا'], [/فلأولياء.$/, 'فلأولياء'], [/^الثاني: استيفاؤه/, 'الثاني استيفاؤه.']];
 const Z = []; // {t:'w', o, title?}
 let lastTitle = '', titleN = 0;
 const ZL = fs.readFileSync(O + 'azzuz.txt', 'utf8').split('\n').filter(l => !/^#PAGE/.test(l) && l.trim());
@@ -27,7 +27,8 @@ for (let l of ZL2) {
   }
   if (l.trim() === 'مقدمة المؤلف' || l.trim() === 'بسم الله الرحمن الرحيم') continue;
   l = l.replace(/\[[^\]\d]*:\s*[\d\s\-–،]*\]?/g, ' ') // [البقرة: 275]
-    .replace(/\[([^\]]*)\]/g, '$1').replace(/[\d*]+/g, ' ').replace(/"/g, ' " ');
+    .replace(/\[[^\]]*\]/g, ' ') // the editor's bracketed sub-headings («[في الهدنة]», «[الأول والثاني]») and additions
+    .replace(/[\d*]+/g, ' ').replace(/"/g, ' " ');
   for (const o of l.split(/\s+/).filter(Boolean)) Z.push({ t: 'w', o });
 }
 // quotation marks: Z uses "…"; turn each pair into «…»
@@ -115,6 +116,9 @@ for (let i = 0; i < FW.length; i++) {
   const x = FW[i], c = core(x.o), w = core(WW[fw[i]]);
   if ((c.match(MK) || []).length >= 2 && x.src === 'Z' && /[{}]/.test(x.o + (FW[i - 1] || {}).o)) continue; // Qur'an typed vocalized in Z
   x.o = x.o.replace(c, w); x.voc = 'W';
+  // Z prints little punctuation: take W's mark after the word when Z has none
+  const wp = (WW[fw[i]].match(/[،.؛:؟!]+$/) || [''])[0];
+  if (wp && !/[،.؛:؟!]$/.test(x.o.replace(/[»)]]+$/, ''))) x.o = x.o.replace(/([»)]*)$/, wp + '$1');
 }
 // fixed formulas left unvocalized: written in full
 const HON = [['صلى', 'صَلَّى'], ['الله', 'اللهُ'], ['عليه', 'عَلَيْهِ'], ['وسلم', 'وَسَلَّمَ']];

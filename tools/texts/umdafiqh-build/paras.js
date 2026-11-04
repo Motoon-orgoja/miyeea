@@ -7,7 +7,11 @@ function splitLong(u, anyDepth) {
   u.forEach((w, i) => { d += (w.match(/[«﴿]/g) || []).length - (w.match(/[»﴾]/g) || []).length; if ((d <= 0 || anyDepth) && i < u.length - 1) { if (/؛$/.test(w)) cuts.push([i, 2]); else if (/[،:]$/.test(w)) cuts.push([i, 1]); } });
   let best = null;
   for (const [i, pr] of cuts) { const a = i + 1, b = u.length - a; if (a < 8 || b < 8) continue; const sc = pr * 100 - Math.abs(a - b); if (!best || sc > best[1]) best = [i, sc]; }
-  if (!best) return anyDepth ? [u] : splitLong(u, true);
+  if (!best && anyDepth) { // no punctuation to cut at: cut before a word opening with «وَ/فَ» (a new clause), nearest the middle
+    u.forEach((w, i) => { const a = i, b = u.length - i; if (a >= 8 && b >= 8 && /^[«(]?[وف]َ/.test(w)) { const sc = -Math.abs(a - b); if (!best || sc > best[1]) best = [i - 1, sc]; } });
+    if (!best) return [u];
+  }
+  if (!best) return splitLong(u, true);
   return [...splitLong(u.slice(0, best[0] + 1), anyDepth), ...splitLong(u.slice(best[0] + 1), anyDepth)];
 }
 function pack(units, P) {

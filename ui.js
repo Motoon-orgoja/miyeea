@@ -55,6 +55,7 @@ const BOOKS=[
   {key:'tayyiba',c:'القراءات والتجويد',lsk:'mutoon_tayyiba_v1',url:'tayyiba.html',t:'طيبة النشر',d:'القراءات العشر الكبرى · ١٠١٥ بيتًا'},
   {key:'nukhba',c:'مصطلح الحديث',lsk:'mutoon_nukhba_v1',url:'nukhba.html',t:'نخبة الفكر',d:'مصطلح الحديث لابن حجر · ٤٣ فقرة'},
   {key:'ibnashir',c:'الفقه',lsk:'mutoon_ibnashir_v1',url:'ibnashir.html',t:'متن ابن عاشر',d:'العقيدة والفقه المالكي والتصوف · ٣١٧ بيتًا'},
+  {key:'umdafiqh',c:'الفقه',lsk:'mutoon_umdafiqh_v1',url:'umdafiqh.html',t:'عمدة الفقه',d:'الفقه الحنبلي لابن قدامة · ٢٦ كتابًا'},
 ];
 // the order of fields in the texts sheet
 const FIELDS=['القراءات والتجويد','علوم القرآن','العقيدة','الحديث','مصطلح الحديث','الفقه','أصول الفقه','القواعد الفقهية','الفرائض','النحو','الصرف','المنطق','السيرة النبوية','الرقائق والأذكار','الآداب والرقائق'];

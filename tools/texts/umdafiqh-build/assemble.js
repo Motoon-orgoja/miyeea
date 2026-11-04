@@ -147,7 +147,7 @@ const J = {
   basmala: basmala || 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ', // printed at the head of the preface in the base
   chapters: chapters.filter(c => c.rows.length).map(c => ({ title: c.title, group: c.group, paras: c.title === 'مُقَدِّمَةُ الْمَتْنِ' ? INTRO : paras(c.rows).map(p => { for (const [a, b] of WORDFIX) p = p.replace(a, b); return require("./vocfix.js")(p); }) })),
 };
-fs.writeFileSync(__dirname + '/../umdafiqh.json', JSON.stringify(J, null, 1) + '\n');
+fs.writeFileSync(__dirname + '/../umdafiqh.wabl.json', JSON.stringify(J, null, 1) + '\n');
 FX.FIXES.forEach(([a], i) => { if (!FXused.has(i)) console.log('FIX NOT APPLIED:', a); });
 DD.DEDUP.forEach(([a], i) => { if (!DDused.has(i)) console.log('DEDUP NOT APPLIED:', a.slice(0, 40)); });
 fs.writeFileSync(__dirname + '/out/structure-notes.txt', notes.join('\n') + '\n');
