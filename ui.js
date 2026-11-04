@@ -64,9 +64,10 @@ const BOOKS=[
   {key:'zad',c:'الفقه',lsk:'mutoon_zad_v1',url:'zad.html',t:'زاد المستقنع',d:'الفقه الحنبلي · ٢٨ كتابًا و١٢٩ بابًا و١٢٨ فصلًا'},
   {key:'safina',c:'الفقه',lsk:'mutoon_safina_v1',url:'safina.html',t:'سفينة النجاة',d:'الفقه الشافعي · ٦٥ فصلًا وخاتمة'},
   {key:'tuhfamuluk',c:'الفقه',lsk:'mutoon_tuhfamuluk_v1',url:'tuhfamuluk.html',t:'تحفة الملوك',d:'الفقه الحنفي · ١٠ كتب'},
+  {key:'kanz',c:'الفقه',lsk:'mutoon_kanz_v1',url:'kanz.html',t:'كنز الدقائق',d:'الفقه الحنفي · ٥٧ كتابًا و١٤٢ بابًا و٥٩ فصلًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
-const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','usul','manar','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala']],
+const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
   ['شافعي',['abushuja','safina','hadramiyya','zubad','waraqat','imriti','rahabiyya']],['حنبلي',['umdafiqh','akhsar','zad','qawaidusul']]];
 // the order of fields in the texts sheet
 const FIELDS=['القراءات والتجويد','علوم القرآن','العقيدة','الحديث','مصطلح الحديث','الفقه','أصول الفقه','القواعد الفقهية','الفرائض','النحو','الصرف','المنطق','السيرة النبوية','الرقائق والأذكار','الآداب والرقائق'];

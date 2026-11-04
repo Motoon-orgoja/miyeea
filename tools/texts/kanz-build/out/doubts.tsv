@@ -1,0 +1,86 @@
+chunk	page	row	k	word	note
+a	ص137	2	18	عِلْم	Existing kasra gives عِلْمُ الْهُدَى; the usual laqab is عَلَمُ الْهُدَى (banner of guidance). Confirm; if عِلْم is kept, vocalize عِلْمُ.
+a	ص140	15	1	يُجمع	Existing damma looks wrong: Kanz/Tabyin reads «وَالسَّبَبُ يَجْمَعُ مُتَفَرِّقَهُ» (active; مُتَفَرِّقَهُ is its object). suggest: يَجْمَعُ
+a	ص142	37	2	جحط	Rumuz code (ج ح ط), not a word; left unvocalized.
+a	ص143	54	4	فُقِدَ	suggest: فَقَدَ (active) since مَاءً is accusative object: «إِنْ فَقَدَ مَاءً».
+a	ص154	160	0	وَالْعِشَاء	Rows 159-160 already have nominative (وَظُهْرُ، وَالْعَصْرُ، وَالْوِتْرُ) which would give الْعِشَاءُ; but the genitive reading (coordinated with الْفَجْرِ: وَظُهْرِ، وَالْعَصْرِ، وَالْعِشَاءِ، وَالْوِتْرِ) is the usual one. Decide for the whole series.
+a	ص164	257	5	فقعس	Rumuz mnemonic (with صمعج); left unvocalized — needs a source.
+a	ص164	257	6	صمعج	Rumuz mnemonic; left unvocalized.
+a	ص166	280	-	يسمع	Vocalized يَسْمَعُ per letters; Kanz usually has «بَلْ يَسْتَمِعُ وَيُنْصِتُ» — possible missing ت.
+a	ص167	290	5	الخنائي	Letter typo: should be «الْخَنَاثَى». Not vocalized.
+a	ص168	295	0	وَطَاهِرٌ	Coordinated with «اقْتِدَاءُ رَجُلٍ» (row 294), so genitive: suggest وَطَاهِرٍ.
+a	ص168	296	1	اقْتِدَاءَ	Coordinated by لَا with the nominative «فَسَدَ اقْتِدَاءُ» (Kanz: «وَصَحَّ اقْتِدَاءُ مُتَوَضِّئٍ»): suggest اقْتِدَاءُ.
+a	ص182	411	4	فَرْضَهُ	Subject of تَمَّ: suggest فَرْضُهُ.
+a	ص192	500	-	وتسنّ	Vocalized وَتُسَنُّ بَعْدَ; the row looks garbled vs. Kanz («إِلَى ثَمَانِ مَرَّةً») — check source.
+a	ص201	567	0	بابٌ	Tanween wrong for a construct heading: suggest بَابُ (I vocalized صَلَاةِ الشَّهِيدِ assuming بَابُ).
+a	ص223	729	8	يَوْمَهُ	After بَقِيَّةَ it must be genitive: suggest يَوْمِهِ (or بقية is an inserted gloss; Kanz: «أَمْسَكَ يَوْمَهُ»).
+a	ص226	756	9	وَقُدْرَةٍ	Construct with زَادٍ: suggest وَقُدْرَةِ.
+a	ص226	756	25	وَمَحْرَمٌ	Part of the بِشَرْطِ genitive series: suggest وَمَحْرَمٍ أَوْ زَوْجٍ.
+a	ص227	763	4	فَتَوَضَّأَ	Imperative: suggest فَتَوَضَّأْ.
+a	ص227	767	9	وَقَتْلُ	Object of فَاتَّقِ: suggest وَقَتْلَ.
+a	ص227	767	11	وَالْإِشَارَةُ	Object of فَاتَّقِ: suggest وَالْإِشَارَةَ.
+a	ص227	767	13	وَالدَّلَالَةُ	Object of فَاتَّقِ: suggest وَالدَّلَالَةَ.
+a	ص229	791	7	كُلِّهَا	Emphasis of nominative عَرَفَاتٌ: suggest كُلُّهَا.
+a	ص229	791	16	مُصَلَّيَا	Likely مُصَلِّيًا (as in row 794).
+a	ص235	853	3	تَرَكْته	Context row 852 (وَلَوْ حَاضَتْ...): she leaves طواف الصدر, so suggest تَرَكَتْهُ; existing sukun on ك is wrong. Not vocalized.
+a	ص239	884	11	رَمَي	Corrupt/ambiguous: Kanz reads «أَوْ رَمْيَ الْجِمَارِ كُلِّهَا أَوْ رَمْيَ يَوْمٍ» (noun, object of تَرَكَ); existing marks treat it as a verb with الْجِمَارَ كُلَّهَا accusative. Decide reading.
+a	ص239	884	15	رَمَي	Same as k=11; with the noun reading also يَوْمٍ (k=16, currently يَوْمَ).
+a	ص272	1184	-	أُطَلِّقُك	k=6 vocalized أُطَلِّقُكِ per the existing damma; the text likely dropped «لَمْ» (Kanz: «أَوْ إِذَا لَمْ أُطَلِّقْكِ»).
+a	ص278	1221	11	تَطْلُق	Jawab of «وَإِنْ قَالَ» (past shart): تَطْلُقْ (jazm) or تَطْلُقُ (raf', permitted); Kanz original has «وَلَوْ قَالَ ... تَطْلُقُ». Not vocalized.
+a	ص306	1446	7	وَالْحِنَّاءُ،	Coordinated with الزِّينَةِ (genitive after بِتَرْكِ): suggest وَالْحِنَّاءِ،.
+a	ص312	1492	7	تعتقا	Two readings: تُعْتَقَا (passive) or تَعْتِقَا (intransitive عَتَقَ). Not vocalized.
+a	ص313	1506	0	وبيع	Ambiguous: وَبِيعَ (passive verb) or وَبَيْعُ (noun, then الْقِنِّ). Kanz has «وَيُبَاعُ الْقِنُّ». Not vocalized.
+a	ص319	1550	13	يَسْتَسْعِي.	Coordinated with أَنْ يُضَمِّنَ: suggest يَسْتَسْعِيَ.
+a	ص325	1588	6	تَسَع	Existing fatha on س looks wrong: «وَلَمْ تَسْعَ لِغَرِيمِهِ» (jussive of تَسْعَى). suggest تَسْعَ. Not vocalized.
+a	ص332	1642	11	ضُرِبْت	Kanz: «أَوْ ضَرْبَ الْعَبْدِ فَقَالَ إِنْ ضَرَبْتِ» (she wanted to beat the slave); existing damma here (and ضُرِبَ الْعَبْدُ at k=7-8) seems wrong. Not vocalized.
+a	ص336	1678	18	أوإذنه	Missing space: أَوْ إِذْنِهِ. Vocalized as one token أَوْإِذْنِهِ to keep letters.
+b	ص340	1710	11	كَأنَ	Typo: letters ك-أ-ن; matn reads «كَانَ مِلْكَهُ أَوْ لَا». suggest: كَانَ
+b	ص340	1710	12	ملّكه	Given shadda on lam looks wrong; matn «كَانَ مِلْكَهُ أَوْ لَا». suggest: مِلْكَهُ
+b	ص341	1712	8	ملّكه	Given shadda wrong; matn «بِأَنْ كَانَ مِلْكَهُ أَمَرَهُ أَوْ لَا». suggest: مِلْكَهُ
+b	ص341	1712	9	أَمْرَهُ	Already vocalized as noun; context needs the verb. suggest: أَمَرَهُ
+b	ص341	1712	10	أوّلًا	Should be two words «أَوْ لَا» (أمره أو لا); shadda wrong — cannot vocalize without splitting
+b	ص347	1766	1	ثِيَابِهِ	Already vocalized genitive; naib fa'il of «وَتُنْزَعُ» must be nominative. suggest: ثِيَابُهُ
+b	ص375	1964	8	خَمَّس	Given marks = active خَمَّسَ (imam implied); the usual reading is passive خُمِّسَ. Two options — not decided
+b	ص416	2263	-	-	Row is one list after «كَالْإِبَاقِ» so I vocalized 4,5,10,11 genitive (وَالسَّرِقَةِ وَالْبَخَرِ الْأَمَةِ وَالْكُفْرِ), but the pre-vocalized words are nominative: k=6 وَالدَّفَرُ, 8 وَوَلَدُهُ, 12 وَعَدَمُ, 15 وَالسُّعَالُ, 16 الْقَدِيمُ, 17 وَالدَّيْنُ, 18 وَالشَّعْرُ, 19 وَالْمَاءُ. suggest: genitive for all (وَالدَّفَرِ وَوَلَدِهِ وَعَدَمِ وَالسُّعَالِ الْقَدِيمِ وَالدَّيْنِ وَالشَّعْرِ وَالْمَاءِ), or else make 5 and 11 nominative if the source treats «وَالْبَخَرُ…» as a new clause
+b	ص429	2350	1	بالتّعيب	Letters allow only «بِالتَّعَيُّبِ», but the sense (requires disclosure, paired with وطء البكر) is «بِالتَّعْيِيبِ» (his own act) — likely a missing ي. Not vocalized
+b	ص436	2405	16	عرضًا	Two readings: عَرْضًا / عَرَضًا (row 2823 already has «بِالْعَرَضِ»)
+b	ص438	2414	3	بيّن	Two readings: active «إِنْ بَيَّنَ الذِّرَاعَ وَالصِّفَةَ وَالصَّنْعَةَ» or passive «إِنْ بُيِّنَ الذِّرَاعُ وَالصِّفَةُ وَالصَّنْعَةُ»
+b	ص438	2414	4	الذّراع	Depends on k=3: الذِّرَاعَ (active) / الذِّرَاعُ (passive)
+b	ص438	2414	5	والصّفة	Depends on k=3: وَالصِّفَةَ / وَالصِّفَةُ
+b	ص438	2414	6	والصّنعة	Depends on k=3: وَالصَّنْعَةَ / وَالصَّنْعَةُ
+b	ص450	2508	3	وَبِمَالِك	This is «وَبِمَا لَكَ عَلَيْهِ» (what you have against him) written joined; the given kasra on lam is wrong. suggest: split into «وَبِمَا لَكَ»
+b	ص460	2592	12	فَيُقْبَل	Two readings: فَيُقْبَلَ (coordinated with أَنْ يُقِرَّ) / فَيُقْبَلُ (resumptive)
+b	ص460	2595	1	دعوةٌ	Given nominative tanween; as object of «وَيَرُدُّ» it should be accusative. suggest: دَعْوَةً
+b	ص460	2595	2	خَاصَّةٌ	Already vocalized nominative; suggest: خَاصَّةً
+b	ص500	2925	3	حلف	Two readings: حَلَفَ / حُلِّفَ (الْعَبْدُ nominative either way)
+b	ص508	2986	4	كذا	Vocalized as كَذَا (indeclinable), but the trailing word looks stray/misplaced (next row starts «و: كَذَا وَكَذَا») — please check source
+b	ص521	3086	5	عرضٍ	Two readings: عَرْضٍ / عَرَضٍ
+b	ص522	3097	1	يجاوز	Two readings: يُجَاوِزُ (active, the wage) / يُجَاوَزُ (passive, impersonal)
+c	ص543	3248	1	تزد	وَلَمْ تَزِدْ (المدة) أو وَلَمْ تُزَدْ (مبني للمجهول) — both possible
+c	ص566	3425	1	قَضَي	written with ي; existing fatha suggests active قَضَى (cf. row 3424 يَقْضِ) but ي suggests passive قُضِيَ (cf. 3419 فَقُضِيَ بِهِ) — check source
+c	ص566	3426	6	وَيُؤَدَّي	final letter ي where passive needs ى: suggest وَيُؤَدَّى (letters typo)
+c	ص575	3503	0	وينحجّر	shadda on ج looks wrong: suggest وَيَنْحَجِرُ (انْحَجَرَ)
+c	ص581	3552	1	يضمن	row has وَمَنَافِعُ (nominative) → passive يُضْمَنُ/تُضْمَنُ vs active يَضْمَنُ الْحُرَّةَ; source wording needed
+c	ص581	3552	2	الْحُرَّة	ending depends on k=1: الْحُرَّةَ (active) or الْحُرَّةُ (passive)
+c	ص585	3570	17	المشترى،	letters end in ى; likely typo for الْمُشْتَرِي،
+c	ص606	3759	0	وَالْمَمْلُوك	وَالْمَمْلُوكِ (عطف على الكافر: قولُ المملوكِ) vs وَالْمَمْلُوكُ; note next word وَالصَّبِيُّ is nominative but row 3760 وَالْفَاسِقِ genitive — inconsistent, suggest genitive throughout (وَالصَّبِيِّ)
+c	ص632	3985	4	فكّ	فَكَّ (active, cf. وَفَكَّ النَّمَاءَ later in row) or فُكَّ (passive)
+c	ص663	4235	6	فعل	letters typo: suggest فَعَلَى (فعلى أقربهما)
+c	ص680	4370	3	فَقِبَل	existing kasra on ق is wrong: suggest فَقَبِلَ
+c	ص680	4372	4	بدل	بُدِّلَ (passive) or بَدَّلَ (active, القاضي implied)
+c	ص693	4478	1	عمرها	عَمَرَهَا or عَمَّرَهَا — both valid, no shadda in source
+c	ص696	4495	10	تقسم	تُقْسَمُ or تُقَسَّمُ
+c	ص698	4511	6	سفل:	سَفَلَ: or سَفُلَ: — both valid
+c	ص705	4572	17	جدات،	كَزَوْجَتَيْنِ جَدَّاتٍ reads oddly (example seems truncated, maybe missing و or numbers); vocalization would be جَدَّاتٍ، if text is right
+c	ص708	4599	19	مضي	letters typo ي for ى: suggest مَضَى
+c	ص532	3163	0	ومودع	vocalized as وَمُودَعُ (receiver, matches next row لَا مُودَعُ الْمُودَعِ); note rows 3157/3183 use الْمُودِعُ for the receiver — check consistency
+c	ص540	3231	0	بَيْعَ	unmarked word ending: after هِبَةٌ ابْتِدَاءً (row 3230) expect بَيْعٌ انْتِهَاءً — suggest بَيْعٌ
+c	ص567	3438	19	أو:	stray colon after أَوْ (vocalized as أَوْ:) — probably punctuation typo
+c	ص574	3497	21	الْوَدِيعَةٍ	unmarked word: article + tanween impossible; probably وَوَدِيعَةٍ (وَغَصْبٍ وَوَدِيعَةٍ) — typo
+c	ص558	3365	9	النَّجْمُ	unmarked: أَوَّلَ النَّجْمِ expected (genitive) — suggest النَّجْمِ
+c	ص701	4542	6	بِإِخْوَتِهِنّ	unmarked: missing fatha on final ن — suggest بِإِخْوَتِهِنَّ
+c	ص549	3297	6	صَحّ	unmarked: missing fatha — suggest صَحَّ
+c	ص644	4076	2	كُلّ	unmarked: missing ending — suggest كُلُّ
+c	ص663	4230	2	يَتِمُّ	unmarked: after لَمْ should be jussive يَتِمَّ
+c	ص556	3349	0	وَتَفْسَخُ	unmarked: active تَفْسَخُ looks wrong — suggest passive وَتُفْسَخُ
+c	ص705	4569	1	مخرج	vocalized مَخْرَجٌ (predicate, row ends here) — verify row not truncated (else مَخْرَجُ ...)

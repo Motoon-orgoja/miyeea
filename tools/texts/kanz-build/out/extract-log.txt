@@ -1,0 +1,169 @@
+ص137	drop basmala
+ص137	bracketed heading: [مقدمة المؤلف]
+ص137	parens/tatweel/number: (الوافي)
+ص138	parens/tatweel/number: بـ (كنز
+ص149	bracketed heading: [باب الحيض]
+ص152	bracketed heading: [باب الأنجاس]
+ص156	bracketed heading: [باب الأذان]
+ص162	parens/tatweel/number: بـ «اللهم
+ص167	bracketed heading: [باب الإمامة]
+ص169	bracketed heading: [باب الحدث في الصلاة]
+ص172	parens/tatweel/number: بـ «يرحمك
+ص179	bracketed heading: [باب إدراك الفريضة]
+ص181	bracketed heading: [باب قضاء الفوائت]
+ص184	bracketed heading: [باب صلاة المريض]
+ص187	bracketed heading: [باب صلاة المسافر]
+ص189	bracketed heading: [باب صلاة الجمعة]
+ص191	bracketed heading: [باب صلاة العيدين]
+ص193	bracketed heading: [باب الكسوف]
+ص194	bracketed heading: [باب صلاة الاستسقاء]
+ص195	bracketed heading: [باب الخوف]
+ص196	bracketed heading: [باب الجنائز]
+ص209	bracketed heading: [باب زكاة المال]
+ص211	bracketed heading: [باب العاشر]
+ص214	bracketed heading: [باب العشر]
+ص216	bracketed heading: [باب المصرف]
+ص218	bracketed heading: [باب صدقة الفطر]
+ص225	bracketed heading: [باب الاعتكاف]
+ص227	bracketed heading: [باب الإحرام]
+ص233	bracketed heading: [باب القران]
+ص234	bracketed heading: [باب التمتع]
+ص236	bracketed heading: [باب الجنايات]
+ص243	bracketed heading: [باب مجاوزة الوقت بغير إحرام]
+ص244	bracketed heading: [باب إضافة الإحرام إلى الإحرام]
+ص246	bracketed heading: [باب الإحصار]
+ص247	bracketed heading: [باب الفوات]
+ص249	bracketed heading: [باب الهدي]
+ص254	bracketed heading: [باب الأولياء والأكفاء]
+ص258	bracketed heading: [باب المهر]
+ص264	bracketed heading: [باب نكاح الكافر]
+ص266	bracketed heading: [باب القسم]
+ص270	parens/tatweel/number: كـ أنت
+ص276	bracketed heading: [باب الكنايات]
+ص280	parens/tatweel/number: بـ أبنت | بـ اخترت
+ص283	parens/tatweel/number: كـ إن
+ص284	parens/tatweel/number: كـ إن
+ص286	bracketed heading: [باب المريض]
+ص288	parens/tatweel/number: بـ راجعتك
+ص291	bracketed heading: [باب الإيلاء]
+ص294	bracketed heading: [باب الخلع]
+ص294	parens/tatweel/number: كـ: خالعني
+ص297	parens/tatweel/number: كـ: أنت
+ص297	parens/tatweel/number: بـ: أنت
+ص297	parens/tatweel/number: بـ: أنت
+ص297	parens/tatweel/number: بـ: أنت
+ص302	parens/tatweel/number: بـ: زنيت،
+ص311	bracketed heading: [باب الحضانة]
+ص316	bracketed heading: [كتاب الإعتاق]
+ص316	parens/tatweel/number: بـ أنت
+ص316	parens/tatweel/number: بـ لا
+ص316	parens/tatweel/number: بـ يا
+ص318	bracketed heading: [باب العبد يعتق بعضه]
+ص322	bracketed heading: [باب العتق على جعل]
+ص324	bracketed heading: [باب التدبير]
+ص324	parens/tatweel/number: كـ إذا
+ص325	bracketed heading: [باب الاستيلاد]
+ص327	bracketed heading: [كتاب الأيمان]
+ص330	parens/tatweel/number: كـ هذا
+ص331	parens/tatweel/number: كـ لا
+ص332	parens/tatweel/number: كـ اجلس
+ص333	bracketed heading: [باب اليمين في الأكل والشرب واللبس والكلام]
+ص334	parens/tatweel/number: بـ سمكٍ
+ص334	parens/tatweel/number: بـ أليةٍ
+ص334	parens/tatweel/number: بـ الخبز
+ص340	parens/tatweel/number: كـ إن
+ص341	parens/tatweel/number: كـ إن
+ص346	bracketed heading: [كتاب الحدود]
+ص359	parens/tatweel/number: بـ يا
+ص359	parens/tatweel/number: بـ يا
+ص372	bracketed heading: [باب الغنائم وقسمتها]
+ص379	bracketed heading: [باب المستأمن]
+ص382	bracketed heading: [باب العشر والخراج والجزية]
+ص390	bracketed heading: [باب البغاة]
+ص395	bracketed heading: [كتاب الآبق]
+ص396	bracketed heading: [كتاب المفقود]
+ص403	bracketed heading: [كتاب الوقف]
+ص406	bracketed heading: [كتاب البيوع]
+ص411	bracketed heading: [باب خيار الشرط]
+ص416	bracketed heading: [باب خيار العيب]
+ص420	bracketed heading: [باب البيع الفاسد]
+ص426	bracketed heading: [باب الإقالة]
+ص431	bracketed heading: [باب الربا]
+ص433	bracketed heading: [باب الحقوق]
+ص433	parens/tatweel/number: بـ كلّ
+ص433	parens/tatweel/number: بـ كلّ
+ص434	bracketed heading: [باب الاستحقاق]
+ص448	bracketed heading: [كتاب الكفالة]
+ص448	parens/tatweel/number: بـ كفلت
+ص448	parens/tatweel/number: بـ ضمنته | بـ عليّ،
+ص448	parens/tatweel/number: بـ أنا
+ص450	parens/tatweel/number: بـ كفلت
+ص451	parens/tatweel/number: كـ إن
+ص451	parens/tatweel/number: كـ أن
+ص456	bracketed heading: [باب كفالة الرجلين والعبدين]
+ص458	bracketed heading: [كتاب الحوالة]
+ص459	bracketed heading: [كتاب القضاء]
+ص462	bracketed heading: [باب كتاب القاضي إلى القاضي وغيره]
+ص467	parens/tatweel/number: بـ إن
+ص473	bracketed heading: [باب من تقبل شهادته ومن لا تقبل]
+ص483	bracketed heading: [كتاب الوكالة]
+ص489	parens/tatweel/number: بـ اعمل
+ص490	bracketed heading: [باب الوكالة بالخصومة والقبض]
+ص493	bracketed heading: [باب عزل الوكيل]
+ص507	bracketed heading: [كتاب الإقرار]
+ص507	parens/tatweel/number: كـ شيءٍ
+ص511	bracketed heading: [باب الاستثناء وما في معناه]
+ص514	bracketed heading: [باب إقرار المريض]
+ص522	bracketed heading: [كتاب المضاربة]
+ص523	parens/tatweel/number: بـ اعمل
+ص525	bracketed heading: [باب المضارب يضارب]
+ص531	bracketed heading: [كتاب الوديعة]
+ص534	parens/tatweel/number: بـ أعرتك
+ص536	bracketed heading: [كتاب الهبة]
+ص536	parens/tatweel/number: كـ: وهبت
+ص543	bracketed heading: [كتاب الإجارة]
+ص549	bracketed heading: [باب الإجارة الفاسدة]
+ص553	bracketed heading: [باب ضمان الأجير]
+ص556	bracketed heading: [باب فسخ الإجارة]
+ص558	bracketed heading: [كتاب المكاتب]
+ص560	bracketed heading: [باب ما يجوز للمكاتب أن يفعله وما لا يجوز]
+ص564	bracketed heading: [باب كتابة العبد المشترك]
+ص565	bracketed heading: [باب موت المكاتب وعجزه وموت المولى]
+ص567	bracketed heading: [كتاب الولاء]
+ص569	bracketed heading: [كتاب الإكراه]
+ص571	bracketed heading: [كتاب الحجر]
+ص574	bracketed heading: [كتاب المأذون]
+ص577	bracketed heading: [كتاب الغصب]
+ص591	bracketed heading: [كتاب القسمة]
+ص596	bracketed heading: [كتاب المزارعة]
+ص598	bracketed heading: [كتاب المساقاة]
+ص605	bracketed heading: [كتاب الكراهية]
+ص616	bracketed heading: [كتاب إحياء الموات]
+ص619	bracketed heading: [كتاب الأشربة]
+ص619	parens/tatweel/number: ١ - 
+ص619	parens/tatweel/number: ٢ - 
+ص619	parens/tatweel/number: ٣ - 
+ص619	parens/tatweel/number: ٤ - 
+ص619	parens/tatweel/number: ١ - 
+ص620	parens/tatweel/number: ٢ - 
+ص620	parens/tatweel/number: ٣ - 
+ص620	parens/tatweel/number: ٤ - 
+ص621	bracketed heading: [كتاب الصيد]
+ص624	bracketed heading: [كتاب الرهن]
+ص626	bracketed heading: [باب ما يجوز ارتهانه والارتهان به وما لا يجوز]
+ص628	bracketed heading: [باب الرهن يوضع على يد عدل]
+ص633	bracketed heading: [كتاب الجنايات]
+ص634	bracketed heading: [باب ما يوجب القود وما لا يوجبه]
+ص655	bracketed heading: [باب جناية البهيمة والجناية عليها وغير ذلك]
+ص657	bracketed heading: [باب جناية المملوك والجناية عليه]
+ص662	bracketed heading: [باب غصب العبد والمدبر والصبي والجناية في ذلك]
+ص663	bracketed heading: [باب القسامة]
+ص666	bracketed heading: [كتاب المعاقل]
+ص668	bracketed heading: [كتاب الوصايا]
+ص674	bracketed heading: [باب العتق في المرض]
+ص684	bracketed heading: [كتاب الخنثى]
+ص687	bracketed heading: [أربع عشرة مسألة بالفارسية]
+ص696	bracketed heading: [كتاب الفرائض]
+ص708	drop colophon: تم بحمد الله مختصر: كنز الدقائق
+ص708	drop colophon: للإمام أبي البركات عبد الله بن أحمد النسفي
+ص708	drop colophon: رحمه الله تعالى
