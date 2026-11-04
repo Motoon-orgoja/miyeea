@@ -63,6 +63,7 @@ const BOOKS=[
   {key:'risala',c:'الفقه',lsk:'mutoon_risala_v1',url:'risala.html',t:'الرسالة',d:'الفقه المالكي · المقدمة و٤٥ بابًا'},
   {key:'zad',c:'الفقه',lsk:'mutoon_zad_v1',url:'zad.html',t:'زاد المستقنع',d:'الفقه الحنبلي · ٢٨ كتابًا و١٢٩ بابًا و١٢٨ فصلًا'},
   {key:'safina',c:'الفقه',lsk:'mutoon_safina_v1',url:'safina.html',t:'سفينة النجاة',d:'الفقه الشافعي · ٦٥ فصلًا وخاتمة'},
+  {key:'tuhfamuluk',c:'الفقه',lsk:'mutoon_tuhfamuluk_v1',url:'tuhfamuluk.html',t:'تحفة الملوك',d:'الفقه الحنفي · ١٠ كتب'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','usul','manar','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala']],

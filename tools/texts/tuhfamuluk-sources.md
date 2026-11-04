@@ -47,4 +47,45 @@ All other differences keep Qasim's reading. Some examples: إما للوضوء �
 1. **Vocalization is partial.** A decision is needed: either publish it as is, or run a vocalization pass to be reviewed (as was done for القدوري and نور الإيضاح).
 2. «إما للوضوء وإما للغسل» (Qasim) and «يعني في الاغتسال والوضوء» (Bashair): Qasim was kept.
 3. The four bracketed insertions in Qasim (item 4 above) are kept. They come from some manuscripts only.
-4. «أو سويقه أو صاع» (زكاة الفطر): the inserted words have no comma after them. That is cosmetic.
+4. «أو سويقه أو صاع» (زكاة الفطر): the inserted words have no comma after them. That is cosmetic. (Fixed in the post-vocalization corrections below.)
+
+## Post-vocalization wording corrections (2026-11-04)
+The vocalizers listed wording errors they were not allowed to fix (`voc/tuhfamuluk/changes.txt`). Each one was checked in Qasim (Q), Bashair (B) and the Minha (M), and then the whole text was scanned by script: a word diff of the vocalized text (marks removed) against `qasim.txt`, a list of the words that occur nowhere in B or M, every single-word Q/B substitution, and an orthography scan (single letters, «يء» after kasra, «اءًا», final «ى» after kasra). Positions are `chapter:paragraph`, counted from 0. No paragraph was added or removed. There are still 538 paragraphs, all 11–40 words long, and 12,731 words in all.
+
+**Root cause of the broken words.** In `build-tuhfa.js`, a reading that is a pure insertion from Bashair was meant to take over a full stop from the word before it. The test used `/.$/`, which matches any letter, instead of `/\.$/`. So every one of the 10 insertions cut the last letter off the word before it and added a full stop after the inserted word. The paragraph splitter then broke the text at some of those false full stops. That gave «وم شحمة. الأذن إل شحمة.», «أ سويقه أو.», «صي آخر.», «رما ثانيا.», «المرأ إلى.» and «وابن الأب والأب.». The regex is now fixed in the script. Only «كالتراب … والزرنيخ» came out right, because the word before it really did end in a full stop.
+
+| Pos. | Before | After | Evidence |
+|---|---|---|---|
+| 2:0 | وَمِ شَحْمَةِ. الْأُذُنِ إِلَ شَحْمَةِ. الْأُذُنِ | وَمِنْ شَحْمَةِ الْأُذُنِ إِلَى شَحْمَةِ الْأُذُنِ | Build bug. B and M: «ومن شحمة الأذن إلى شحمة الأذن عرضا» |
+| 24:1–2 | غُسِّلَ وَكُفِّنَ. ‖ وَصُلِّيَ عَلَيْهِ، وَإِنْ… | غُسِّلَ، وَكُفِّنَ، وَصُلِّيَ عَلَيْهِ. ‖ وَإِنْ… | Build bug: «غسل،» lost its comma and a false full stop split the clause. B: «ومن استهل غسل وكفن وصلي عليه» |
+| 24:3–4 | عَلَى شِقِّ الْأَيْمَنِ. ‖ مُوَجَّهًا إِلَيْهَا. وَيُكْرَهُ… | عَلَى شِقِّهِ الْأَيْمَنِ مُوَجَّهًا إِلَيْهَا. ‖ وَيُكْرَهُ… | Build bug. Q: «شقه»; B and M: «ويضجع على شقه الأيمن موجها إليها» |
+| 29:1–2 | أَوْ دَقِيقِهِ، أَ سَوِيقِهِ أَوْ. ‖ صَاعٌ مِنْ تَمْرٍ … أَوْ سَوِيقِهِ، وَفِي الزَّبِيبِ… | أَوْ دَقِيقِهِ، أَوْ سَوِيقِهِ، أَوْ صَاعٌ مِنْ تَمْرٍ، أَوْ شَعِيرٍ، أَوْ دَقِيقِهِ، أَوْ سَوِيقِهِ. ‖ وَفِي الزَّبِيبِ… | Build bug. B: «أو دقيقه أو سويقه أو صاع من تمر»; M: «(أو سويقه …)». The paragraph break now falls after the list. |
+| 44:10–11 | فَمَرَّ بِهِ صَيْ آخَرُ. ‖ فَقَتَلَهُ، لَمْ يَحِلَّ الثَّانِي. وَلَوْ… | فَمَرَّ بِهِ صَيْدٌ آخَرُ فَقَتَلَهُ، لَمْ يَحِلَّ الثَّانِي. ‖ وَلَوْ… | Build bug. Q: «صيد»; B: «فمر به صيد آخر فقتله لم يحل الثاني»; M the same |
+| 45:19 | ثُمَّ رَمَا ثَانِيًا. فَأَنْزَلَهُ | ثُمَّ رَمَاهُ ثَانِيًا فَأَنْزَلَهُ | Build bug. Q: «رماه»; B and M: «ثم رماه ثانيا فأنزله: لا يحل» |
+| 49:10–11 | مِنَ الْمَرْأَ إِلَى. ‖ مَا يَنْظُرُ الرَّجُلُ إِلَيْهِ مِنَ الرَّجُلِ، وَيَنْظُرُ… | مِنَ الْمَرْأَةِ إِلَى مَا يَنْظُرُ الرَّجُلُ إِلَيْهِ مِنَ الرَّجُلِ. ‖ وَيَنْظُرُ… | Build bug. Q: «المرأة»; B and M: «وتنظر المرأة من المرأة إلى ما ينظر الرجل إليه من الرجل» |
+| 53:1 | بِالِابْنِ وَابْنِ الْأَبِ وَالْأَبِ. وَالْجَدِّ، | بِالِابْنِ وَابْنِ الِابْنِ وَالْأَبِ وَالْجَدِّ، | Build bug: «الابن» lost its last letter and became «الأب». Q: «وابن الابن»; B: «بالابن وابن الابن والأب والجد» |
+| 17:4 | عَلَى كُلِّ مُسْلِمٍ، مُقِيمٍ، مُصَلِّي، وَصَلَّى فِي جَمَاعَةٍ | عَلَى كُلِّ مُقِيمٍ مُصَلٍّ فِي جَمَاعَةٍ | Q only. B: «على كل مقيم مصل في جماعة»; M: «(على كل مقيم) احترز به عن المسافر (مصلي في جماعة)». B and M agree, which is the edition rule. |
+| 18:0 | الْمُسَافِرُ السَّفَرُ الْمُرَخِّصُ | السَّفَرُ الْمُرَخِّصُ | Q only: the heading word leaked into the text. B: «السفر المرخص»; M glosses «(المرخص …) أي السفر المرخص» |
+| 23:3 | صَلَّى فِي مَسْجِدِهِ وَسَجَدَ | صَلَّى فِي مَجْلِسِهِ، وَأَعَادَهَا، وَسَجَدَ | Not proposed by the vocalizers. B: «في مجلسه وأعادها»; M: «(حتى صلى في مجلسه) … (وأعادها) أي أعاد تلك السجدة» |
+| 26:14 | أَوْ زَكَاةُ الْغَنِيمَةِ | أَوْ زَكَاةُ الْقِيمَةِ | B: «أو زكاة القيمة». M explains: «يعطي عن كل فرس دينارا، أو يقومها، ويعطي عن كل مائتي درهم خمسة» |
+| 41:2 | وَيُوؤْمَرُ | وَيُؤْمَرُ | Misprint in Q. B and M: «ويؤمر الذمي» |
+| 41:4 | بَقَاكَ | بَقَاءَكَ | Not proposed. B: «بقاءك»; M: «بقائك» (the hamza in both) |
+| 45:7 | رُمْحٍ مَنْضُوبٍ | رُمْحٍ مَنْصُوبٍ | Misprint in Q: «منضوب» has no sense here. B: «منصوب» |
+| 45:25 | وَكَلْذَا | وَكَذَا | B: «وكذا»; M: «(وكذا لو رمى بالسمكة)» |
+| 50:12 | قِيمَةَ الْأَجْرِ | قِيمَةَ الْآخَرِ | B: «قيمة الآخر». M: «يضمن صاحب النعامة قيمة اللؤلؤة لصاحبها» |
+| 52:1 | وَأَبْنَائِهِمْ | وَأَبْنَائِهِمَا | Not proposed. B and M: «والعم لأب وأم أو لأب وأبنائهما» |
+| 10:18, 19:2 ×2 | يُومِيءُ | يُومِئُ | Spelling only (hamza after kasra), like «القارئ» |
+| 31:0 | وَالْمُخْطِيءِ | وَالْمُخْطِئِ | Spelling. B: «والمخطئ» |
+| 32:5 | بَرِيءَ مِنْ مَرَضٍ | بَرِئَ مِنْ مَرَضٍ | Spelling of the verb |
+| 34:0 | وَرِدَاءًا | وَرِدَاءً | Spelling. B: «ورداءً» |
+| 51:4 | هَوُلَاءِ | هَؤُلَاءِ | Spelling |
+| 63:3 | وَيَعْنِى | وَيَعْنِي | Spelling. B: «ويعني» |
+
+**Proposed but not changed** (the sources do not prove the other reading):
+- 21:0 «فذهب إلى جماعته»: Q, and M quotes «(إلا أن يكون إماما أو مؤذنا فذهب إلى جماعته)». Only B has «فيذهب».
+- 26:13 «إلى أربعمائة، أربع شياه»: no witness has «ففيها». B has «ثم أربع شياه».
+- 47:5 «بسمل بغير هاء»: B and M agree. The proposed «بسم الل» is not attested.
+- 2:12 «يقظانًا»: Q and B both write it this way. It is a known variant, so it was left.
+- The harakat-only items in `changes.txt` (15:2، 34:2، 34:13، 36:2، 36:6، 36:8، 40:15، 41:2 الزنار، 41:4، 44:0، 45:2، 45:10، 46:1، 48:8، 49:0، 49:8، 63:4) were already applied in the vocalized text. The check confirmed this.
+
+**Found by the scan and kept as Q** (Q's reading makes sense, or Q and M agree against B): 40:13 «وتؤخذ من القسيسين» (M: «ويؤخذ»; B «ولا تؤخذ» is wrong); 31:5 «ترابا مشوبا» (M agrees); 26:22 «ولنصب» (B «ولغصب» is a misprint); 51:5 «فلها»; 10:28 «الأولتين» (B «الأوليين»); 45:6 «أو جرة» (B «آجرة», and M does not quote it); 50:7 «والغزو» (B «والغزاة», M «والغزوات»).
