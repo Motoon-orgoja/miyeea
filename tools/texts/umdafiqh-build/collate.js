@@ -1,5 +1,6 @@
 // Word-by-word collation of the وبل الغمامة matn (base) against a check copy.
 // usage: node collate.js <idda|azzuz|abdali|quotes> [out/align-<name>.json] > out/diff-<name>.tsv
+// (--pairs as 4th argument prints the matched word pairs instead: used by voc-compare.js)
 // (the optional json holds, per base word, matched 0/1 and the check-copy words inserted before it: used by consensus.js)
 // Normalization: harakat, tatweel, punctuation removed; أإآٱ→ا, ى→ي, ة→ه, ئ→ي, ؤ→و, ء dropped; honorific formulas skipped.
 // Alignment: unique 4-gram anchors common to both texts, longest increasing chain of anchors, Myers diff between anchors.
@@ -81,6 +82,7 @@ for (const [op, a, b] of ops) {
   if (a) cur.A.push(a); if (b) { cur.B.push(b); if (!cur.z) cur.z = b.tag; }
 }
 if (cur) hunks.push(cur);
+if (process.argv[4] === '--pairs') { console.log('PAIRS ' + JSON.stringify(ops.filter(o => o[0] === '=').map(o => [o[1].i, o[2].o]))); process.exit(0); }
 if (process.argv[3]) { const M = A.map(() => 0), INS = {}; let la = -1; for (const [op, a, b] of ops) { if (op === '=') { M[a.i] = 1; la = a.i; } else if (b) { (INS[la + 1] = INS[la + 1] || []).push(b.w + '|' + b.o + '|' + b.tag); } else la = a.i; } fs.writeFileSync(process.argv[3], JSON.stringify({ M, INS, A: A.map(t => [t.w, t.o, t.tag]) })); }
 const ctx = i => A.slice(Math.max(0, i - 3), i).map(t => t.o).join(' ');
 console.log('wabl_page\tother_page\tidx\tcontext\twabl\tother');

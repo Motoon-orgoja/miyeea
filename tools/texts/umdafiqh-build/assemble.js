@@ -33,16 +33,15 @@ const clean = s => {
     // ذلِكَ → ذَلِكَ, the preposition lam before hamza/alif (لأَنَّ → لِأَنَّ, لاِمْرَأَتِهِ → لِامْرَأَتِهِ)
     .replace(/([ب-ي])(?=ى(?![ً-ْ]))/g, '$1َ').replace(/([َ])َ/g, '$1')
     .replace(/ذلِكَ/g, 'ذَلِكَ').replace(/(^|[\s«(])([وف]َ?)?ل(?=[أإآ])/g, '$1$2لِ').replace(/(^|[\s«(])([وف]َ?)?لاِ/g, '$1$2لِا');
-  s = s.replace(/([\u0621-\u064A])ى\u064E\u0651/g, '$1\u0651\u064Eى').replace(/([\u0621-\u064A])ى\u064E/g, '$1\u064Eى').replace(/\u064E\u064E/g, '\u064E') // marks typed after ى (صَلىَّ → صَلَّى)
-    .replace(/([\u0628-\u064A])ا\u064B\u0651/g, '$1\u0651\u064Bا').replace(/فُلاُنًا/g, 'فُلَانًا').replace(/سَوِيقِهِمَ0650ا/g, 'سَوِيقِهِمَا'); // حَالاًّ → حَالًّا
   s = fixVoc(s).replace(/\{/g, '﴿').replace(/\}/g, '﴾').split(' ').map(alifFatha).join(' ');
   return s.replace(/\s+/g, ' ').replace(/ ([،.؛:؟!»﴾)])/g, '$1').replace(/([«﴿(]) /g, '$1').replace(/([،؛:])(?=[^\s»﴾)])/g, '$1 ')
     .replace(/([.،؛:])\1+/g, '$1').replace(/^[،.؛:\s]+/, '').trim();
 };
+const FX = require('./fixes.js'), FXused = new Set();
 const R = [];
 for (const r of rows) {
   const toks = byRow.get(r); if (!toks) continue;
-  const text = clean(toks.map(t => t.o).join(' '));
+  const text = FX.apply(clean(toks.map(t => t.o).join(' ')), FXused);
   if (!text) continue;
   R.push({ r, toks, text });
 }
@@ -82,7 +81,12 @@ for (const x of R) {
 }
 // ---- paragraphs
 const words = s => s.split(' ').filter(Boolean);
-function paras(rowsIn) {
+const DD = require('./dedup.js'), DDused = new Set();
+function paras(rows0) {
+  // join the plain rows between فصل marks, so a repeat broken across rows can be removed
+  const rowsIn = [];
+  for (const r of rows0) { if (r.fasl || !rowsIn.length || rowsIn[rowsIn.length - 1].fasl) rowsIn.push({ ...r }); else rowsIn[rowsIn.length - 1].text += ' ' + r.text; }
+  rowsIn.forEach(r => { if (!r.fasl) r.text = DD.apply(r.text, DDused); });
   const P = [];
   let units = []; // sentences: arrays of words; a fasl starts a new paragraph
   const flushUnits = () => { pack(units, P); units = []; };
@@ -99,14 +103,14 @@ function paras(rowsIn) {
   flushUnits();
   return P.map(p => p.join(' '));
 }
-function splitLong(u) { // a sentence over 40 words: cut at «؛» then «،» (outside quotes), pieces of at least 8 words
+function splitLong(u, anyDepth) { // a sentence over 40 words: cut at «؛» then «،» (outside quotes), pieces of at least 8 words
   if (u.length <= 40) return [u];
   const cuts = []; let d = 0;
-  u.forEach((w, i) => { d += (w.match(/[«﴿]/g) || []).length - (w.match(/[»﴾]/g) || []).length; if (d <= 0 && i < u.length - 1) { if (/؛$/.test(w)) cuts.push([i, 2]); else if (/[،:]$/.test(w)) cuts.push([i, 1]); } });
+  u.forEach((w, i) => { d += (w.match(/[«﴿]/g) || []).length - (w.match(/[»﴾]/g) || []).length; if ((d <= 0 || anyDepth) && i < u.length - 1) { if (/؛$/.test(w)) cuts.push([i, 2]); else if (/[،:]$/.test(w)) cuts.push([i, 1]); } });
   let best = null;
   for (const [i, pr] of cuts) { const a = i + 1, b = u.length - a; if (a < 8 || b < 8) continue; const sc = pr * 100 - Math.abs(a - b); if (!best || sc > best[1]) best = [i, sc]; }
-  if (!best) return [u];
-  return [...splitLong(u.slice(0, best[0] + 1)), ...splitLong(u.slice(best[0] + 1))];
+  if (!best) return anyDepth ? [u] : splitLong(u, true); // a long hadith: cut inside the quotation
+  return [...splitLong(u.slice(0, best[0] + 1), anyDepth), ...splitLong(u.slice(best[0] + 1), anyDepth)];
 }
 function pack(units, P) {
   let cur = [];
@@ -131,7 +135,7 @@ const INTRO = [
 const WORDFIX = [
   [/حَبَسْتَنِي، قوله وَهُوَ/, 'حَبَسْتَنِي، وَهُوَ'], // «قوله» = the commentator's word left at the head of the page
   [/الأَرْبَعَةِ الأخرى/, 'الأَرْبَعَةِ الأُخْرَى'], [/زَادَ البنون/, 'زَادَ الْبَنُونَ'],
-  [/مَعَ الإخوة وَالأَخَوَاتِ لِلأَبَوَيْنِ/, 'مَعَ الإِخْوَةِ وَالأَخَوَاتِ لِلأَبَوَيْنِ'], [/وَسَقَطَ الإخوة./, 'وَسَقَطَ الإِخْوَةُ.'],
+  [/مَعَ الإخوة وَالأَخَوَاتِ لِلأَبَوَيْنِ/, 'مَعَ الإِخْوَةِ وَالأَخَوَاتِ لِلأَبَوَيْنِ'], [/وَسَقَطَ الإخوة.(?=s|$)/, 'وَسَقَطَ الإِخْوَةُ.'],
   [/إِسْقَاطِ الإخوة/, 'إِسْقَاطِ الإِخْوَةِ'], [/وَبَنِي الإخوة،/, 'وَبَنِي الإِخْوَةِ،'], [/فَصَاعِدًا مِنَ الإخوة/, 'فَصَاعِدًا مِنَ الإِخْوَةِ'],
   [/كَبَنِي الإخوة/, 'كَبَنِي الإِخْوَةِ'], [/وَسَقَطَ الإخوة لِلأَبَوَيْنِ/, 'وَسَقَطَ الإِخْوَةُ لِلأَبَوَيْنِ'], [/وَبَنَاتُ الإخوة/, 'وَبَنَاتُ الإِخْوَةِ'],
   [/وَبَنُو الإخوة/, 'وَبَنُو الإِخْوَةِ'], [/الآخر (?=عَلَى)/, 'الآخَرِ '], [/وَالإخوة/g, 'وَالإِخْوَةُ'], [/قَبْلِ اختيارهَا/, 'قَبْلَ اخْتِيَارِهَا'], [/بِنسبَ،/, 'بِنَسَبٍ،'], [/وَبوْلُ/, 'وَبَوْلُ'], [/الآخر (?=مَمْلُوكاً)/, 'الآخَرَ '], [/بالزنَا/, 'بِالزِّنَا'], [/بالذِّمِّيِّ/, 'بِالذِّمِّيِّ'],
@@ -140,10 +144,12 @@ const WORDFIX = [
 const J = {
   source: 'https://shamela.ws/book/145206 = https://ketabonline.com/ar/books/97048 (وبل الغمامة في شرح عمدة الفقه، عبد الله بن محمد الطيار، دار الوطن ١٤٢٩–١٤٣٢هـ، ٨ مجلدات: المتن المشكول بأعلى كل صفحة)',
   check: 'العدة شرح العمدة لبهاء الدين المقدسي (دار الحديث ١٤٢٤هـ = shamela 10908 / ketabonline 599) + عمدة الفقه ت. أحمد عزوز (المكتبة العصرية ١٤٢٥هـ = shamela 11315 / ketabonline 827) + نصوص المتن في شرح العمدة لابن تيمية (عطاءات العلم = shamela 151، الطهارة–الحج) + اقتباسات الشارح «قوله…» داخل وبل الغمامة — انظر umdafiqh-sources.md',
-  basmala,
-  chapters: chapters.filter(c => c.rows.length).map(c => ({ title: c.title, group: c.group, paras: c.title === 'مُقَدِّمَةُ الْمَتْنِ' ? INTRO : paras(c.rows).map(p => { for (const [a, b] of WORDFIX) p = p.replace(a, b); return p; }) })),
+  basmala: basmala || 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ', // printed at the head of the preface in the base
+  chapters: chapters.filter(c => c.rows.length).map(c => ({ title: c.title, group: c.group, paras: c.title === 'مُقَدِّمَةُ الْمَتْنِ' ? INTRO : paras(c.rows).map(p => { for (const [a, b] of WORDFIX) p = p.replace(a, b); return require("./vocfix.js")(p); }) })),
 };
 fs.writeFileSync(__dirname + '/../umdafiqh.json', JSON.stringify(J, null, 1) + '\n');
+FX.FIXES.forEach(([a], i) => { if (!FXused.has(i)) console.log('FIX NOT APPLIED:', a); });
+DD.DEDUP.forEach(([a], i) => { if (!DDused.has(i)) console.log('DEDUP NOT APPLIED:', a.slice(0, 40)); });
 fs.writeFileSync(__dirname + '/out/structure-notes.txt', notes.join('\n') + '\n');
 const P = J.chapters.flatMap(c => c.paras), W = P.flatMap(words);
 const len = P.map(p => words(p).length);
