@@ -110,6 +110,9 @@ const BOOKS=[
   {key:'lamiyyatarab',c:'الشعر العربي',lsk:'mutoon_lamiyyatarab_v1',url:'lamiyyatarab.html',t:'لامية العرب',d:'الشعر العربي · ٦٨ بيتًا'},
   {key:'ilbiri',c:'التزكية والرقائق',lsk:'mutoon_ilbiri_v1',url:'ilbiri.html',t:'تائية الإلبيري',d:'الوعظ والحث على العلم · ١١٢ بيتًا'},
   {key:'wasiyyasughra',c:'التزكية والرقائق',lsk:'mutoon_wasiyyasughra_v1',url:'wasiyyasughra.html',t:'الوصية الصغرى',d:'وصيته لأبي القاسم المغربي · ٩٧ فقرة'},
+  {key:'lamiyyatajam',c:'الشعر العربي',lsk:'mutoon_lamiyyatajam_v1',url:'lamiyyatajam.html',t:'لامية العجم',d:'الشعر العربي · ٥٩ بيتًا'},
+  {key:'bustiyya',c:'الشعر العربي',lsk:'mutoon_bustiyya_v1',url:'bustiyya.html',t:'نونية البستي',d:'الشعر العربي · ٦٣ بيتًا'},
+  {key:'rundiyya',c:'الشعر العربي',lsk:'mutoon_rundiyya_v1',url:'rundiyya.html',t:'رثاء الأندلس',d:'الشعر العربي · ٤٣ بيتًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
