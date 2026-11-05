@@ -25,8 +25,13 @@ const errText=e=>e.st===404?'ما لقينا هالحلقة، تأكد من ال
 
 /* my status: home.js hands over what it worked out; it goes to the server when it changed, or every few hours */
 let STAT=null;
+// the hour of the daily reminder: the reminder time in the settings (ui.js), 8 in the evening by default
+const remHour=()=>{const p=window.UI&&UI.prefs().remind;const h=parseInt(p||'20',10);return h>=0&&h<=23?h:20};
 function setStatus(s){
   STAT={...s,day:today()};
+  // the daily reminder: the server reminds this device at its hour, unless today's ward is done
+  if(pushState()==='on'){const r={day:STAT.day,left:s.open,rem:remHour()},h=JSON.stringify(r),l=get('mutoon_remind_push')||{};
+    if(l.h!==h||Date.now()-l.at>6*36e5)api('me',r).then(()=>put('mutoon_remind_push',{h,at:Date.now()})).catch(()=>{})}
   // read, not me(): making an empty id here would outrank the one a linked device brings (the newer key wins)
   const ids=list().map(c=>c.id), m=get('mutoon_me'); if(!ids.length||!m||!m.name)return;
   const h=JSON.stringify(STAT), last=get('mutoon_circle_push')||{};
@@ -61,11 +66,11 @@ async function subscribe(){
   const reg=await navigator.serviceWorker.register('sw.js').then(()=>navigator.serviceWorker.ready);
   const key=Uint8Array.from(atob(VAPID.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
   const sub=await reg.pushManager.getSubscription()||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:key});
-  if(get(PUSHK)!==sub.endpoint){await api('sub',{sub:sub.toJSON()});put(PUSHK,sub.endpoint)}
+  if(get(PUSHK)!==sub.endpoint){await api('sub',{sub:sub.toJSON()});put(PUSHK,sub.endpoint);put('mutoon_remind_push',{});if(STAT)setStatus(STAT)}
 }
 async function enablePush(btn){
   btn.disabled=true;
-  try{if(await Notification.requestPermission()!=='granted')throw 0;await subscribe();toast('تمام، صار يوصلك تذكير أصحابك ودعاؤهم إشعار 🔔');btn.remove()}
+  try{if(await Notification.requestPermission()!=='granted')throw 0;await subscribe();toast('تمام 🔔 بيوصلك تذكير الساعة '+ar(remHour()>12?remHour()-12:remHour())+(remHour()>=12?' المسا':' الصبح')+' إذا ما خلّصت وردك');btn.remove()}
   catch(e){toast(Notification.permission==='denied'?'الإشعارات مقفلة من إعدادات المتصفح':'ما زبط تفعيل الإشعارات، جرّب كمان مرة');btn.disabled=false}
 }
 /* the banner at the top of the home page, for members of a circle whose notifications are not on yet.
@@ -95,30 +100,25 @@ function banner(box){
     const no=el('button','btn','لا، أنا جديد');no.onclick=()=>{try{localStorage.setItem('ui_carry_no','1')}catch(e){}box.hidden=true};
     const row=el('div','cc-acts');row.append(ok,no);box.append(i,row); box.hidden=false; return;
   }
-  if(!cs||st==='on')return;
+  if(st==='on'||st==='none')return;
   if(Date.now()-(+localStorage.getItem(LATER)||0)<3*864e5)return;
   const later=el('button','btn','لاحقًا'); later.onclick=()=>{try{localStorage.setItem(LATER,Date.now())}catch(e){}box.hidden=true};
-  if(st==='off'){
-    box.append(el('b','','🔔 فعّل الإشعارات'),el('p','','عشان يوصلك تذكير أصحابك بالحلقة ودعاؤهم ومباركتهم على جوالك، حتى والموقع مسكّر.'));
-    const on=el('button','btn primary','🔔 فعّل الإشعارات');on.onclick=async()=>{await enablePush(on);if(pushState()==='on')box.hidden=true};
-    const row=el('div','cc-acts');row.append(on,later);box.append(row);
-  }else if(st==='ios'){
-    box.append(el('b','','🔔 عشان يوصلك تذكير أصحابك إشعار على الآيفون'));
+  const why='بيوصلك تذكير بوردك إذا ما خلّصته، وتشجيع أصحابك بالحلقات.';
+  box.append(el('b','','🔔 فعّل الإشعارات'),el('p','',why));
+  const row=el('div','cc-acts');
+  if(st==='off'){const on=el('button','btn primary','فعّل');on.onclick=async()=>{await enablePush(on);if(pushState()==='on')box.hidden=true};row.append(on,later);box.append(row)}
+  else if(st==='ios'){
+    // on the iPhone the site must be on the home screen first: the steps wait behind «كيف؟»
+    const how=el('details','pb-how');how.append(el('summary','','على الآيفون: أضف الموقع للشاشة الرئيسية أول · كيف؟'));
     const ol=el('ol','pb-steps');
-    [['زر المشاركة ',el('span','pb-ico','⬆︎'),' تحت الشاشة'],['اختار «إضافة إلى الشاشة الرئيسية» (إذا ما شفته انزل بالقائمة)'],['افتح «المتون» من الأيقونة الجديدة، وبيطلعلك فوق زر «فعّل الإشعارات»']]
+    [['زر المشاركة ',el('span','pb-ico','⬆︎'),' تحت الشاشة'],['اختار «إضافة إلى الشاشة الرئيسية» (إذا ما شفته انزل بالقائمة)'],['افتح «المتون» من الأيقونة الجديدة، وفعّل الإشعارات من هون']]
       .forEach(p=>{const li=el('li');li.append(...p.map(x=>typeof x==='string'?document.createTextNode(x):x));ol.append(li)});
     ol.firstChild.prepend(document.createTextNode('اكبس '));
-    box.append(ol);
-    const note=el('p','pb-note','تقدمك وحلقاتك بينتقلوا معك للأيقونة لحالهم.'); box.append(note);
-    carry().then(code=>{if(code){const c=el('span','',code);c.setAttribute('data-noi18n','');note.append(document.createTextNode(' وإذا ما انتقلوا، اكتب هناك هالرمز: '),c)}}).catch(()=>{});
-    box.append(later);
-  }else if(st==='old'){
-    box.append(el('b','','🔔 الإشعارات بدها تحديث للآيفون'),el('p','','حدّث الآيفون لـ iOS 16.4 أو أحدث، وبعدين بتقدر تفعّل الإشعارات من هون.'),later);
-  }else if(st==='denied'){
-    box.append(el('b','','🔕 الإشعارات مقفلة'),el('p','','افتح إعدادات الموقع بالمتصفح (القفل جنب العنوان) واسمح بالإشعارات، عشان يوصلك تذكير أصحابك.'),later);
-  }else{
-    box.append(el('b','','🔔 متصفحك هاد ما بيدعم الإشعارات'),el('p','','إذا فتحت الموقع من جوّا إنستغرام أو فيسبوك، افتحه بـ Chrome أو Safari عشان يوصلك تذكير أصحابك.'),later);
-  }
+    const note=el('p','pb-note','تقدمك وحلقاتك بينتقلوا معك للأيقونة لحالهم.');
+    how.append(ol,note); box.append(how); row.append(later); box.append(row);
+    how.addEventListener('toggle',()=>{if(how.open&&!how.dataset.c){how.dataset.c=1;carry().then(code=>{if(code){const c=el('span','',code);c.setAttribute('data-noi18n','');note.append(document.createTextNode(' وإذا ما انتقلوا، اكتب هناك هالرمز: '),c)}}).catch(()=>{})}});
+  }else if(st==='old'){box.append(el('p','pb-note','بدها iOS 16.4 أو أحدث.'));row.append(later);box.append(row)}
+  else if(st==='denied'){box.append(el('p','pb-note','الإشعارات مقفلة من إعدادات المتصفح لهالموقع (القفل جنب العنوان).'));row.append(later);box.append(row)}
   box.hidden=false;
 }
 // the offer to turn them on, where it fits: in a circle and on the home card

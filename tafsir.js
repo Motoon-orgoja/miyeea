@@ -107,13 +107,16 @@ function render(){
 /* ---------- the plan sheet ---------- */
 const DAYS=[[30,'شهر'],[60,'شهرين'],[90,'٣ شهور'],[182,'٦ شهور'],[365,'سنة'],[730,'سنتين']], PERS=[1,3,5,10,15,20,30];
 function chips(opts,cur,fn){const r=el('div','chips');opts.forEach(([v,t])=>{const b=el('button','chip'+(v===cur?' on':''),t);b.type='button';b.onclick=()=>fn(v);r.append(b)});return r}
+// a span of days in words: «٤٠ يوم»، «٣ شهور»، «سنتين و٩ شهور»
+const dur=n=>{if(n<60)return ar(n)+' يوم';let y=Math.floor(n/365),mo=Math.round((n-y*365)/30.4);if(mo>=12){y++;mo=0}const Y=y===1?'سنة':y===2?'سنتين':ar(y)+(y<=10?' سنين':' سنة'),M=mo===1?'شهر':mo===2?'شهرين':ar(mo)+(mo<=10?' شهور':' شهر');
+  return y?(mo?Y+' و'+M:Y):M};
 const sec=(title,...kids)=>{const s=el('div','psec');s.append(el('div','eyebrow',title),...kids);return s};
 const fold=(title,fill)=>{const d=el('details','pfold');d.append(el('summary','',title));d.addEventListener('toggle',()=>{if(d.open&&!d.dataset.l){d.dataset.l=1;fill(d)}});return d};
 // the next unread ayah and the day it is read on
 const nextStart=()=>S.done?{g:gi({s:S.s,a:S.a}),d:addDays(T,1)}:{g:gi(S.from),d:T};
 // the days of the plan from here to an-Nas: [{d, f, l}]
 function schedule(){const out=[];let {g,d}=nextStart();
-  while(g<TOTAL&&out.length<1500){const n=S.mode==='days'&&S.end?perFor(g,d):S.per, e=Math.min(TOTAL-1,g+n-1);out.push({d,f:at(g),l:at(e)});g=e+1;d=addDays(d,1)}
+  while(g<TOTAL&&out.length<TOTAL){const n=S.mode==='days'&&S.end?perFor(g,d):S.per, e=Math.min(TOTAL-1,g+n-1);out.push({d,f:at(g),l:at(e)});g=e+1;d=addDays(d,1)}
   return out}
 
 function planSheet(first){
@@ -126,7 +129,7 @@ function planSheet(first){
       :chips(PERS.map(n=>[n,ayat(n)]),S.per,v=>{S.per=v;paint()});
     const sch=schedule(), endD=sch.length?sch[sch.length-1].d:T, left=TOTAL-nextStart().g;
     const sum=el('p','psum',!sch.length?'':S.mode==='days'?'يعني تقريبًا '+ayat(Math.ceil(left/sch.length))+' باليوم، وبتختم '+dateLbl(endD)+'.'
-      :'بتختم بعد '+ar(sch.length)+' يوم تقريبًا، '+dateLbl(endD)+'.');
+      :'بتختم بعد '+dur(sch.length)+'، '+dateLbl(endD)+'.');
     b.append(sec('كيف بدك تقرأ؟',how,opts,sum));
     // 2. the books, in order
     const mine=el('div','mine');
@@ -140,7 +143,7 @@ function planSheet(first){
       r.append(el('b','',(on?'✓ ':'')+t.t),el('small','',t.by));r.onclick=()=>{S.books=on?S.books.filter(x=>x!==t.k):[...S.books,t.k];paint()};box.append(r)})});
     b.append(sec('التفاسير تحت كل آية',mine,add));
     // 3. the rest, folded
-    b.append(fold('📅 جدول الختمة',d=>{const l=el('div','sched');sch.forEach(x=>{const r=el('div');r.append(el('span','',dayLbl(x.d)),el('b','',range(x.f,x.l)));l.append(r)});d.append(l)}));
+    b.append(fold('📅 جدول الختمة',d=>{const l=el('div','sched');sch.slice(0,400).forEach(x=>{const r=el('div');r.append(el('span','',dayLbl(x.d)),el('b','',range(x.f,x.l)));l.append(r)});d.append(l)}));
     b.append(fold('ابدأ من مكان تاني',d=>{const p=el('div','pick'),su=el('select'),ay=el('input');ay.type='number';ay.min=1;ay.inputMode='numeric';
       Q.suras.forEach(([n],i)=>{const o=el('option','',ar(i+1)+'. '+n);o.value=i+1;if(i+1===S.from.s)o.selected=true;su.append(o)});
       const lim=()=>{ay.max=Q.suras[su.value-1][1];ay.placeholder='١–'+ar(ay.max)}; su.onchange=()=>{ay.value=1;lim()}; ay.value=S.from.a; lim();

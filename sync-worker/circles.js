@@ -7,6 +7,7 @@
 //   get {id,mid,tok} → circle + my cheers + sent (what I sent today)   stat {ids,mid,tok,name,stat} → {ok}
 //   cheer {id,mid,tok,to,kind} → {ok, sent: false if already sent today}             leave {id,mid,tok,who?} → {ok}     rename {id,mid,tok,cname} → {ok}
 //   sub {mid,tok,sub:{endpoint,keys:{p256dh,auth}}, drop?} → {ok}   (this device's push subscription, or drop it)
+//   me {mid,tok,day,left,rem} → {ok}   (for the daily reminder: today's tasks left, -1 for none, and the hour to remind, -1 off)
 //   cfg {id,mid,tok,cfg:{note?,locked?,challenge?,admins?}} → {ok}   (the owner or an admin; only the owner names admins)
 // The circle's settings (cfg): note, a short pinned word from the admins; locked, no new members; admins, member ids;
 // challenge {t: title, k: 'all'|'days'|'mem', a, b: first and last day}. Each status update also marks the member's day
@@ -68,6 +69,12 @@ export async function circles(action, b, db, notify) {
     await db.putMember(id, b.mid, th, name, statOf(b.stat), now);
     await db.putDay(id, b.mid, dayRow(b.stat));
     return { id };
+  }
+  if (action === 'me') {
+    // the reminder belongs to this member's push subscriptions; with none yet there is nothing to keep
+    const own = await db.subTh(b.mid); if (!own) return { ok: true }; if (own !== th) throw new E(403, 'member');
+    const rem = Number.isInteger(b.rem) && b.rem >= -1 && b.rem <= 23 ? b.rem : 20, left = Number.isInteger(b.left) ? Math.max(-1, Math.min(99, b.left)) : -1;
+    await db.setMe(b.mid, isDay(b.day) ? b.day : day(), left, rem); return { ok: true };
   }
   if (action === 'sub') {
     // a member id's subscriptions all belong to the token that first made one
@@ -146,6 +153,9 @@ export function d1(D) {
   const one = (q, ...a) => D.prepare(q).bind(...a).first(), run = (q, ...a) => D.prepare(q).bind(...a).run();
   return {
     circle: id => one('SELECT id,name,owner,cfg FROM circles WHERE id=?', id),
+    setMe: (mid, d, left, rem) => run('UPDATE subs SET day=?,left=?,rem=? WHERE mid=?', d, left, rem, mid),
+    // the devices to remind at this hour: the ward not opened today, or opened with tasks left
+    dueSubs: async (hour, d) => (await D.prepare('SELECT ep,p256dh,auth,mid,day,left FROM subs WHERE COALESCE(rem,20)=? AND (day IS NULL OR day<>? OR left>0)').bind(hour, d).all()).results,
     setCfg: (id, cfg) => run('UPDATE circles SET cfg=? WHERE id=?', cfg, id),
     // one row a member a day; the ward and the tafsir stay done once done that day
     putDay: (cid, mid, r) => run('INSERT INTO days(cid,mid,day,done,tf,mem) VALUES(?,?,?,?,?,?) ON CONFLICT(cid,mid,day) DO UPDATE SET done=MAX(done,excluded.done),tf=MAX(tf,excluded.tf),mem=excluded.mem', cid, mid, r.d, r.done, r.tf, r.mem),
@@ -180,6 +190,8 @@ export function memory() {
   const k = (c, m) => c + '|' + m;
   return {
     circle: async id => C.get(id) || null,
+    setMe: async (mid, d, left, rem) => { for (const x of S.values()) if (x.mid === mid) Object.assign(x, { day: d, left, rem }) },
+    dueSubs: async (hour, d) => [...S.values()].filter(x => (x.rem ?? 20) === hour && (!x.day || x.day !== d || x.left > 0)),
     setCfg: async (id, cfg) => { C.get(id).cfg = cfg },
     putDay: async (cid, mid, r) => { const kk = cid + '|' + mid + '|' + r.d, o = DY.get(kk); DY.set(kk, { cid, mid, day: r.d, done: Math.max(r.done, o ? o.done : 0), tf: Math.max(r.tf, o ? o.tf : 0), mem: r.mem }) },
     days: async (cid, from) => [...DY.values()].filter(r => r.cid === cid && r.day >= from),
@@ -212,6 +224,14 @@ export async function handle(req, db, cors, notify) {
   try { return json(await circles(m[1], b, db, notify)) } catch (e) { return json({ error: e.message }, e.st || 500) }
 }
 
+// the daily reminder, run every hour by the worker's cron: one push to each device due at this hour (Amman time)
+export async function remind(db, send) {
+  const now = new Date(Date.now() + 3 * 36e5), hour = now.getUTCHours(), d = now.toISOString().slice(0, 10);
+  for (const s of await db.dueSubs(hour, d)) {
+    const msg = { t: 'حفظ المتون', b: s.day === d && s.left > 0 ? 'باقي عليك ' + (s.left === 1 ? 'مهمة وحدة' : s.left === 2 ? 'مهمتين' : String(s.left).replace(/\d/g, x => '٠١٢٣٤٥٦٧٨٩'[x]) + ' مهام') + ' من ورد اليوم 🤍' : 'ورد اليوم بانتظارك 🤍', u: 'home.html' };
+    try { const st = await send(s, msg); if (st === 404 || st === 410) await db.delSub(s.ep) } catch (e) { }
+  }
+}
 export async function pushTo(db, mid, msg, send) {
   for (const s of await db.subs(mid)) { try { const st = await send(s, msg); if (st === 404 || st === 410) await db.delSub(s.ep) } catch (e) { } }
 }

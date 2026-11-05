@@ -93,7 +93,7 @@ active.forEach(r=>{
   d.append(ul,go); list.append(d);
 });
 const sum=$('todaySum');
-sum.textContent=!started.length&&!list.children.length?'لسا ما بلّشت بأي متن. اختر متن من تحت وابدأ فيه.':!active.length&&!list.children.length?'كل متونك موقوفة.':open?`باقي عليك ${ar(open)} ${open===1?'مهمة':'مهام'}`+(totalMin?` · تقريبًا ${mins(totalMin)} دقيقة`:''):'ما شاء الله، خلصت ورد اليوم 🤍';
+sum.textContent=!started.length&&!list.children.length?'لسا ما بلّشت بأي متن. اختر متن من «المتون» فوق وابدأ فيه.':!active.length&&!list.children.length?'كل متونك موقوفة.':open?`باقي عليك ${ar(open)} ${open===1?'مهمة':'مهام'}`+(totalMin?` · تقريبًا ${mins(totalMin)} دقيقة`:''):'ما شاء الله، خلصت ورد اليوم 🤍';
 sum.classList.toggle('ok',!open&&list.children.length>0);
 // the daily time: a small button, its choices in a sheet; a word only when today asks for more than that
 if(active.length){
@@ -110,15 +110,6 @@ if(held.length){const box=el('details','held');box.append(el('summary','','مت�
   held.forEach(r=>{const row=el('div','ui-book paused');const a=el('a','ui-book-link');a.href=PAGE[r.b.key];a.append(el('b','',r.b.title),el('small','',ar(r.done)+' من '+ar(r.total)));
     const t=el('button','ui-switch','فعّله');t.type='button';t.onclick=()=>{UI.setPaused(r.b.key,false);location.reload()};row.append(a,t);box.append(row)});
   list.after(box)}
-
-/* not started yet: folded under one line (open when nothing is started) */
-$('restCard').hidden=!rest.length; if(!started.length)$('restCard').open=true;
-const infoOf=r=>(window.UI&&UI.BOOKS.find(x=>x.key===r.b.key))||{}, FL=(window.UI&&UI.FIELDS)||[];
-const restFields=[...new Set([...FL,...rest.map(r=>infoOf(r).c||'')])].filter(c=>rest.some(r=>(infoOf(r).c||'')===c));
-restFields.forEach(c=>{const mine=rest.filter(r=>(infoOf(r).c||'')===c);
-  const box=el('details','restfield'); box.append(el('summary','',(c||'متون')+' · '+ar(mine.length)));
-  mine.forEach(r=>{const a=el('a','ui-book');a.href=PAGE[r.b.key];a.append(el('b','',r.b.title),el('small','',infoOf(r).d||r.b.sub||''));box.append(a)});
-  $('restList').append(box)});
 
 /* statistics: three numbers; the rest (per-book progress, twelve weeks) folded */
 const days=new Set(); started.forEach(r=>r.days.forEach(d=>days.add(d)));

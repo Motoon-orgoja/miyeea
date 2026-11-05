@@ -1,4 +1,4 @@
-import { handle, d1, pushTo } from './circles.js';
+import { handle, d1, pushTo, remind } from './circles.js';
 import { sendPush } from './push.js';
 // Sync server for حفظ المتون: stores one encrypted blob per sync id in Workers KV.
 // The client derives the id and the AES key from a secret only the user's devices know, so the stored bytes are unreadable here.
@@ -8,6 +8,11 @@ import { sendPush } from './push.js';
 const ORIGINS = ['https://motoon-orgoja.github.io', 'http://localhost:8765', 'http://localhost:8767'];
 const MAX = 512 * 1024;
 export default {
+  // every hour (wrangler.toml crons): the daily reminder for the devices whose hour it is
+  async scheduled(ev, env, ctx) {
+    let vapid; try { vapid = { jwk: JSON.parse(env.VAPID_JWK.replace(/^﻿/, '')), subject: 'https://motoon-orgoja.github.io/miyeea/' } } catch (e) { return }
+    ctx.waitUntil(remind(d1(env.CIRCLES), (s, m) => sendPush(s, m, vapid)));
+  },
   async fetch(req, env, ctx) {
     const origin = req.headers.get('Origin') || '';
     const cors = { 'Access-Control-Allow-Origin': ORIGINS.includes(origin) ? origin : ORIGINS[0], 'Access-Control-Allow-Methods': 'GET,PUT,POST,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '86400', 'Vary': 'Origin' };

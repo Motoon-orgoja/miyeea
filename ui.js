@@ -220,7 +220,7 @@ function openSettings(){
   const rw=el('div','ui-row'); const ti=el('input'); ti.type='time'; ti.value=P.remind; ti.onchange=()=>{P.remind=ti.value;save()};
   const rb=el('button','btn','📅 أضف تذكير يومي للتقويم');
   rb.onclick=()=>{const blob=new Blob([reminderICS(ti.value||'20:00')],{type:'text/calendar'});const a=el('a');a.href=URL.createObjectURL(blob);a.download='تذكير-الحفظ.ics';document.body.append(a);a.click();a.remove();toast('افتح الملف واضغط «إضافة للتقويم»')};
-  rw.append(ti,rb); b.append(field('تذكير يومي',rw,'بينزل ملف تقويم بموعد يومي بالوقت اللي بتختاره، وبيذكّرك بإشعار من تقويم الجوال.'));
+  rw.append(ti,rb); b.append(field('تذكير يومي',rw,'إذا الإشعارات مفعّلة، بيوصلك تذكير بهالوقت إذا ما خلّصت وردك. وزر التقويم بينزّل موعد يومي لتقويم جوالك.'));
   // devices: linked sync when the server is set up, and a transfer code/file that merges (sync.js)
   if(window.SYNC&&SYNC.available)b.append(field('مزامنة الأجهزة',syncBox(),'بتربط جوالك وآيبادك وكمبيوترك بنفس الرمز، والتقدم بيتحدّث لحاله. المزامنة مشفّرة: الخادم ما بيقدر يقرأ تقدمك.'));
   const bk=el('div','ui-col');

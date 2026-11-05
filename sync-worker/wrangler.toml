@@ -13,3 +13,7 @@ id = "736b0f6c9cf2424f9edfb3670cbad68f"
 binding = "CIRCLES"
 database_name = "mutoon-circles"
 database_id = "ab23a62c-eb83-4963-930d-f10179193d30"
+
+# the daily reminder (circles.js remind): every hour, for the devices whose hour it is
+[triggers]
+crons = ["0 * * * *"]

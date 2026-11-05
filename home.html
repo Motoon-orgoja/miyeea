@@ -119,9 +119,10 @@ details.cc-m:not([open]){gap:0}
 .chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .cc-foot .btn{font-size:13px}
 /* the notifications banner at the top (circles.js banner) */
-.pushbar{background:var(--gold-soft);border:1.5px solid var(--gold);display:flex;flex-direction:column;gap:8px}
+.pushbar{display:flex;flex-direction:column;gap:8px}
 .pushbar b{font-size:16px}
-.pushbar p{margin:0;font-size:14px;line-height:1.7}
+.pushbar p{margin:0;font-size:14px;line-height:1.7;color:var(--muted)}
+.pushbar .pb-how>summary{cursor:pointer;font-size:13px;color:var(--accent);font-weight:600}.pushbar .pb-how[open] .pb-steps{margin-top:8px}
 .pushbar .pb-steps{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:6px;font-size:14.5px;line-height:1.6}
 .pushbar .pb-ico{display:inline-block;border:1.5px solid currentColor;border-radius:6px;padding:0 6px;font-weight:700}
 .pushbar .pb-note{color:var(--muted);font-size:12.5px}
@@ -142,8 +143,6 @@ details.cc-m:not([open]){gap:0}
     <div class="thead" id="todayHead"><div class="tsum" id="todaySum"></div></div>
     <div id="todayList"></div>
   </section>
-
-  <details class="card fold" id="restCard" hidden><summary>＋ ابدأ متن جديد</summary><div class="ui-col" id="restList"></div></details>
 
   <section class="card" id="circleCard" hidden></section>
 
