@@ -105,11 +105,6 @@ if(active.length){
   if(BUDGET&&totalMin>BUDGET+2)sum.after(el('div','note tover',`ورد اليوم أطول من وقتك، فابدأ بالمراجعة وأجّل الجديد إذا ما ضل وقت.`));
 }
 
-/* the next step: the first unfinished task, one tap away */
-const nextUp=pending.length?{r:pending[0].r,t:pending[0].x}:null;
-if(nextUp){const h=$('hero');h.hidden=false;h.href=PAGE[nextUp.r.b.key];
-  h.append(el('small','','الخطوة الجاية'),el('b','',nextUp.t.t),el('span','',nextUp.r.b.title),el('i','','ابدأ ←'))}
-
 /* paused texts: folded; one tap brings each back to the ward */
 if(held.length){const box=el('details','held');box.append(el('summary','','متون موقوفة · '+ar(held.length)));
   held.forEach(r=>{const row=el('div','ui-book paused');const a=el('a','ui-book-link');a.href=PAGE[r.b.key];a.append(el('b','',r.b.title),el('small','',ar(r.done)+' من '+ar(r.total)));
