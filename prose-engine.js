@@ -278,7 +278,8 @@ function renderToday(){
     const t=document.createElement('button'); t.className='tap'+(n>=S.goal?' full':''); t.dataset.fab=''; t.innerHTML=`${ar(n)}<small>من ${ar(S.goal)}</small>`;
     t.addEventListener('click',()=>{S.reps[u.id]=(S.reps[u.id]||0)+1;save();renderToday()});
     const side=document.createElement('div'); side.style.flex='1';
-    side.innerHTML=QA?'<p class="note" style="margin:0 0 8px">اقرأ السؤال وجوابه وافهمه («من الكتاب» تحت فيه الفقرة كاملة)، واضغط الدائرة بعد كل قراءة. وجرّب «سؤال وجواب» لتختبر حالك قبل «حفظته».</p>':'<p class="note" style="margin:0 0 8px">اقرأه كامل، واضغط الدائرة بعد كل قراءة. جرّب «إخفاء تدريجي» و«مخفي» لما تحس إنه بلّش يثبت.</p>';
+    // the how-to line only for the first days
+    if(Object.keys(S.log||{}).length<=2)side.innerHTML=QA?'<p class="note" style="margin:0 0 8px">اقرأ السؤال وجوابه وافهمه («من الكتاب» تحت فيه الفقرة كاملة)، واضغط الدائرة بعد كل قراءة. وجرّب «سؤال وجواب» لتختبر حالك قبل «حفظته».</p>':'<p class="note" style="margin:0 0 8px">اقرأه كامل، واضغط الدائرة بعد كل قراءة. جرّب «إخفاء تدريجي» و«مخفي» لما تحس إنه بلّش يثبت.</p>';
     const done=document.createElement('button'); done.className='btn primary'; done.textContent='حفظته ✓'; done.disabled=n<Math.min(3,S.goal);
     done.addEventListener('click',()=>{if(VS.on)vStop(true);mode._seen='';snap('حفظت '+u.label);learn(u.id);renderAll();undoToast('حفظته ✓')});
     side.append(done); c.append(t,side); box.append(c);
@@ -317,7 +318,9 @@ function repBtn(u){const b=document.createElement('button');b.className='btn';b.
 function actBtn(txt,fn){const b=document.createElement('button');b.className='btn';b.textContent=txt;b.addEventListener('click',()=>{snap(txt.replace(/^\S+\s/,''));if(VS.on)vStop(true);mode._seen='';fn();renderAll()});return b}
 function wardActions(kind,ch){
   const box=document.createElement('div'); box.className='ward';
-  const h=document.createElement('div'); h.className='eyebrow'; h.textContent='تحكّم بورد اليوم'; box.append(h);
+  // the rarer actions fold behind «✎ عدّل الورد»; listening and «اختبرني» stay in sight
+  const fold=document.createElement('details'); fold.className='wfold'; const sm=document.createElement('summary'); sm.textContent='✎ عدّل الورد'; fold.append(sm);
+  const lead=document.createElement('div'); lead.className='row';
   const row=document.createElement('div'); row.className='row';
   if(unstarted().length>newList().length)row.append(actBtn('➕ زيد محفوظ جديد',()=>addNew()));
   const due=dueBlocks().map(c=>c.id);
@@ -326,14 +329,16 @@ function wardActions(kind,ch){
   if(kind==='block')row.append(actBtn('↩︎ نسيته، رجّعه للحفظ',()=>{if(confirm('بدك ترجع تحفظ «'+CHI[ch].title+'» فقرة فقرة من جديد؟'))relearn(ch)}));
   // the recording of the current chapter, when there is one
   const md=window.UI.mediaFor(BOOK.key), cu=md&&(md.chap&&md.chap[CUR]||md.chapN&&md.chapN(CH.findIndex(c=>c.id===CUR)+1));
-  if(cu){const lb=document.createElement('button');lb.className='btn';lb.textContent=md.chapN?'🎧 استمع للحديث':'🎧 استمع للباب';lb.addEventListener('click',()=>window.UI.play(cu,CHI[CUR].title+' · '+md.chapBy));row.append(lb)}
+  if(cu){const lb=document.createElement('button');lb.className='btn';lb.textContent=md.chapN?'🎧 استمع للحديث':'🎧 استمع للباب';lb.addEventListener('click',()=>window.UI.play(cu,CHI[CUR].title+' · '+md.chapBy));lead.append(lb)}
   // «اختبرني»: the opening words of a memorised passage, and the reader goes on
   const learnedAll=Object.keys(S.cards).filter(id=>UI_[id]);
   if(learnedAll.length){const qb=document.createElement('button');qb.className='btn gold';qb.textContent='🎯 اختبرني';qb.addEventListener('click',()=>{
-    window.UI.quiz(learnedAll.map(id=>{const u=UI_[id],txt=u.segs.map(x=>x[1]).join(' '),w=txt.split(' ');return {label:u.label,prompt:u.q||w.slice(0,Math.min(6,Math.ceil(w.length/3))).join(' ')+' …',answer:txt}}),'اختبرني · '+BOOK.title)});row.append(qb)}
+    window.UI.quiz(learnedAll.map(id=>{const u=UI_[id],txt=u.segs.map(x=>x[1]).join(' '),w=txt.split(' ');return {label:u.label,prompt:u.q||w.slice(0,Math.min(6,Math.ceil(w.length/3))).join(' ')+' …',answer:txt}}),'اختبرني · '+BOOK.title)});lead.append(qb)}
   if(UNDO.length){const u=document.createElement('button');u.className='btn';u.textContent='↶ تراجع عن «'+UNDO[UNDO.length-1].label+'»';u.addEventListener('click',undo);row.append(u)}
-  if(!row.childElementCount)return document.createTextNode('');
-  box.append(row); return box;
+  if(lead.childElementCount)box.append(lead);
+  if(row.childElementCount){fold.append(row);box.append(fold)}
+  if(!box.childElementCount)return document.createTextNode('');
+  return box;
 }
 function renderAll(){
   renderToday();

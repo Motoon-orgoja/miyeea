@@ -20,6 +20,29 @@
 <script src="sync.js"></script>
 <script src="ui.js"></script>
 <style>
+/* today: quiet rows that open */
+.thead{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tsum{font-size:14px;font-weight:600;color:var(--muted)}.tsum.ok{color:var(--accent)}
+.tbtn{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:99px;padding:4px 12px;font:inherit;font-size:12.5px;cursor:pointer;flex:none}
+.tover{font-size:12.5px;color:var(--gold);margin:0}
+#todayList{display:flex;flex-direction:column}
+.trow{border-top:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.trow:first-child{border-top:0}
+.trow>summary,a.trow>summary{display:flex;align-items:center;gap:10px;padding:12px 2px;cursor:pointer;list-style:none}
+.trow>summary::-webkit-details-marker{display:none}
+.trow summary b{font-family:var(--verse);font-size:20px;font-weight:700;flex:none}
+.trow summary small{color:var(--muted);font-size:12.5px;margin-inline-start:auto;text-align:left}
+.tdot{width:20px;height:20px;border-radius:50%;border:2px solid var(--gold);flex:none;font-style:normal;font-size:12px;display:grid;place-items:center;color:#fff}
+.tdot.ok{background:var(--accent);border-color:var(--accent)}
+.trow.done summary b{color:var(--muted)}
+.trow[open]{padding-bottom:12px}.trow[open]>summary small{display:none}
+.trow .tasks{margin-bottom:10px}
+.fold{padding:14px 18px}
+.fold>summary,.fold2>summary,.held>summary{cursor:pointer;font-weight:700;color:var(--ink)}
+.fold[open]>summary,.fold2[open]>summary{color:var(--accent);margin-bottom:10px}
+.fold2{display:flex;flex-direction:column;gap:10px}
+.held{padding:10px 2px 0;border-top:1px solid var(--line);font-size:14px}.held>summary{color:var(--muted);font-weight:600}
+.tiles{grid-template-columns:repeat(3,1fr)!important}
 .tfcard{flex-direction:row;justify-content:space-between;align-items:center;text-decoration:none;color:var(--ink);gap:10px}.tfcard b{font-family:var(--verse);font-size:21px;flex:none}.tfcard span{font-size:12.5px;color:var(--muted);text-align:left}
 .restfield{display:flex;flex-direction:column;gap:8px}
 .restfield>summary{cursor:pointer;font-weight:700;padding:10px 4px;color:var(--ink);border-bottom:1px solid var(--line)}
@@ -60,9 +83,9 @@ a.btn{text-decoration:none;text-align:center}
 .heat i.on{background:var(--accent)}
 .heat i.now{outline:2px solid var(--gold);outline-offset:-2px}
 .empty{color:var(--muted);font-size:13px}
-.hero{display:flex;flex-direction:column;gap:2px;padding:18px 20px;border-radius:20px;background:linear-gradient(135deg,#0B7A55,#0a5a40);color:#fff;text-decoration:none;box-shadow:0 8px 24px rgba(11,122,85,.25)}
+.hero{display:flex;flex-direction:column;gap:2px;padding:14px 18px;border-radius:20px;background:linear-gradient(135deg,#0B7A55,#0a5a40);color:#fff;text-decoration:none;box-shadow:0 8px 24px rgba(11,122,85,.25)}
 .hero small{opacity:.85;font-size:12.5px;font-weight:600}
-.hero b{font-size:20px;line-height:1.5}
+.hero b{font-size:18px;line-height:1.5}
 .hero span{opacity:.9;font-size:13.5px}
 .hero i{font-style:normal;align-self:flex-end;margin-top:8px;background:rgba(255,255,255,.18);padding:8px 16px;border-radius:12px;font-weight:700}
 /* «حلقاتي» (circles.js) */
@@ -80,6 +103,26 @@ a.btn{text-decoration:none;text-align:center}
 .cc-bk .bar{grid-column:1/-1;height:6px}
 .cc-acts{display:flex;flex-wrap:wrap;gap:6px}
 .cc-acts .btn{font-size:13px;padding:6px 10px}
+/* a circle: pinned word, challenge, today / points, admin settings */
+details.cc-m>summary{list-style:none;cursor:pointer}details.cc-m>summary::-webkit-details-marker{display:none}
+details.cc-m:not([open]){gap:0}
+.cc-note{background:var(--gold-soft);border-radius:12px;padding:8px 12px}.cc-note small{color:var(--gold);font-weight:700;font-size:12px}.cc-note p{margin:2px 0 0;font-size:15px;line-height:1.8}
+.cc-ch{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:start;border:0;border-radius:14px;padding:12px 14px;background:linear-gradient(135deg,#0B7A55,#0a5a40);color:#fff;font:inherit;cursor:pointer}
+.cc-ch small{opacity:.85;font-size:12px;font-weight:600}.cc-ch b{font-size:17px}.cc-ch span{font-size:13.5px;opacity:.95}
+.cc-seg{display:flex;gap:4px;background:var(--bg);border-radius:12px;padding:4px}
+.cc-seg button{flex:1;border:0;background:transparent;color:var(--muted);font:inherit;font-size:13.5px;font-weight:600;padding:8px 4px;border-radius:9px;cursor:pointer}
+.cc-seg button.on{background:var(--surface);color:var(--accent);box-shadow:var(--shadow)}
+.cc-sum{font-size:13px;color:var(--muted);font-weight:600}
+.lb{display:flex;flex-direction:column}
+.lb-r{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--line)}.lb-r.me{background:var(--accent-soft);border-radius:10px}
+.lb-n{width:28px;text-align:center;font-weight:700;color:var(--muted)}.lb-r b{flex:1;font-size:15px}.lb-p{font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
+.cc-fold>summary{cursor:pointer;color:var(--muted);font-size:13.5px;font-weight:600;padding:6px 2px}
+.cc-admin{border-top:1px solid var(--line);padding-top:6px;display:flex;flex-direction:column;gap:8px}.cc-admin[open]>summary{color:var(--accent)}
+.cc-admin textarea,.cc-admin input{font:inherit;font-size:15px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);width:100%;box-sizing:border-box}
+.cc-chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.cc-foot .btn{font-size:13px}
 /* the notifications banner at the top (circles.js banner) */
 .pushbar{background:var(--gold-soft);border:1.5px solid var(--gold);display:flex;flex-direction:column;gap:8px}
 .pushbar b{font-size:16px}
@@ -101,27 +144,23 @@ a.btn{text-decoration:none;text-align:center}
 
   <section class="card pushbar" id="pushBar" hidden></section>
   <a class="hero" id="hero" hidden></a>
-  <a class="card tfcard" id="tfCard" href="tafsir.html"><b>📖 ورد التفسير</b><span id="tfState">آيات كل يوم مع تفسيرها من الكتب اللي بتختارها</span></a>
-  <section class="card">
-    <div class="chapstat" id="todaySum"></div>
+  <section class="card today">
+    <div class="thead" id="todayHead"><div class="tsum" id="todaySum"></div></div>
     <div id="todayList"></div>
   </section>
 
-  <section class="card" id="restCard" hidden>
-    <div class="eyebrow">متون ما بلّشت فيها بعد · اضغط على أي واحد لتبلّش</div>
-    <div class="ui-col" id="restList"></div>
-  </section>
+  <details class="card fold" id="restCard" hidden><summary>＋ ابدأ متن جديد</summary><div class="ui-col" id="restList"></div></details>
 
   <section class="card" id="circleCard" hidden></section>
 
-  <section class="card">
-    <div class="eyebrow">إحصائياتك</div>
+  <section class="card" id="statCard" hidden>
     <div class="tiles" id="tiles"></div>
-    <div class="eyebrow">تقدمك بكل متن</div>
-    <div id="progList" style="display:flex;flex-direction:column;gap:12px"></div>
-    <div class="eyebrow">آخر ١٢ أسبوع · كل مربع يوم، والأخضر يوم حفظت أو راجعت فيه</div>
-    <div class="heat" id="heat"></div>
-    <p class="note" style="margin:0">الأرقام من تقدمك على هالجهاز. والمحفوظ القديم اللي بتعلّمه بينحسب معها.</p>
+    <details class="fold2"><summary>تقدّمك بالتفصيل</summary>
+      <div id="progList" style="display:flex;flex-direction:column;gap:12px"></div>
+      <div class="eyebrow" id="d30"></div>
+      <div class="heat" id="heat"></div>
+      <p class="note" style="margin:0">كل مربع يوم، والأخضر يوم حفظت أو راجعت فيه. الأرقام من تقدمك على هالجهاز.</p>
+    </details>
   </section>
 </div>
 <script>window.BOOKS=[]</script>
@@ -192,7 +231,5 @@ a.btn{text-decoration:none;text-align:center}
 <script src="data/umdasalik.js"></script><script>BOOKS.push(BOOK)</script>
 <script src="data/dalil.js"></script><script>BOOKS.push(BOOK)</script>
 <script src="home.js"></script>
-<script>(function(){try{const s=JSON.parse(localStorage.getItem('mutoon_tafsir_v1')||'null');if(!s)return;const t=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Amman'}).format(new Date());
-  document.getElementById('tfState').textContent=s.day===t&&s.done?'قرأت ورد اليوم ✓':'ورد اليوم بانتظارك ←'}catch(e){}})()</script>
 </body>
 </html>

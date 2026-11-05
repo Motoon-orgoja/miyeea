@@ -29,16 +29,38 @@ details.tf{background:var(--bg);border-radius:12px;padding:8px 12px}
 details.tf>summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--accent)}
 .tfb p{font-family:var(--verse);font-size:19px;line-height:1.95;margin:8px 0 0;text-align:justify}
 .tfb p.note{font-family:var(--ui);font-size:12.5px}
-.tfnone{font-family:var(--ui);font-size:12px;color:var(--muted,#888);margin:2px 12px;opacity:.75}
 .tq{color:var(--accent);font-weight:700}
-.bk{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;cursor:pointer}
-.bk.on{border-color:var(--accent);background:var(--accent-soft)}
-.bkt{display:flex;flex-direction:column;flex:1;min-width:0}.bkt b{font-family:var(--verse);font-size:19px}.bkt small{color:var(--muted);font-size:12px}
-.btn.up{padding:4px 10px}
 .pick{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .pick select,.pick input{font:inherit;font-size:16px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 .pick input{width:90px}
-#logList>div{display:flex;justify-content:space-between;font-size:14px;padding:4px 0;border-bottom:1px solid var(--line)}
+/* today's ward: a title, one quiet line, the khatma bar */
+.wardcard{gap:10px}
+.whead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.whead .ptitle{margin:0}
+.pline{color:var(--muted);font-size:13px;margin-top:2px}
+.btn.sm{padding:6px 12px;font-size:13px;min-height:0;flex:none}
+.pbar{height:5px;background:var(--bg);border-radius:99px;overflow:hidden}.pbar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.intro{font-size:15px;line-height:1.9;color:var(--muted);margin:4px 0}
+.doneMsg{text-align:center;font-size:17px;font-weight:700;color:var(--accent);padding:22px 0 8px}
+.tfquiet{font-family:var(--ui);font-size:12px;color:var(--muted);margin:0 4px;opacity:.8;line-height:1.7}
+.tfquiet.center{text-align:center}
+/* the plan sheet */
+.psec{display:flex;flex-direction:column;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:6px 14px;font:inherit;font-size:14px;cursor:pointer}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.psum{margin:0;font-size:14px;color:var(--accent);font-weight:600;line-height:1.7}
+.mine{display:flex;flex-direction:column;gap:6px}
+.mbk{display:flex;align-items:center;gap:6px;background:var(--bg);border-radius:12px;padding:6px 10px}.mbk b{flex:1;font-family:var(--verse);font-size:18px}
+.pfold>summary{cursor:pointer;font-weight:700;padding:10px 2px;border-top:1px solid var(--line);color:var(--ink)}
+.pfold[open]>summary{color:var(--accent)}
+.pgrp{margin:2px 0 6px}.pgrp>summary{cursor:pointer;font-weight:600;padding:8px 6px;color:var(--muted);font-size:14px}
+.pbk{display:flex;flex-direction:column;align-items:flex-start;width:100%;text-align:start;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:8px 12px;margin:4px 0;font:inherit;cursor:pointer}
+.pbk b{font-family:var(--verse);font-size:18px;font-weight:700}.pbk small{color:var(--muted);font-size:12px}
+.pbk.on{border-color:var(--accent);background:var(--accent-soft)}
+.sched{display:flex;flex-direction:column;max-height:50vh;overflow:auto}
+.sched>div{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:6px 2px;border-bottom:1px solid var(--line)}
+.sched span{color:var(--muted);white-space:nowrap}.sched b{font-weight:600;text-align:left}
 </style>
 </head>
 <body>
@@ -46,28 +68,12 @@ details.tf>summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--acc
   <header>
     <nav class="books" aria-label="المتون"><a href="home.html" data-book="home">وردي اليوم</a><a href="tafsir.html" data-book="tafsir" aria-current="page">ورد التفسير</a><a href="ashmawiyya.html" data-book="ashmawiyya">متن العشماوية</a><a href="qawaidusul.html" data-book="qawaidusul">قواعد الأصول ومعاقد الفصول</a><a href="akhsar.html" data-book="akhsar">أخصر المختصرات</a><a href="siraji.html" data-book="siraji">السراجية</a><a href="risala.html" data-book="risala">الرسالة</a><a href="zad.html" data-book="zad">زاد المستقنع</a><a href="safina.html" data-book="safina">سفينة النجاة</a><a href="tuhfamuluk.html" data-book="tuhfamuluk">تحفة الملوك</a><a href="kanz.html" data-book="kanz">كنز الدقائق</a><a href="hadramiyya.html" data-book="hadramiyya">المقدمة الحضرمية</a><a href="maraqi.html" data-book="maraqi">مراقي السعود</a><a href="thalatha.html" data-book="thalatha">ثلاثة الأصول وأدلتها</a><a href="qawaidarba.html" data-book="qawaidarba">القواعد الأربع</a><a href="safariniyya.html" data-book="safariniyya">السفارينية</a><a href="iraqi.html" data-book="iraqi">ألفية العراقي</a><a href="tawhid.html" data-book="tawhid">كتاب التوحيد</a><a href="wasitiyya.html" data-book="wasitiyya">العقيدة الواسطية</a><a href="hairiyya.html" data-book="hairiyya">المنظومة الحائية</a><a href="lumaa.html" data-book="lumaa">لمعة الاعتقاد</a><a href="usultafsir.html" data-book="usultafsir">مقدمة في أصول التفسير</a><a href="adab.html" data-book="adab">منظومة الآداب</a><a href="durrabahiyya.html" data-book="durrabahiyya">الدرة البهية</a><a href="qurra.html" data-book="qurra">قرة الأبصار</a><a href="jawharmaknun.html" data-book="jawharmaknun">الجوهر المكنون</a><a href="bina.html" data-book="bina">متن البناء</a><a href="umdasalik.html" data-book="umdasalik">عمدة السالك</a><a href="dalil.html" data-book="dalil">دليل الطالب</a></nav>
     <h1>ورد التفسير</h1>
-    <p>آيات كل يوم، وتحت كل آية التفاسير اللي بتختارها</p>
   </header>
-  <section class="card">
-    <div class="chapstat" id="wardState"></div>
-    <div class="ptitle" id="wardTitle"></div>
+  <section class="card wardcard">
+    <div class="whead"><div><div class="ptitle" id="wardTitle"></div><div class="pline" id="planLine"></div></div><button class="btn sm" id="planBtn" type="button">⚙︎ خطتي</button></div>
+    <div class="pbar" id="pbar" hidden><i></i></div>
     <div id="ward"></div>
     <div class="row" id="wardBtns"></div>
-  </section>
-  <section class="card">
-    <div class="eyebrow">كم آية باليوم؟</div>
-    <div class="pick"><select id="per" aria-label="عدد الآيات باليوم"></select></div>
-    <div class="eyebrow">كتب التفسير اللي بتطلع تحت كل آية (بالترتيب، وبتقدر تختار أكثر من كتاب)</div>
-    <div id="books" style="display:flex;flex-direction:column;gap:8px"></div>
-    <label class="row note"><input type="checkbox" id="openFirst"> افتح أول تفسير تلقائيًا (الباقي بينفتح لما تضغط عليه)</label>
-    <div class="eyebrow">ابدأ من مكان معيّن</div>
-    <div class="pick"><select id="sura" aria-label="السورة"></select><input id="ayah" type="number" min="1" inputmode="numeric" aria-label="الآية"><button class="btn" id="go">انتقل</button></div>
-    <p class="note" style="margin:0">نص القرآن بالرسم العثماني والتفاسير من موقع quran.com (والجلالين من api.quran-tafseer.com)، منقولة بلفظها. بعض التفاسير بتشرح آيتين أو أكثر مع بعض، فبيطلع تفسيرها مرة وحدة.</p>
-  </section>
-  <section class="card">
-    <div class="eyebrow">سجلّك</div>
-    <div class="chapstat" id="logSum"></div>
-    <div id="logList"></div>
   </section>
 </div>
 <script src="data/quran/index.js"></script>

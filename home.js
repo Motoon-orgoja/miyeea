@@ -73,64 +73,67 @@ const pending=active.flatMap(r=>r.tasks.filter(x=>!x.done).map(x=>({r,x}))).sort
 const totalMin=pending.reduce((n,{x})=>n+(x.min||0),0);
 if(BUDGET){let used=0; pending.forEach(({x})=>{used+=x.min||0; x.over=used>BUDGET+2})}
 
-/* today */
+/* today: one quiet row per text (and the tafsir ward); a row opens to its tasks */
 $('dayLbl').textContent=dayName(T);
 const list=$('todayList'); let open=0;
-active.forEach(r=>{
-  const c=el('div','bk'), h=el('div','bkh');
-  const a=el('a','bkt',r.b.title); a.href=PAGE[r.b.key]; h.append(a);
-  const pend=r.tasks.filter(x=>!x.done).length; open+=pend;
-  h.append(el('span','pill'+(pend?'':' new'),pend?`باقي ${ar(pend)}`:'خلصت ✓')); c.append(h);
-  const ul=el('ul','tasks');
-  if(!r.tasks.length)ul.append(el('li','done','ما في شي اليوم بهالكتاب'));
-  // each task wears its kind, as huffaz split the day: new (sabaq), recent (sabqi), old (manzil)
 const KIND={new:'جديد',recent:'قريب',old:'قديم',test:'تسميع'};
-  r.tasks.forEach(x=>{const li=el('li',x.done?'done':x.over?'over':'');if(x.k)li.append(el('em','k-'+x.k,KIND[x.k]));li.append(el('span','',x.t));if(x.sub)li.append(el('small','',x.sub));
-    if(!x.done&&x.min)li.append(el('small','tm',(x.over?'إذا ضل وقت · ':'')+'⏱ '+mins(x.min)+' د'));ul.append(li)});
-  c.append(ul);
-  const go=el('a','btn'+(pend?' primary':''),pend?'افتح وكمّل':'افتحه'); go.href=PAGE[r.b.key]; c.append(go);
-  list.append(c);
+const row=(title,state,done)=>{const s=el('summary');s.append(el('i','tdot'+(done?' ok':''),done?'✓':''),el('b','',title),el('small','',state));return s};
+// the tafsir ward, when the reader has a plan
+const TFS=get('mutoon_tafsir_v1');
+if(TFS&&TFS.set!==false){const done=TFS.day===T&&TFS.done, a=el('a','trow');a.href='tafsir.html';
+  a.append(row('ورد التفسير',done?'قرأته':TFS.day===T&&TFS.lbl?TFS.lbl:'بانتظارك',done));list.append(a);if(!done)open++}
+active.forEach(r=>{
+  const pend=r.tasks.filter(x=>!x.done), m=pend.reduce((n,x)=>n+(x.min||0),0); open+=pend.length;
+  const d=el('details','trow'+(pend.length?'':' done'));
+  d.append(row(r.b.title,pend.length?(pend.length===1?pend[0].t.replace(/^ورد اليوم: /,''):'باقي '+ar(pend.length))+(m?' · '+mins(m)+' د':''):r.tasks.length?'خلصت':'ما في شي اليوم',!pend.length));
+  const ul=el('ul','tasks');
+  r.tasks.forEach(x=>{const li=el('li',x.done?'done':x.over?'over':'');if(x.k)li.append(el('em','k-'+x.k,KIND[x.k]));li.append(el('span','',x.t));
+    const sub=[x.sub,!x.done&&x.min?(x.over?'إذا ضل وقت · ':'')+'⏱ '+mins(x.min)+' د':''].filter(Boolean).join(' · ');if(sub)li.append(el('small','',sub));ul.append(li)});
+  const go=el('a','btn'+(pend.length?' primary':''),pend.length?'افتح وكمّل':'افتحه'); go.href=PAGE[r.b.key];
+  d.append(ul,go); list.append(d);
 });
-$('todaySum').textContent=!started.length?'لسا ما بلّشت بأي متن. اختر متن من تحت وابدأ فيه.':!active.length?'كل متونك موقوفة. فعّل اللي بدك تحفظه من تحت.':open?`باقي عليك ${ar(open)} ${open===1?'مهمة':'مهام'} اليوم، تقريبًا ${mins(totalMin)} دقيقة.`:'ما شاء الله، خلصت ورد اليوم بكل المتون 🤍';
-// the daily time: a row of choices under the summary, and a word when today asks for more than that
+const sum=$('todaySum');
+sum.textContent=!started.length&&!list.children.length?'لسا ما بلّشت بأي متن. اختر متن من تحت وابدأ فيه.':!active.length&&!list.children.length?'كل متونك موقوفة.':open?`باقي عليك ${ar(open)} ${open===1?'مهمة':'مهام'}`+(totalMin?` · تقريبًا ${mins(totalMin)} دقيقة`:''):'ما شاء الله، خلصت ورد اليوم 🤍';
+sum.classList.toggle('ok',!open&&list.children.length>0);
+// the daily time: a small button, its choices in a sheet; a word only when today asks for more than that
 if(active.length){
-  const box=el('div','dayplan'), row=el('div','dayopts'); box.append(el('small','','وقتي اليومي للحفظ:'),row);
-  [[0,'مفتوح'],[15,'١٥ د'],[30,'٣٠ د'],[45,'٤٥ د'],[60,'ساعة'],[90,'ساعة ونص']].forEach(([v,t])=>{const b=el('button','chip'+(BUDGET===v?' on':''),t);b.type='button';
-    b.onclick=()=>{UI.setPref('dayMin',v);location.reload()};row.append(b)});
-  if(BUDGET&&totalMin>BUDGET+2){const late=pending.filter(({x})=>x.over&&x.k==='new').map(({r})=>r.b.title);
-    box.append(el('div','note',`ورد اليوم أطول من وقتك (${mins(totalMin)} من ${ar(BUDGET)} دقيقة). ابدأ بالمراجعة، لأنه الحفاظ على المحفوظ أولى`+(late.length?`، وأجّل الجديد بـ«${[...new Set(late)].join('» و«')}» إذا ما ضل وقت.`:'.')))}
-  $('todaySum').after(box);
+  const tb=el('button','tbtn',BUDGET?'⏱ '+ar(BUDGET)+' د':'⏱ وقتي');tb.type='button';
+  tb.onclick=()=>{const b=UI.sheet('وقتي اليومي للحفظ');b.append(el('p','note','إذا حددت وقت، بنقدّم المراجعة على الجديد، وبنعلّم اللي ما بيلحق بـ«إذا ضل وقت».'));
+    const r=el('div','dayopts');[[0,'مفتوح'],[15,'١٥ د'],[30,'٣٠ د'],[45,'٤٥ د'],[60,'ساعة'],[90,'ساعة ونص']].forEach(([v,t])=>{const c=el('button','chip'+(BUDGET===v?' on':''),t);c.type='button';
+      c.onclick=()=>{UI.setPref('dayMin',v);location.reload()};r.append(c)});b.append(r)};
+  $('todayHead').append(tb);
+  if(BUDGET&&totalMin>BUDGET+2)sum.after(el('div','note tover',`ورد اليوم أطول من وقتك، فابدأ بالمراجعة وأجّل الجديد إذا ما ضل وقت.`));
 }
 
 /* the next step: the first unfinished task, one tap away */
 const nextUp=pending.length?{r:pending[0].r,t:pending[0].x}:null;
 if(nextUp){const h=$('hero');h.hidden=false;h.href=PAGE[nextUp.r.b.key];
-  h.append(el('small','','الخطوة الجاية'),el('b','',nextUp.t.t),el('span','',nextUp.r.b.title+(nextUp.t.sub?' · '+nextUp.t.sub:'')),el('i','','ابدأ ←'))}
+  h.append(el('small','','الخطوة الجاية'),el('b','',nextUp.t.t),el('span','',nextUp.r.b.title),el('i','','ابدأ ←'))}
 
-/* paused texts: one tap brings each back to the ward */
-if(held.length){const box=el('div','held');box.append(el('div','eyebrow','متون موقوفة · ما بتطلع بالورد'));
+/* paused texts: folded; one tap brings each back to the ward */
+if(held.length){const box=el('details','held');box.append(el('summary','','متون موقوفة · '+ar(held.length)));
   held.forEach(r=>{const row=el('div','ui-book paused');const a=el('a','ui-book-link');a.href=PAGE[r.b.key];a.append(el('b','',r.b.title),el('small','',ar(r.done)+' من '+ar(r.total)));
     const t=el('button','ui-switch','فعّله');t.type='button';t.onclick=()=>{UI.setPaused(r.b.key,false);location.reload()};row.append(a,t);box.append(row)});
   list.after(box)}
 
-/* not started yet */
-$('restCard').hidden=!rest.length;
-// each text not started yet, with what it is about, as a tappable card
-// grouped by field; with many texts each field folds, so the page stays short
+/* not started yet: folded under one line (open when nothing is started) */
+$('restCard').hidden=!rest.length; if(!started.length)$('restCard').open=true;
 const infoOf=r=>(window.UI&&UI.BOOKS.find(x=>x.key===r.b.key))||{}, FL=(window.UI&&UI.FIELDS)||[];
 const restFields=[...new Set([...FL,...rest.map(r=>infoOf(r).c||'')])].filter(c=>rest.some(r=>(infoOf(r).c||'')===c));
-restFields.forEach(c=>{const mine=rest.filter(r=>(infoOf(r).c||'')===c), fold=rest.length>8;
-  const box=el(fold?'details':'div','restfield'); box.append(fold?el('summary','',(c||'متون')+' · '+ar(mine.length)):el('div','ui-lbl',c));
+restFields.forEach(c=>{const mine=rest.filter(r=>(infoOf(r).c||'')===c);
+  const box=el('details','restfield'); box.append(el('summary','',(c||'متون')+' · '+ar(mine.length)));
   mine.forEach(r=>{const a=el('a','ui-book');a.href=PAGE[r.b.key];a.append(el('b','',r.b.title),el('small','',infoOf(r).d||r.b.sub||''));box.append(a)});
   $('restList').append(box)});
 
-/* statistics: one streak across every book, totals, per-book progress, and twelve weeks of activity */
+/* statistics: three numbers; the rest (per-book progress, twelve weeks) folded */
 const days=new Set(); started.forEach(r=>r.days.forEach(d=>days.add(d)));
 let streak=0, d=days.has(T)?T:addDays(T,-1); while(days.has(d)){streak++;d=addDays(d,-1)}
 let last30=0; for(let i=0;i<30;i++)if(days.has(addDays(T,-i)))last30++;
 const verses=R.filter(r=>r.b.poems).reduce((n,r)=>n+r.done,0), units=R.filter(r=>!r.b.poems).reduce((n,r)=>n+r.done,0);
-[[streak,'أيام ورا بعض'],[last30,'يوم نشاط من آخر ٣٠'],[verses,'بيت محفوظ'],[units,'حديث وفقرة محفوظة']].forEach(([n,l])=>{
+$('statCard').hidden=!started.length;
+[[streak,'🔥 أيام ورا بعض'],[verses,'بيت محفوظ'],[units,'حديث وفقرة']].forEach(([n,l])=>{
   const t=el('div'); t.append(el('b','',ar(n)),el('small','',l)); $('tiles').append(t)});
+$('d30').textContent=ar(last30)+' يوم نشاط من آخر ٣٠ يوم';
 started.forEach(r=>{
   const row=el('div','pg'), top=el('div','pgh');
   top.append(el('span','',r.b.title),el('small','',`${ar(r.done)} من ${ar(r.total)} ${r.b.poems?'بيت':r.unit}`+(r.chapters>1?` · ختمت ${ar(r.finished)} باب من ${ar(r.chapters)}`:'')));
@@ -149,7 +152,7 @@ if(!started.length)$('progList').append(el('div','empty','بيظهر هون تق
 // the grid runs oldest to newest, a column per week; RTL puts the newest week on the left
 /* circles: my status for friends to see, and the card listing my circles */
 if(window.CIRCLES&&CIRCLES.available){
-  CIRCLES.setStatus({s:streak,d30:last30,td:days.has(T),open:active.length?open:-1,v:verses,u:units,
+  CIRCLES.setStatus({s:streak,d30:last30,td:days.has(T),tf:!!(TFS&&TFS.day===T&&TFS.done),open:active.length?open:-1,v:verses,u:units,
     bk:active.slice(0,4).map(r=>[r.b.title,r.done,r.total])});
   CIRCLES.banner($('pushBar'));
   const cc=$('circleCard'); cc.hidden=false; CIRCLES.card(cc); CIRCLES.fromHash(); addEventListener('hashchange',CIRCLES.fromHash);

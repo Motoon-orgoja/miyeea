@@ -295,7 +295,7 @@ function render(){
   $('barM').style.width=(memEnd/N*100)+'%';
   $('barW').style.width=(Math.max(0,e-Math.max(memEnd,f-1))/N*100)+'%';
   const sk=streak();
-  $('progTxt').textContent=`ختمت ${ar(memEnd)} بيتًا من ${ar(N)} · ورد اليوم ${ar(f)}–${ar(e)}`+(e<N?` · باقي تقريبًا ${ar(Math.ceil((N-e)/PER()))} يوم`:'')+(sk>1?` · ${ar(sk)} أيام ورا بعض`:'');
+  $('progTxt').textContent=`حفظت ${ar(memEnd)} من ${ar(N)}`+(e<N?` · باقي تقريبًا ${ar(Math.ceil((N-e)/PER()))} يوم`:'')+(sk>1?` · 🔥 ${ar(sk)}`:'');
   $('goalTxt').textContent='من '+ar(GOAL());
   $('dayLbl').textContent=dayName(S.day);
   $('rangeTxt').textContent=`الأبيات ${ar(f)} – ${ar(e)}`+(e===N&&S.done?(MULTI?' · ختمت القصيدة':' · ختمت المنظومة'):'');
@@ -305,6 +305,8 @@ function render(){
   const p=Math.min(1,S.reps/GOAL()); $('arc').setAttribute('stroke-dashoffset',String(377*(1-p)));
   $('arc').setAttribute('stroke',S.reps>=GOAL()?'var(--accent)':'var(--gold)');
   $('done').disabled=S.done;
+  // the how-to line only until the first tap
+  const hint=$('tap').closest('.counter').querySelector('.side>p:not(.note)'); if(hint)hint.hidden=S.reps>0||S.log.length>2;
   fill('today',f,e,{markNew:true});
   const oc=friMode==='old'&&S.oldB&&S.oldB[oldK]; if(friMode==='old'&&!oc)friMode='all';
   $('friEyebrow').textContent=oc?'مراجعة المحفوظ القديم'+(c=>c.old?' · أول مراجعة':' · '+SRS.label(c))(oc):WDAY()<0?'التسميع الأسبوعي':'التسميع الأسبوعي · يوم '+WDAYS[WDAY()];
@@ -327,7 +329,7 @@ function render(){
 }
 const LSK=lskOf(CUR);
 function save(){
-  try{localStorage.setItem(LSK,JSON.stringify(S));$('saveTxt').textContent='محفوظ على هذا الجهاز ✓'}
+  try{localStorage.setItem(LSK,JSON.stringify(S));$('saveTxt').textContent=''}
   catch(e){$('saveTxt').textContent='المتصفح ما سمح بالحفظ هنا، افتح الملف بمتصفح ثاني'}
 }
 function loadLocal(){try{const v=localStorage.getItem(LSK);return v?JSON.parse(v):null}catch(e){return null}}
@@ -350,13 +352,16 @@ function redraw(){Object.keys(lastSig).forEach(k=>delete lastSig[k]);save();rend
 function undo(){const u=UNDO.pop();if(!u)return;S=JSON.parse(u.s);redraw();UI.toast('رجعت عن: '+u.label)}
 function act(label,fn){snap(label);fn();redraw();UI.toast(label,{label:'تراجع',fn:undo})}
 $('undo').closest('.counter').insertAdjacentHTML('afterend','<div class="wardctl" id="wardCtl"></div>');
+// the rarer controls (the range, −١, reset, undo) wait behind «✎ عدّل الورد»; it stays open once opened, for the day
+let ctlOpen=false;
 function renderWardCtl(){
-  const box=$('wardCtl'); box.replaceChildren();
-  const b=(txt,fn,cls)=>{const x=document.createElement('button');x.type='button';x.className='btn'+(cls?' '+cls:'');x.textContent=txt;x.addEventListener('click',fn);box.append(x)};
-  if(S.done&&S.undoDone&&S.undoDone.d===S.day)b('↩︎ ما حفظته، رجّع الورد',()=>act('رجّعت ورد اليوم',()=>{S.mem=S.undoDone.mem;S.done=false;S.log=S.log.filter(x=>x.d!==S.day);delete S.undoDone}),'gold');
+  const top=$('wardCtl'); top.replaceChildren(); const lead=document.createElement('div');lead.className='wr wr-more';
+  const box=document.createElement('details');box.className='wfold';box.open=ctlOpen;box.addEventListener('toggle',()=>ctlOpen=box.open);
+  const sm=document.createElement('summary');sm.textContent='✎ عدّل الورد';box.append(sm);top.append(lead,box);
+  const mk=(host,txt,fn,cls)=>{const x=document.createElement('button');x.type='button';x.className='btn'+(cls?' '+cls:'');x.textContent=txt;x.addEventListener('click',fn);host.append(x)};
+  if(S.done&&S.undoDone&&S.undoDone.d===S.day)mk(lead,'↩︎ ما حفظته، رجّع الورد',()=>act('رجّعت ورد اليوم',()=>{S.mem=S.undoDone.mem;S.done=false;S.log=S.log.filter(x=>x.d!==S.day);delete S.undoDone}),'gold');
   // today's range: one row for its first verse, one for its last, then the other actions
   const f=from(), lo=S.old===false?S.start:1, grow=n=>{S.grow={d:S.day,n:grown()+n}};
-  const mk=(host,txt,fn,cls)=>{const x=document.createElement('button');x.type='button';x.className='btn'+(cls?' '+cls:'');x.textContent=txt;x.addEventListener('click',fn);host.append(x)};
   const row=(lbl,btns)=>{const w=document.createElement('div');w.className='wr';const l=document.createElement('span');l.className='wr-l';l.textContent=lbl;w.append(l);
     btns.filter(Boolean).forEach(([t,fn])=>mk(w,t,fn));box.append(w)};
   row('أول الورد: البيت '+ar(f),[
@@ -366,7 +371,8 @@ function renderWardCtl(){
     S.end<N&&['➕ زيد البيت '+ar(S.end+1),()=>act('زدت البيت '+ar(S.end+1),()=>{S.end=Math.min(N,S.end+1);S.done=false})],
     S.end>1&&S.end>S.start-1&&S.end>f&&['✕ شيل البيت '+ar(S.end),()=>act('شلت البيت '+ar(S.end),()=>{S.end=Math.max(1,S.end-1);S.mem=Math.min(S.mem,S.end)})]]);
   const more=document.createElement('div');more.className='wr wr-more';box.append(more);
-  const mb=(txt,fn,cls)=>mk(more,txt,fn,cls);
+  const mb=(txt,fn,cls)=>mk(cls==='primary'?lead:more,txt,fn,cls==='primary'?'':cls);
+  if(S.reps>0&&!S.done)mk(more,'تراجع −١',()=>{S.reps--;render();save()});
   // listen-and-repeat over today's ward when the text has one recording per verse
   const m=UI.mediaFor(B.key); if(m&&m.verse){const it=[];for(let i=from();i<=S.end;i++){const u=m.verse(i);if(u)it.push({url:u,label:'البيت '+ar(i)})}
     if(it.length)mb('🎧 استمع للورد',()=>UI.playQueue(it,'ورد اليوم '+ar(from())+'–'+ar(S.end)),'primary')}
