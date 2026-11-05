@@ -22,8 +22,9 @@ const after=list=>{const l=list[list.length-1];return l.a<Q.suras[l.s-1][1]?{s:l
 
 const cache={};
 const load=url=>cache[url]||(cache[url]=fetch(url).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).catch(e=>{delete cache[url];throw e}));
+// a specialized book (sp: asbab, i'rab, ahkam…) has null where it says nothing about the ayah
 // the tafsir of an ayah; quran.com explains some ayat together with an earlier one (an empty entry): show that one's text once
-function tafsirOf(arr,a,shownFrom){if(arr[a-1])return{text:arr[a-1]};let j=a-1;while(j>0&&!arr[j-1])j--;
+function tafsirOf(arr,a,shownFrom){if(arr[a-1])return{text:arr[a-1]};if(arr[a-1]===null)return{none:true};let j=a-1;while(j>0&&!arr[j-1])j--;
   if(!j)return{text:''}; return j>=shownFrom?{with:j}:{text:arr[j-1],range:[j,a]}}
 
 // Quran quotes ﴿…﴾ in a tafsir stand out
@@ -50,14 +51,15 @@ async function render(){
       const sm=el('summary','',TF[k].t); d.append(sm); card.append(d);
       const body=el('div','tfb',' '); d.append(body);
       const fill=()=>load('data/tafsir/'+k+'/'+v.s+'.json').then(arr=>{body.replaceChildren();const r=tafsirOf(arr,v.a,shownFrom);
+        if(r.none){d.replaceWith(el('p','tfnone',TF[k].t+' · ما فيه شي عن هالآية'));return}
         if(r.with){body.append(el('p','note','تفسير هذه الآية مع الآية '+ar(r.with)+' فوق.'));return}
         if(r.range)body.append(el('p','note','تفسير الآيات '+ar(r.range[0])+'–'+ar(r.range[1])+' معًا:'));
         if(!r.text){body.append(el('p','note','ما في تفسير لهالآية بهالكتاب.'));return}
         r.text.split(/\n\n+/).forEach(x=>{const p=el('p');para(p,x);body.append(p)})})
         .catch(()=>{body.replaceChildren(el('p','note','ما قدرت أحمّل التفسير، تأكد من الإنترنت.'))});
-      // a closed book loads when opened, so a long tafsir costs nothing until it is read
-      if(d.open)fill(); else d.addEventListener('toggle',()=>{if(d.open&&!d.dataset.l){d.dataset.l=1;fill()}});
-      if(d.open)d.dataset.l=1;
+      // a closed book loads when opened, so a long tafsir costs nothing until it is read; a specialized one loads at once,
+      // to say so when it has nothing on this ayah
+      if(d.open||TF[k].sp){d.dataset.l=1;fill()} else d.addEventListener('toggle',()=>{if(d.open&&!d.dataset.l){d.dataset.l=1;fill()}});
     });
   }
   const row=$('wardBtns'); row.replaceChildren();
@@ -74,7 +76,7 @@ function renderSettings(){
   // chosen books first, in their order (▲ moves one up), then the others by group: short, contemporary, long
   const order=[...S.books,...Q.tafasir.map(t=>t.k).filter(k=>!S.books.includes(k))];
   order.forEach((k,i)=>{const t=TF[k],on=S.books.includes(k);
-    const lbl=on?(i===0?'اللي اخترتها':''):(t.g&&(i===0||S.books.includes(order[i-1])||TF[order[i-1]].g!==t.g)?'تفاسير '+t.g:'');
+    const lbl=on?(i===0?'اللي اخترتها':''):(t.g&&(i===0||S.books.includes(order[i-1])||TF[order[i-1]].g!==t.g)?t.g:'');
     if(lbl)bl.append(el('div','eyebrow',lbl));
     const r=el('label','bk'+(on?' on':'')); const c=el('input');c.type='checkbox';c.checked=on;
     c.onchange=()=>{S.books=c.checked?[...S.books,k]:S.books.filter(x=>x!==k);save();renderSettings();render()};

@@ -8,7 +8,9 @@ const fs = require('fs'), path = require('path'), https = require('https');
 const root = path.join(__dirname, '..'), R = path.join(__dirname, 'texts/raw/tafsir');
 // id: a quran.com tafsir id, 'jalalayn' (api.quran-tafseer.com), 'app-<slug>' (tafsir.app, tools/tafsir-fetch-app.js)
 // or 'qp-<book>' (Quranpedia's dumps, tools/tafsir-qp.js)
-const S = 'مختصرة', M = 'معاصرة', L = 'مطوّلة';
+const S = 'تفاسير مختصرة', M = 'تفاسير معاصرة', L = 'تفاسير مطوّلة';
+// specialized books (sp: an ayah they say nothing about is null, shown as such, not as part of an earlier passage)
+const AS = 'أسباب النزول', MA = 'التفسير بالمأثور', GH = 'غريب القرآن ومعانيه', IR = 'إعراب القرآن', AH = 'أحكام القرآن', QR = 'القراءات', NS = 'الناسخ والمنسوخ', MN = 'منتقاة من كلام الأئمة';
 const TAFASIR = [
   { k: 'muyassar', id: 16, g: S, t: 'التفسير الميسر', by: 'نخبة من العلماء · مجمع الملك فهد' },
   { k: 'mukhtasar', id: 'app-mukhtasar', g: S, t: 'المختصر في التفسير', by: 'مركز تفسير للدراسات القرآنية' },
@@ -38,6 +40,25 @@ const TAFASIR = [
   { k: 'qurtubi', id: 'app-qurtubi', g: L, t: 'تفسير القرطبي', by: 'محمد بن أحمد القرطبي (ت ٦٧١هـ)' },
   { k: 'fathqadeer', id: 'app-fath-alqadeer', g: L, t: 'فتح القدير', by: 'محمد بن علي الشوكاني (ت ١٢٥٠هـ)' },
   { k: 'tabari', id: 15, g: L, t: 'تفسير الطبري', by: 'محمد بن جرير الطبري (ت ٣١٠هـ)' },
+  { k: 'wahidiasbab', id: 'qp-asbab-book-2919', g: AS, sp: 1, t: 'أسباب النزول للواحدي', by: 'علي بن أحمد الواحدي (ت ٤٦٨هـ)' },
+  { k: 'muharrar', id: 'qp-asbab-book-460', g: AS, sp: 1, t: 'المحرر في أسباب نزول القرآن', by: 'خالد بن سليمان المزيني · من خلال الكتب التسعة' },
+  { k: 'ibnabihatim', id: 'app-ibn-abi-hatim', g: MA, sp: 1, t: 'تفسير ابن أبي حاتم', by: 'ابن أبي حاتم الرازي (ت ٣٢٧هـ) · ما وصل منه' },
+  { k: 'siraj', id: 'app-siraaj-ghareeb', g: GH, sp: 1, t: 'السراج في بيان غريب القرآن', by: 'محمد بن عبد العزيز الخضيري' },
+  { k: 'muyassargharib', id: 'app-almuyassar-ghareeb', g: GH, sp: 1, t: 'الميسر في غريب القرآن', by: 'مركز الدراسات القرآنية · مجمع الملك فهد' },
+  { k: 'ibnqutayba', id: 'app-ghareeb-ibn-qutaybah', g: GH, sp: 1, t: 'تفسير غريب القرآن لابن قتيبة', by: 'عبد الله بن مسلم بن قتيبة (ت ٢٧٦هـ)' },
+  { k: 'farraa', id: 'app-farraa', g: GH, sp: 1, t: 'معاني القرآن للفراء', by: 'يحيى بن زياد الفراء (ت ٢٠٧هـ)' },
+  { k: 'zajjaj', id: 'app-zajjaj', g: GH, sp: 1, t: 'معاني القرآن وإعرابه للزجاج', by: 'أبو إسحاق الزجاج (ت ٣١١هـ)' },
+  { k: 'mujtaba', id: 'qp-e3rab-book-180', g: IR, sp: 1, t: 'المجتبى من مشكل إعراب القرآن', by: 'أحمد بن محمد الخراط' },
+  { k: 'daas', id: 'app-iraab-daas', g: IR, sp: 1, t: 'إعراب القرآن للدعاس', by: 'أحمد عبيد الدعاس وأحمد محمد حميدان وإسماعيل محمود القاسم' },
+  { k: 'darweesh', id: 'app-iraab-aldarweesh', g: IR, sp: 1, t: 'إعراب القرآن وبيانه', by: 'محيي الدين درويش (ت ١٤٠٣هـ)' },
+  { k: 'ikleel', id: 'app-alikleel', g: AH, sp: 1, t: 'الإكليل في استنباط التنزيل', by: 'جلال الدين السيوطي (ت ٩١١هـ)' },
+  { k: 'harrasi', id: 'app-ilkia-alharrasee', g: AH, sp: 1, t: 'أحكام القرآن للكيا الهراسي', by: 'إلكيا الهراسي الشافعي (ت ٥٠٤هـ)' },
+  { k: 'jassas', id: 'app-aljasas', g: AH, sp: 1, t: 'أحكام القرآن للجصاص', by: 'أبو بكر الجصاص الحنفي (ت ٣٧٠هـ)' },
+  { k: 'ibnalarabi', id: 'app-ahkam-ibn-alarabee', g: AH, sp: 1, t: 'أحكام القرآن لابن العربي', by: 'أبو بكر ابن العربي المالكي (ت ٥٤٣هـ)' },
+  { k: 'nashr', id: 'app-alnashir', g: QR, sp: 1, t: 'النشر في القراءات العشر', by: 'ابن الجزري (ت ٨٣٣هـ) · فرش الحروف' },
+  { k: 'tahbeer', id: 'app-tahbeer-altayseer', g: QR, sp: 1, t: 'تحبير التيسير في القراءات العشر', by: 'ابن الجزري (ت ٨٣٣هـ)' },
+  { k: 'eedah', id: 'qp-nasekh-book-2391', g: NS, sp: 1, t: 'الإيضاح لناسخ القرآن ومنسوخه', by: 'مكي بن أبي طالب (ت ٤٣٧هـ)' },
+  { k: 'ibnqayyim', id: 'app-ibn-alqayyim', g: MN, sp: 1, t: 'تفسير ابن القيم', by: 'ما جُمع من كلام ابن قيم الجوزية (ت ٧٥١هـ) في التفسير' },
 ];
 // tafsir.app text: plain lines; drop the edition's page marks (p-٦٩٣) and the editors' notes [[…]]
 const cleanApp = t => !t ? '' : t.replace(/\[\[[\s\S]*?\]\]/g, '').replace(/\(p-[٠-٩0-9]+\)/g, '').split(/\n+/).map(p => p.replace(/[ \t\r]+/g, ' ').trim()).filter(Boolean).join('\n\n');
@@ -73,10 +94,11 @@ function clean(h) {
       else { out = Array(c.verses_count).fill('');
         for (const t of JSON.parse(fs.readFileSync(path.join(src, c.id + '.json'), 'utf8')).tafsirs) out[+t.verse_key.split(':')[1] - 1] = clean(t.text) }
       // a book that repeats a passage's text under each of its ayat: keep it once, on the first (the page shows it for the rest)
-      out = out.map((t, i) => t && out.slice(0, i).lastIndexOf(t) >= 0 && out.slice(0, i).filter(Boolean).pop() === t ? '' : t);
+      if (T.sp) out = out.map((t, i) => !t ? null : i && out[i - 1] === t ? '' : t);
+      else out = out.map((t, i) => t && out.slice(0, i).lastIndexOf(t) >= 0 && out.slice(0, i).filter(Boolean).pop() === t ? '' : t);
       const j = JSON.stringify(out); size += Buffer.byteLength(j); fs.writeFileSync(path.join(od, c.id + '.json'), j);
     }
-    ready.push({ k: T.k, t: T.t, by: T.by, g: T.g, size: Math.round(size / 1048576 * 10) / 10 });
+    ready.push({ k: T.k, t: T.t, by: T.by, g: T.g, ...(T.sp ? { sp: 1 } : {}), size: Math.round(size / 1048576 * 10) / 10 });
     console.log(T.k, (size / 1048576).toFixed(1) + 'MB');
   }
   fs.writeFileSync(path.join(qd, 'index.js'), '// Generated by tools/build-tafsir.js\nwindow.QURAN=' + JSON.stringify({ suras: CH.map(c => [c.name_arabic.replace(/^ابراهيم$/, 'إبراهيم'), c.verses_count]), tafasir: ready }) + ';\n');
