@@ -1,0 +1,3 @@
+// prints the output text around F index <f> (from out/tokens.json). usage: node around.js f1 f2 ...
+const T = require('./out/tokens.json');
+for (const f of process.argv.slice(2).map(Number)) { let i = T.findIndex(t => t.f >= f); console.log('@' + f + ': ' + T.slice(Math.max(0, i - 18), i + 12).map(t => t.o).join(' ')); }
