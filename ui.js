@@ -116,6 +116,7 @@ const BOOKS=[
   {key:'zuhdabulatahiya',c:'الشعر العربي',lsk:'mutoon_zuhdabulatahiya_v1',url:'zuhdabulatahiya.html',t:'زهدية أبي العتاهية',d:'الشعر العربي · ١٩ بيتًا'},
   {key:'mutanabbihikam',c:'الشعر العربي',lsk:'mutoon_mutanabbihikam_v1',url:'mutanabbihikam.html',t:'على قدر أهل العزم',d:'الشعر العربي · ٤٦ بيتًا'},
   {key:'shafiidiwan',c:'الشعر العربي',lsk:'mutoon_shafiidiwan_v1',url:'shafiidiwan.html',t:'مختارات من شعر الشافعي',d:'الشعر العربي · خمس مقطوعات · ٣٢ بيتًا'},
+  {key:'bidaya',c:'التزكية والرقائق',lsk:'mutoon_bidaya_v1',url:'bidaya.html',t:'بداية الهداية',d:'الطاعات واجتناب المعاصي وآداب الصحبة · ٦١٨ فقرة'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
