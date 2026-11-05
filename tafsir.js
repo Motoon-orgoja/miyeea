@@ -36,6 +36,30 @@ const perFor=(g,d)=>Math.max(1,Math.ceil((TOTAL-g)/Math.max(1,diff(d,S.end)+1)))
 if(S.day!==T){S.day=T;S.from={s:S.s,a:S.a};S.done=false;if(S.mode==='days'&&S.end)S.per=perFor(gi(S.from),T);if(S.set)save()}
 if(!S.from)S.from={s:S.s,a:S.a};
 
+/* a balanced ward: ayat differ a lot in length (the debt ayah is a page, some ayat are two words) and so do their tafsirs,
+   so a fixed count of ayat makes one day ten times another. The ward is cut by reading length instead: the words of the
+   Quran and of the chosen books (data/quran/w.json, data/tafsir/<k>/w.json), so each day reads about the same; a passage
+   the first book explains as one is kept whole, and the short end of a sura joins the day before it. */
+let WT=null, CONT=null, PRE=null;
+function loadWeights(){const ks=S.books.slice();
+  return Promise.all([load('data/quran/w.json'),...ks.map(k=>load('data/tafsir/'+k+'/w.json'))]).then(arrs=>{
+    const w=new Float64Array(TOTAL), c=new Uint8Array(TOTAL);
+    arrs.forEach((a,bi)=>a.forEach((x,i)=>{w[i]+=Math.max(0,x);if(bi===1&&x===-1)c[i]=1}));
+    const p=new Float64Array(TOTAL+1); for(let i=0;i<TOTAL;i++)p[i+1]=p[i]+w[i];
+    WT=w;CONT=c;PRE=p}).catch(()=>{})}
+// the ayat of the ward that starts at g on day d (a plan by date: what is left over the days left; by amount: S.per
+// ayat of average length)
+function wardN(g,d){
+  if(!WT)return S.mode==='days'&&S.end?perFor(g,d):S.per;
+  const target=S.mode==='days'&&S.end?(PRE[TOTAL]-PRE[g])/Math.max(1,diff(d,S.end)+1):PRE[TOTAL]/TOTAL*S.per;
+  let i=g,acc=0;
+  while(i<TOTAL){const w=WT[i];if(i>g&&acc+w/2>target)break;acc+=w;i++}
+  for(let k=0;i<TOTAL&&CONT[i]&&k<15;k++)i++;
+  const end=CUM[at(i-1).s]; if(i<end&&PRE[end]-PRE[i]<target*.25)i=end;
+  return Math.max(1,i-g)}
+// today's ward size, kept for the day (unless the plan, the books or the start change)
+function todayN(){const key=[T,gi(S.from),S.books.join(),S.mode,S.end,S.per,!!WT].join('|');
+  if(S.nKey!==key){S.n=wardN(gi(S.from),T);S.nKey=key}return S.n}
 // the ayat of a ward: per ayat from a start, running into the next sura; a plan by date stops at an-Nas
 function ward(from,n){const g=gi(from);if(S.mode==='days')n=Math.min(n,TOTAL-g);const out=[];for(let i=0;i<n;i++)out.push(at((g+i)%TOTAL));return out}
 const after=list=>at((gi(list[list.length-1])+1)%TOTAL);
@@ -56,12 +80,12 @@ function render(){
   if(!S.set){$('wardTitle').textContent='خلّينا نرتّب خطتك';$('planLine').textContent='';$('pbar').hidden=true;
     box.append(el('p','intro','كل يوم بتقرأ كم آية، وتحت كل آية التفاسير اللي بتختارها. حدد متى بدك تختم، وإحنا بنحسبلك ورد كل يوم.'));
     row.append(btn('primary grow','رتّب خطتي ←',()=>planSheet(true)));return}
-  const list=ward(S.from,S.per), first=list[0], last=list[list.length-1];
+  const list=ward(S.from,todayN()), first=list[0], last=list[list.length-1];
   S.lbl=range(first,last); save();
   $('wardTitle').textContent=S.lbl;
   const khatma=S.khatmaDay===T&&S.done, g=gi(S.done?{s:S.s,a:S.a}:S.from), pct=khatma?100:Math.floor(g/TOTAL*100);
   $('pbar').hidden=false; $('pbar').firstElementChild.style.width=Math.max(1,pct)+'%';
-  $('planLine').textContent=(S.mode==='days'&&S.end?'ختمة لـ '+dateLbl(S.end):ayat(S.per)+' باليوم')+' · '+ar(pct)+'٪';
+  $('planLine').textContent=(S.mode==='days'&&S.end?'ختمة لـ '+dateLbl(S.end):'حوالي '+ayat(S.per)+' باليوم')+' · '+ar(pct)+'٪';
   if(S.done){
     box.append(el('div','doneMsg',khatma?'ما شاء الله، ختمت القرآن مع التفسير 🤍':'✓ قرأت ورد اليوم'));
     const nx=schedule()[0]; if(nx&&!khatma)box.append(el('p','tfquiet center','ورد بكرة: '+range(nx.f,nx.l)));
@@ -116,7 +140,7 @@ const fold=(title,fill)=>{const d=el('details','pfold');d.append(el('summary',''
 const nextStart=()=>S.done?{g:gi({s:S.s,a:S.a}),d:addDays(T,1)}:{g:gi(S.from),d:T};
 // the days of the plan from here to an-Nas: [{d, f, l}]
 function schedule(){const out=[];let {g,d}=nextStart();
-  while(g<TOTAL&&out.length<TOTAL){const n=S.mode==='days'&&S.end?perFor(g,d):S.per, e=Math.min(TOTAL-1,g+n-1);out.push({d,f:at(g),l:at(e)});g=e+1;d=addDays(d,1)}
+  while(g<TOTAL&&out.length<TOTAL){const n=wardN(g,d), e=Math.min(TOTAL-1,g+n-1);out.push({d,f:at(g),l:at(e)});g=e+1;d=addDays(d,1)}
   return out}
 
 function planSheet(first){
@@ -128,19 +152,20 @@ function planSheet(first){
     const opts=S.mode==='days'?chips(DAYS,S.end?(DAYS.find(([n])=>addDays(nextStart().d,n-1)===S.end)||[])[0]:null,setDays)
       :chips(PERS.map(n=>[n,ayat(n)]),S.per,v=>{S.per=v;paint()});
     const sch=schedule(), endD=sch.length?sch[sch.length-1].d:T, left=TOTAL-nextStart().g;
+    const bal=el('p','note','الورد بيتوازن بطول الآيات وتفسيرها: يوم بيطلع آيات أكثر ويوم أقل، بس وقت القراءة تقريبًا نفسه، والمقطع اللي بيتفسّر مع بعض ما بينقسم.');bal.style.margin='0';
     const sum=el('p','psum',!sch.length?'':S.mode==='days'?'يعني تقريبًا '+ayat(Math.ceil(left/sch.length))+' باليوم، وبتختم '+dateLbl(endD)+'.'
       :'بتختم بعد '+dur(sch.length)+'، '+dateLbl(endD)+'.');
-    b.append(sec('كيف بدك تقرأ؟',how,opts,sum));
+    b.append(sec('كيف بدك تقرأ؟',how,opts,sum,bal));
     // 2. the books, in order
     const mine=el('div','mine');
     S.books.forEach((k,i)=>{const r=el('div','mbk');r.append(el('b','',TF[k].t));
       if(i>0)r.append(btn('sm','▲',()=>{S.books.splice(i,1);S.books.splice(i-1,0,k);paint()}));
-      r.append(btn('sm','✕',()=>{S.books.splice(i,1);paint()}));mine.append(r)});
+      r.append(btn('sm','✕',()=>{S.books.splice(i,1);loadWeights().then(paint)}));mine.append(r)});
     if(!S.books.length)mine.append(el('p','note','ما اخترت ولا تفسير.'));
     const add=fold('＋ زيد تفسير',d=>{let g=null,box=null;Q.tafasir.forEach(t=>{
       if(t.g!==g){g=t.g;box=el('details','pgrp');box.append(el('summary','',t.g));d.append(box)}
       const on=S.books.includes(t.k), r=el('button','pbk'+(on?' on':''));r.type='button';
-      r.append(el('b','',(on?'✓ ':'')+t.t),el('small','',t.by));r.onclick=()=>{S.books=on?S.books.filter(x=>x!==t.k):[...S.books,t.k];paint()};box.append(r)})});
+      r.append(el('b','',(on?'✓ ':'')+t.t),el('small','',t.by));r.onclick=()=>{S.books=on?S.books.filter(x=>x!==t.k):[...S.books,t.k];loadWeights().then(paint)};box.append(r)})});
     b.append(sec('التفاسير تحت كل آية',mine,add));
     // 3. the rest, folded
     b.append(fold('📅 جدول الختمة',d=>{const l=el('div','sched');sch.slice(0,400).forEach(x=>{const r=el('div');r.append(el('span','',dayLbl(x.d)),el('b','',range(x.f,x.l)));l.append(r)});d.append(l)}));
@@ -162,5 +187,5 @@ function planSheet(first){
   new MutationObserver((m,o)=>{if(!document.getElementById('uiSheet')){o.disconnect();render()}}).observe(document.body,{childList:true});
 }
 $('planBtn').onclick=()=>planSheet(!S.set);
-render();
+render(); loadWeights().then(render);
 })();

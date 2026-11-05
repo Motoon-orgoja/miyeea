@@ -1,6 +1,8 @@
 // Builds the daily tafsir ward's data from tools/texts/raw/tafsir (tools/tafsir-fetch.js):
 //   data/quran/index.js        window.QURAN = {suras:[[name, ayat]], tafasir:[{k,t,by,g,size}]} (g: the group in the settings)
 //   data/quran/<s>.json         the Uthmani text of sura s (quran.com), one string per ayah
+//   data/quran/w.json and data/tafsir/<k>/w.json  the words of each ayah, for the plan that balances the daily ward by
+//                               reading length (tafsir.js); -1 where a tafsir explains the ayah with the one before
 //   data/tafsir/<k>/<s>.json    one tafsir of sura s, one string per ayah: plain paragraphs (\n\n), Quran quoted as ﴿…﴾;
 //                               "" where the tafsir explains this ayah together with an earlier one (quran.com groups them)
 // usage: node tools/build-tafsir.js
@@ -65,6 +67,8 @@ const cleanApp = t => !t ? '' : t.replace(/\[\[[\s\S]*?\]\]/g, '').replace(/\(p-
 const get = url => new Promise((ok, no) => https.get(url, { headers: { 'User-Agent': 'Mozilla/5.0 (motoon app build)' } }, r => {
   let s = ''; r.setEncoding('utf8'); r.on('data', d => s += d); r.on('end', () => ok(s)) }).on('error', no));
 const num = s => +String(s).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+// words of a text, without harakat
+const words = t => { t = String(t).replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g, '').trim(); return t ? t.split(/\s+/).length : 0 };
 const ent = s => s.replace(/&nbsp;/g, ' ').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#(\d+);/g, (a, n) => String.fromCharCode(+n));
 // quran.com tafsir html -> plain paragraphs; a Quran quote ({ … } in a qpc-hafs span) becomes ﴿…﴾
 function clean(h) {
@@ -82,10 +86,11 @@ function clean(h) {
   const CH = JSON.parse(fs.readFileSync(nf, 'utf8')).chapters;
   const qd = path.join(root, 'data/quran'); fs.mkdirSync(qd, { recursive: true });
   for (const c of CH) fs.writeFileSync(path.join(qd, c.id + '.json'), JSON.stringify(Q.filter(v => +v.verse_key.split(':')[0] === c.id).map(v => v.text_uthmani.trim())));
+  fs.writeFileSync(path.join(qd, 'w.json'), JSON.stringify(Q.map(v => words(v.text_uthmani))));
   const ready = [];
   for (const T of TAFASIR) {
     const src = path.join(R, String(T.id)); if (!fs.existsSync(src) || fs.readdirSync(src).length < 114) { console.log('skip', T.k, '(not downloaded)'); continue }
-    const od = path.join(root, 'data/tafsir', T.k); fs.mkdirSync(od, { recursive: true }); let size = 0;
+    const od = path.join(root, 'data/tafsir', T.k); fs.mkdirSync(od, { recursive: true }); let size = 0; const W = [];
     for (const c of CH) {
       let out;
       if (String(T.id).startsWith('app-')) out = JSON.parse(fs.readFileSync(path.join(src, c.id + '.json'), 'utf8')).map(cleanApp);
@@ -100,8 +105,10 @@ function clean(h) {
         const a = num(m[1]), b = num(m[2]); if (a !== i + 1 || b <= a || b - a > 20) return; for (let k = i + 1; k < Math.min(b, out.length); k++) if (!out[k]) out[k] = t });
       if (T.sp) out = out.map((t, i) => !t ? null : i && out[i - 1] === t ? '' : t);
       else out = out.map((t, i) => t && out.slice(0, i).lastIndexOf(t) >= 0 && out.slice(0, i).filter(Boolean).pop() === t ? '' : t);
+      out.forEach(t => W.push(t === '' ? -1 : t ? words(t) : 0));
       const j = JSON.stringify(out); size += Buffer.byteLength(j); fs.writeFileSync(path.join(od, c.id + '.json'), j);
     }
+    fs.writeFileSync(path.join(od, 'w.json'), JSON.stringify(W));
     ready.push({ k: T.k, t: T.t, by: T.by, g: T.g, ...(T.sp ? { sp: 1 } : {}), size: Math.round(size / 1048576 * 10) / 10 });
     console.log(T.k, (size / 1048576).toFixed(1) + 'MB');
   }

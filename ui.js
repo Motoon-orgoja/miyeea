@@ -578,9 +578,11 @@ function mountFab(){
     const t=document.querySelector('[data-fab]');
     const shown=t&&t.offsetParent!==null&&!document.getElementById('uiSheet');
     let off=false; if(shown){const r=t.getBoundingClientRect();off=r.bottom<60||r.top>innerHeight-40}
+    // a bar at the bottom (step-by-step, voice recitation) lifts the floating buttons above it: this counter and the pen (annot.js)
+    let h=0; document.querySelectorAll('.stepbar,.voicebar,.ui-rbar').forEach(b=>{if(!b.hidden&&getComputedStyle(b).display!=='none')h=Math.max(h,b.getBoundingClientRect().height)});
+    const pen=document.querySelector('.ann-btn'); if(pen)pen.style.bottom=h?`calc(${Math.round(h)+12}px + env(safe-area-inset-bottom,0px))`:'';
     fab.hidden=!(shown&&off); if(fab.hidden)return;
     fab.innerHTML=t.innerHTML; fab.classList.toggle('full',t.classList.contains('full')||Number(t.dataset.fabFull)>0);
-    let h=0; document.querySelectorAll('.stepbar,.voicebar,.ui-rbar').forEach(b=>{if(!b.hidden&&getComputedStyle(b).display!=='none')h=Math.max(h,b.getBoundingClientRect().height)});
     fab.style.bottom=`calc(${Math.round(h)+16}px + env(safe-area-inset-bottom,0px))`;
   };
   const later=()=>{if(!raf)raf=setTimeout(update,60)};
