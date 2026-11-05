@@ -83,6 +83,12 @@ const BOOKS=[
   {key:'bina',c:'الصرف',lsk:'mutoon_bina_v1',url:'bina.html',t:'متن البناء',d:'الصرف · ٣٥ بابًا وتقسيم الفعل'},
   {key:'umdasalik',c:'الفقه',lsk:'mutoon_umdasalik_v1',url:'umdasalik.html',t:'عمدة السالك',d:'الفقه الشافعي · ١١ كتابًا و٧٥ بابًا و٥٧ فصلًا'},
   {key:'dalil',c:'الفقه',lsk:'mutoon_dalil_v1',url:'dalil.html',t:'دليل الطالب',d:'الفقه الحنبلي · ٣٧ كتابًا و١١٥ بابًا و٢٠٢ فصلًا'},
+  {key:'qahtaniyya',c:'العقيدة',lsk:'mutoon_qahtaniyya_v1',url:'qahtaniyya.html',t:'نونية القحطاني',d:'العقيدة والآداب · ٦٨٩ بيتًا'},
+  {key:'shudhur',c:'النحو',lsk:'mutoon_shudhur_v1',url:'shudhur.html',t:'شذور الذهب',d:'المتن الأوسع بعد قطر الندى · ١٧ بابًا وفصلًا'},
+  {key:'nawaqid',c:'العقيدة',lsk:'mutoon_nawaqid_v1',url:'nawaqid.html',t:'نواقض الإسلام',d:'نواقض الإسلام العشرة · ١٦ فقرة'},
+  {key:'shurut',c:'العقيدة',lsk:'mutoon_shurut_v1',url:'shurut.html',t:'شروط الصلاة وأركانها وواجباتها',d:'الفقه والعقيدة في الصلاة · ٩ شروط و١٤ ركنًا و٨ واجبات في ٨٥ فقرة'},
+  {key:'usulsitta',c:'العقيدة',lsk:'mutoon_usulsitta_v1',url:'usulsitta.html',t:'الأصول الستة',d:'ستة أصول عظيمة · مقدمة و٦ أصول في ٢٣ فقرة (غير مشكول)'},
+  {key:'kashf',c:'العقيدة',lsk:'mutoon_kashf_v1',url:'kashf.html',t:'كشف الشبهات',d:'التوحيد والرد على شبه المشركين · مقدمة وجواب مجمل و١٢ شبهة وخاتمة في ٢١٨ فقرة'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
