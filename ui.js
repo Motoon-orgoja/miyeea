@@ -94,6 +94,9 @@ const BOOKS=[
   {key:'aqila',c:'القراءات والتجويد',lsk:'mutoon_aqila_v1',url:'aqila.html',t:'عقيلة أتراب القصائد',d:'رسم المصحف · ٢٩٨ بيتًا'},
   {key:'rajab',c:'الحديث',lsk:'mutoon_rajab_v1',url:'rajab.html',t:'زوائد ابن رجب',d:'الحديث · ٨ أحاديث (٤٣–٥٠)'},
   {key:'lamiyyataymiyya',c:'العقيدة',lsk:'mutoon_lamiyyataymiyya_v1',url:'lamiyyataymiyya.html',t:'لامية ابن تيمية',d:'العقيدة · ١٦ بيتًا'},
+  {key:'sullamwusul',c:'العقيدة',lsk:'mutoon_sullamwusul_v1',url:'sullamwusul.html',t:'سلم الوصول',d:'العقيدة · ٢٩٠ بيتًا'},
+  {key:'isaghuji',c:'المنطق',lsk:'mutoon_isaghuji_v1',url:'isaghuji.html',t:'إيساغوجي',d:'المنطق · ٨ أبواب'},
+  {key:'miatmaani',c:'البلاغة',lsk:'mutoon_miatmaani_v1',url:'miatmaani.html',t:'مائة المعاني والبيان',d:'البلاغة · ١٠٠ بيت'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
