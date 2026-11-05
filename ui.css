@@ -3,6 +3,8 @@
 :root{--vs:1;--us:1;--radius:14px;--shadow:0 1px 2px rgba(16,40,30,.06),0 4px 14px rgba(16,40,30,.05)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--shadow:0 1px 2px rgba(0,0,0,.4)}}
 :root[data-theme="dark"]{--shadow:0 1px 2px rgba(0,0,0,.4)}
+/* «ورقي»: warm paper tones, soft on the eyes for long reading */
+:root[data-theme="paper"]{--bg:#F3EBDC;--surface:#FBF6EB;--ink:#2E271C;--muted:#6F6553;--line:#E4D8C3;--accent:#2E6B50;--accent-soft:#E5EAD8;--gold:#94681F;--gold-soft:#F0E2C5;--veil:#ECE2CF;--bad:#B23A2E;--bad-bg:#F6E0D8;--shadow:0 1px 2px rgba(80,60,20,.08);color-scheme:light}
 body{font-size:calc(15px*var(--us));-webkit-tap-highlight-color:transparent}
 .card{box-shadow:var(--shadow);border-radius:18px}
 

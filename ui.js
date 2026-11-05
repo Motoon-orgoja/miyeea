@@ -191,7 +191,7 @@ function openSettings(){
   const b=sheet('الإعدادات');
   b.append(field('لغة الواجهة',seg('لغة الواجهة',[['ar','عامية'],['fus','فصحى'],['en','English']],P.lang||'ar',v=>{P.lang=v;save();setTimeout(()=>location.reload(),150)}),'المتون نفسها بتضل بالعربي.'));
   b.append(el('h3','ui-sec','القراءة والمظهر'));
-  b.append(field('المظهر',seg('المظهر',[['auto','حسب الجهاز'],['light','فاتح'],['dark','غامق']],P.theme,v=>{P.theme=v;save()})));
+  b.append(field('المظهر',seg('المظهر',[['auto','حسب الجهاز'],['light','فاتح'],['paper','ورقي'],['dark','غامق']],P.theme,v=>{P.theme=v;save()})));
   const prev=el('div','ui-preview','وَالْأَخْذُ بِالتَّجْوِيدِ حَتْمٌ لَازِمُ');
   const rng=(min,max,step,key,fmt)=>{const r=el('input');r.type='range';r.min=min;r.max=max;r.step=step;r.value=P[key];const o=el('span','ui-val',fmt(P[key]));
     r.oninput=()=>{P[key]=+r.value;o.textContent=fmt(P[key]);save()};const w=el('div','ui-range');w.append(r,o);return w};

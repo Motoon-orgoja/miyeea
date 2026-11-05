@@ -64,6 +64,7 @@ const TAFASIR = [
 const cleanApp = t => !t ? '' : t.replace(/\[\[[\s\S]*?\]\]/g, '').replace(/\(p-[٠-٩0-9]+\)/g, '').split(/\n+/).map(p => p.replace(/[ \t\r]+/g, ' ').trim()).filter(Boolean).join('\n\n');
 const get = url => new Promise((ok, no) => https.get(url, { headers: { 'User-Agent': 'Mozilla/5.0 (motoon app build)' } }, r => {
   let s = ''; r.setEncoding('utf8'); r.on('data', d => s += d); r.on('end', () => ok(s)) }).on('error', no));
+const num = s => +String(s).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
 const ent = s => s.replace(/&nbsp;/g, ' ').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#(\d+);/g, (a, n) => String.fromCharCode(+n));
 // quran.com tafsir html -> plain paragraphs; a Quran quote ({ … } in a qpc-hafs span) becomes ﴿…﴾
 function clean(h) {
@@ -94,6 +95,9 @@ function clean(h) {
       else { out = Array(c.verses_count).fill('');
         for (const t of JSON.parse(fs.readFileSync(path.join(src, c.id + '.json'), 'utf8')).tafsirs) out[+t.verse_key.split(':')[1] - 1] = clean(t.text) }
       // a book that repeats a passage's text under each of its ayat: keep it once, on the first (the page shows it for the rest)
+      // a specialized entry headed by its range («[البقرة: 183 - 184]», «[١-٢]») covers the ayat after it too
+      if (T.sp) out.forEach((t, i) => { const m = t && /\[(?:[^\]:]{2,20}:\s*)?([0-9٠-٩]+)\s*[-–]\s*([0-9٠-٩]+)\]/.exec(t.slice(0, 800)); if (!m) return;
+        const a = num(m[1]), b = num(m[2]); if (a !== i + 1 || b <= a || b - a > 20) return; for (let k = i + 1; k < Math.min(b, out.length); k++) if (!out[k]) out[k] = t });
       if (T.sp) out = out.map((t, i) => !t ? null : i && out[i - 1] === t ? '' : t);
       else out = out.map((t, i) => t && out.slice(0, i).lastIndexOf(t) >= 0 && out.slice(0, i).filter(Boolean).pop() === t ? '' : t);
       const j = JSON.stringify(out); size += Buffer.byteLength(j); fs.writeFileSync(path.join(od, c.id + '.json'), j);
