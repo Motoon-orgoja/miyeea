@@ -81,6 +81,7 @@ const BOOKS=[
   {key:'qurra',c:'السيرة النبوية',lsk:'mutoon_qurra_v1',url:'qurra.html',t:'قرة الأبصار',d:'السيرة النبوية · ٣٩٨ بيتًا'},
   {key:'jawharmaknun',c:'البلاغة',lsk:'mutoon_jawharmaknun_v1',url:'jawharmaknun.html',t:'الجوهر المكنون',d:'البلاغة · ٢٩١ بيتًا'},
   {key:'bina',c:'الصرف',lsk:'mutoon_bina_v1',url:'bina.html',t:'متن البناء',d:'الصرف · ٣٥ بابًا وتقسيم الفعل'},
+  {key:'umdasalik',c:'الفقه',lsk:'mutoon_umdasalik_v1',url:'umdasalik.html',t:'عمدة السالك',d:'الفقه الشافعي · ١١ كتابًا و٧٥ بابًا و٥٧ فصلًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
