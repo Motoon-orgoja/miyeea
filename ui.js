@@ -103,6 +103,10 @@ const BOOKS=[
   {key:'amr',c:'الشعر العربي',lsk:'mutoon_amr_v1',url:'amr.html',t:'معلقة عمرو بن كلثوم',d:'الشعر العربي · ١٠٣ أبيات'},
   {key:'antara',c:'الشعر العربي',lsk:'mutoon_antara_v1',url:'antara.html',t:'معلقة عنترة بن شداد',d:'الشعر العربي · ٧٥ بيتًا'},
   {key:'harith',c:'الشعر العربي',lsk:'mutoon_harith_v1',url:'harith.html',t:'معلقة الحارث بن حلزة',d:'الشعر العربي · ٨٢ بيتًا'},
+  {key:'imru',c:'الشعر العربي',lsk:'mutoon_imru_v1',url:'imru.html',t:'معلقة امرئ القيس',d:'الشعر العربي · ٧٩ بيتًا'},
+  {key:'tarafa',c:'الشعر العربي',lsk:'mutoon_tarafa_v1',url:'tarafa.html',t:'معلقة طرفة بن العبد',d:'الشعر العربي · ١٠٣ أبيات'},
+  {key:'zuhayr',c:'الشعر العربي',lsk:'mutoon_zuhayr_v1',url:'zuhayr.html',t:'معلقة زهير بن أبي سلمى',d:'الشعر العربي · ٦٢ بيتًا'},
+  {key:'labid',c:'الشعر العربي',lsk:'mutoon_labid_v1',url:'labid.html',t:'معلقة لبيد بن ربيعة',d:'الشعر العربي · ٨٨ بيتًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
