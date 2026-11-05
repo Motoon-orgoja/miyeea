@@ -113,6 +113,9 @@ const BOOKS=[
   {key:'lamiyyatajam',c:'الشعر العربي',lsk:'mutoon_lamiyyatajam_v1',url:'lamiyyatajam.html',t:'لامية العجم',d:'الشعر العربي · ٥٩ بيتًا'},
   {key:'bustiyya',c:'الشعر العربي',lsk:'mutoon_bustiyya_v1',url:'bustiyya.html',t:'نونية البستي',d:'الشعر العربي · ٦٣ بيتًا'},
   {key:'rundiyya',c:'الشعر العربي',lsk:'mutoon_rundiyya_v1',url:'rundiyya.html',t:'رثاء الأندلس',d:'الشعر العربي · ٤٣ بيتًا'},
+  {key:'zuhdabulatahiya',c:'الشعر العربي',lsk:'mutoon_zuhdabulatahiya_v1',url:'zuhdabulatahiya.html',t:'زهدية أبي العتاهية',d:'الشعر العربي · ١٩ بيتًا'},
+  {key:'mutanabbihikam',c:'الشعر العربي',lsk:'mutoon_mutanabbihikam_v1',url:'mutanabbihikam.html',t:'على قدر أهل العزم',d:'الشعر العربي · ٤٦ بيتًا'},
+  {key:'shafiidiwan',c:'الشعر العربي',lsk:'mutoon_shafiidiwan_v1',url:'shafiidiwan.html',t:'مختارات من شعر الشافعي',d:'الشعر العربي · خمس مقطوعات · ٣٢ بيتًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
