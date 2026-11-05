@@ -107,6 +107,9 @@ const BOOKS=[
   {key:'tarafa',c:'الشعر العربي',lsk:'mutoon_tarafa_v1',url:'tarafa.html',t:'معلقة طرفة بن العبد',d:'الشعر العربي · ١٠٣ أبيات'},
   {key:'zuhayr',c:'الشعر العربي',lsk:'mutoon_zuhayr_v1',url:'zuhayr.html',t:'معلقة زهير بن أبي سلمى',d:'الشعر العربي · ٦٢ بيتًا'},
   {key:'labid',c:'الشعر العربي',lsk:'mutoon_labid_v1',url:'labid.html',t:'معلقة لبيد بن ربيعة',d:'الشعر العربي · ٨٨ بيتًا'},
+  {key:'lamiyyatarab',c:'الشعر العربي',lsk:'mutoon_lamiyyatarab_v1',url:'lamiyyatarab.html',t:'لامية العرب',d:'الشعر العربي · ٦٨ بيتًا'},
+  {key:'ilbiri',c:'التزكية والرقائق',lsk:'mutoon_ilbiri_v1',url:'ilbiri.html',t:'تائية الإلبيري',d:'الوعظ والحث على العلم · ١١٢ بيتًا'},
+  {key:'wasiyyasughra',c:'التزكية والرقائق',lsk:'mutoon_wasiyyasughra_v1',url:'wasiyyasughra.html',t:'الوصية الصغرى',d:'وصيته لأبي القاسم المغربي · ٩٧ فقرة'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
