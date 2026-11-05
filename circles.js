@@ -207,8 +207,10 @@ function render(v,fresh,tab){
   const m=me(), b=UI.sheet('👥 '+v.name), adm=isAdmin(v,m.mid), cfg=v.cfg||{};
   // keep the stored name in step (an admin may have renamed it)
   setList(list().map(c=>c.id===v.id?{id:c.id,name:v.name}:c));
-  const head=el('div','cc-head'); const code=el('div','ui-code',v.id.slice(0,4)+'-'+v.id.slice(4)); code.setAttribute('data-noi18n','');
-  const inv=el('button','btn primary','📨 ادعُ أصحابك'); inv.onclick=()=>invite(v); head.append(code,inv); b.append(head);
+  // the invitation waits at the bottom, small: the code and a button (a fresh circle shows it at the top once)
+  const inv=el('div','cc-inv'), code=el('span','cc-code',v.id.slice(0,4)+'-'+v.id.slice(4)); code.setAttribute('data-noi18n','');
+  const ib=el('button','btn'+(fresh?' primary':''),'📨 ادعُ أصحابك'); ib.onclick=()=>invite(v); inv.append(el('small','','كود الحلقة'),code,ib);
+  if(fresh)b.append(inv);
   if(fresh)b.append(el('p','ui-hint','الحلقة جاهزة. ابعت الرابط لأصحابك، أو خلّيهم يكتبوا الكود من «حلقاتي».'));
   const po=pushOffer(); if(po)b.append(po);
   if(cfg.note){const n=el('div','cc-note');n.append(el('small','','📌 من المشرف'),el('p','',cfg.note));b.append(n)}
@@ -298,7 +300,7 @@ function render(v,fresh,tab){
   const foot=el('div','cc-acts cc-foot');
   const back=el('button','btn','← حلقاتي'); back.onclick=open;
   const lv=el('button','btn','اطلع من الحلقة'); lv.onclick=async()=>{if(!confirm('بدك تطلع من «'+v.name+'»؟'))return;try{await api('leave',{id:v.id})}catch(e){if(e.st!==403&&e.st!==404){toast(errText(e));return}}setList(list().filter(c=>c.id!==v.id));toast('طلعت من الحلقة');open()};
-  foot.append(back,lv); b.append(foot);
+  foot.append(back,lv); if(!fresh)b.append(inv); b.append(foot);
   const pv=el('details','cc-fold');pv.append(el('summary','','شو بيشوف أصحابي عني؟'),el('p','ui-hint',SHARE_NOTE+' وكل تشجيع بيوصل مرة وحدة باليوم، عشان ما يصير إزعاج.'));b.append(pv);
 }
 

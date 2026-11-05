@@ -97,12 +97,18 @@ const BOOKS=[
   {key:'sullamwusul',c:'العقيدة',lsk:'mutoon_sullamwusul_v1',url:'sullamwusul.html',t:'سلم الوصول',d:'العقيدة · ٢٩٠ بيتًا'},
   {key:'isaghuji',c:'المنطق',lsk:'mutoon_isaghuji_v1',url:'isaghuji.html',t:'إيساغوجي',d:'المنطق · ٨ أبواب'},
   {key:'miatmaani',c:'البلاغة',lsk:'mutoon_miatmaani_v1',url:'miatmaani.html',t:'مائة المعاني والبيان',d:'البلاغة · ١٠٠ بيت'},
+  {key:'durarlawami',c:'القراءات والتجويد',lsk:'mutoon_durarlawami_v1',url:'durarlawami.html',t:'الدرر اللوامع',d:'أصول قراءة نافع · ٢٧٣ بيتًا'},
+  {key:'qawaidirab',c:'النحو',lsk:'mutoon_qawaidirab_v1',url:'qawaidirab.html',t:'قواعد الإعراب',d:'النحو · أربعة أبواب · ٥ بابًا'},
+  {key:'maqsud',c:'الصرف',lsk:'mutoon_maqsud_v1',url:'maqsud.html',t:'المقصود',d:'الصرف · ١١ فصلًا'},
+  {key:'amr',c:'الشعر العربي',lsk:'mutoon_amr_v1',url:'amr.html',t:'معلقة عمرو بن كلثوم',d:'الشعر العربي · ١٠٣ أبيات'},
+  {key:'antara',c:'الشعر العربي',lsk:'mutoon_antara_v1',url:'antara.html',t:'معلقة عنترة بن شداد',d:'الشعر العربي · ٧٥ بيتًا'},
+  {key:'harith',c:'الشعر العربي',lsk:'mutoon_harith_v1',url:'harith.html',t:'معلقة الحارث بن حلزة',d:'الشعر العربي · ٨٢ بيتًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
   ['شافعي',['abushuja','safina','hadramiyya','umdasalik','zubad','waraqat','imriti','rahabiyya']],['حنبلي',['umdafiqh','akhsar','dalil','zad','qawaidusul']]];
 // the order of fields in the texts sheet
-const FIELDS=['القراءات والتجويد','علوم القرآن','العقيدة','الحديث','مصطلح الحديث','الفقه','أصول الفقه','القواعد الفقهية','الفرائض','النحو','الصرف','البلاغة','المنطق','السيرة النبوية','الرقائق والأذكار','الآداب والرقائق'];
+const FIELDS=['القراءات والتجويد','علوم القرآن','العقيدة','الحديث','مصطلح الحديث','الفقه','أصول الفقه','القواعد الفقهية','الفرائض','النحو','الصرف','البلاغة','المنطق','السيرة النبوية','الرقائق والأذكار','الآداب والرقائق','التزكية والرقائق','الشعر العربي'];
 
 /* ---------- small helpers ---------- */
 const ar=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
