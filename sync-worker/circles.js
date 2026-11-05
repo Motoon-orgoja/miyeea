@@ -8,7 +8,11 @@
 //   cheer {id,mid,tok,to,kind} → {ok, sent: false if already sent today}             leave {id,mid,tok,who?} → {ok}     rename {id,mid,tok,cname} → {ok}
 //   sub {mid,tok,sub:{endpoint,keys:{p256dh,auth}}, drop?} → {ok}   (this device's push subscription, or drop it)
 //   me {mid,tok,day,left,rem} → {ok}   (for the daily reminder: today's tasks left, -1 for none, and the hour to remind, -1 off)
-//   cfg {id,mid,tok,cfg:{note?,locked?,challenge?,admins?}} → {ok}   (the owner or an admin; only the owner names admins)
+//   cfg {id,mid,tok,cfg:{note?,locked?,challenge?,admins?,track?,assign?}} → {ok}   (the owner or an admin; only the owner names admins)
+//   pick {id,mid,tok,key} → {ok}   (in a circle where each member follows one text: the member's own text)
+// What a circle follows (cfg.track): {m:'all'} every text of each member (the default); {m:'one',k} one text for everyone;
+// {m:'each',a:{mid:key}} each member one text (the member picks it, an admin may set it). The status then carries bks
+// {key:[memorised, total, tasks left today]}, and the points count only the followed text.
 // The circle's settings (cfg): note, a short pinned word from the admins; locked, no new members; admins, member ids;
 // challenge {t: title, k: 'all'|'days'|'mem', a, b: first and last day}. Each status update also marks the member's day
 // (days: done the ward, read the tafsir ward, how much memorised), and «get» adds the points of this week and of the
@@ -27,14 +31,24 @@ const isDay = d => /^\d{4}-\d{2}-\d{2}$/.test(d || '');
 // this week: Saturday to Friday
 const weekOf = d => { const w = (new Date(d + 'T12:00:00Z').getUTCDay() + 1) % 7; return [addD(d, -w), addD(d, 6 - w)] };
 // the day row a status makes: the ward done, the tafsir ward read, memorised so far
-const dayRow = s => ({ d: isDay(s && s.day) ? s.day : day(), done: s && s.open === 0 && s.td ? 1 : 0, tf: s && s.tf ? 1 : 0, mem: Math.max(0, (+(s && s.v) || 0) + (+(s && s.u) || 0)) });
+const isKey = k => /^[a-z]{2,24}$/.test(k || '');
+// the text a member follows in a circle (null: every text)
+const keyOf = (cfg, mid) => { const t = cfg && cfg.track; return !t || t.m === 'all' ? null : t.m === 'one' ? t.k || '' : (t.a || {})[mid] || '' };
+// the day row: the ward done, the tafsir read, memorised so far, and per text [memorised, its ward done] (bk), so the
+// points can follow any text the circle chooses, even after it changes
+const dayRow = s => {
+  const bk = {}; Object.entries((s && s.bks) || {}).filter(([k]) => isKey(k)).slice(0, 40).forEach(([k, x]) => { bk[k] = [Math.max(0, +(x && x[0]) || 0), x && +x[2] === 0 && s.td ? 1 : 0] });
+  return { d: isDay(s && s.day) ? s.day : day(), done: s && s.open === 0 && s.td ? 1 : 0, tf: s && s.tf ? 1 : 0, mem: Math.max(0, (+(s && s.v) || 0) + (+(s && s.u) || 0)), bk: JSON.stringify(bk) };
+};
 // points of each member between a and b (k: what counts)
-function points(rows, a, b, k) {
+function points(rows, a, b, k, cfg) {
   const by = {};
   for (const r of rows) (by[r.mid] = by[r.mid] || []).push(r);
   const out = {};
   for (const [mid, rs] of Object.entries(by)) {
     rs.sort((x, y) => x.day < y.day ? -1 : 1);
+    // a circle that follows one text: that text's count and ward only
+    const tk = keyOf(cfg, mid); if (tk !== null) rs.forEach(r => { let x = []; try { x = (JSON.parse(r.bk || '{}'))[tk] || [] } catch (e) { } r = Object.assign(r, { mem: x[0] || 0, done: x[1] || 0, tf: 0 }) });
     const before = rs.filter(r => r.day < a).pop(), inn = rs.filter(r => r.day >= a && r.day <= b);
     const days = inn.filter(r => r.done).length, tf = inn.filter(r => r.tf).length;
     const base = before ? before.mem : inn.length ? inn[0].mem : 0, mem = inn.length ? Math.max(0, inn[inn.length - 1].mem - base) : 0;
@@ -58,8 +72,8 @@ export async function circles(action, b, db, notify) {
     const cfg = cfgOf(c), t = day(), [wa, wb] = weekOf(t), ch = cfg.challenge;
     const from = addD(ch && ch.a < wa ? ch.a : wa, -60), rows = await db.days(id, from);
     const v = { id, name: c.name, owner: c.owner, cfg, today: t, members: ms.map(m => ({ mid: m.mid, name: m.name, stat: JSON.parse(m.stat || '{}'), at: m.at })) };
-    v.week = { a: wa, b: wb, pts: points(rows, wa, wb, 'all') };
-    if (ch) v.challenge = { ...ch, pts: points(rows, ch.a, ch.b, ch.k) };
+    v.week = { a: wa, b: wb, pts: points(rows.map(r => ({ ...r })), wa, wb, 'all', cfg) };
+    if (ch) v.challenge = { ...ch, pts: points(rows.map(r => ({ ...r })), ch.a, ch.b, ch.k, cfg) };
     return v;
   };
   if (action === 'new') {
@@ -127,12 +141,26 @@ export async function circles(action, b, db, notify) {
       else { const t = clean(x.t, 50), len = Math.round(+x.days); if (!t || !(len >= 1 && len <= 90) || !KS.includes(x.k)) throw new E(400, 'challenge');
         const a = isDay(x.a) ? x.a : day(); cfg.challenge = { t, k: x.k, a, b: addD(a, len - 1) } }
     }
+    if ('track' in n) {
+      const t = n.track || {};
+      if (t.m === 'one' && isKey(t.k)) cfg.track = { m: 'one', k: t.k };
+      else if (t.m === 'each') cfg.track = { m: 'each', a: (cfg.track && cfg.track.a) || {} };
+      else delete cfg.track;
+    }
+    if (n.assign && cfg.track && cfg.track.m === 'each') { const x = n.assign; if (!hex.test(x.mid || '') || !(await db.member(id, x.mid))) throw new E(400, 'assign');
+      if (isKey(x.key)) cfg.track.a[x.mid] = x.key; else delete cfg.track.a[x.mid] }
     if ('admins' in n) {
       if (c.owner !== b.mid) throw new E(403, 'owner');
       const ms = new Set((await db.members(id)).map(x => x.mid));
       cfg.admins = (Array.isArray(n.admins) ? n.admins : []).filter(x => hex.test(x) && ms.has(x) && x !== c.owner).slice(0, 5);
       if (!cfg.admins.length) delete cfg.admins;
     }
+    await db.setCfg(id, JSON.stringify(cfg)); return { ok: true };
+  }
+  if (action === 'pick') {
+    const c = await db.circle(id), cfg = cfgOf(c);
+    if (!cfg.track || cfg.track.m !== 'each') throw new E(409, 'track');
+    if (isKey(b.key)) cfg.track.a[b.mid] = b.key; else delete cfg.track.a[b.mid];
     await db.setCfg(id, JSON.stringify(cfg)); return { ok: true };
   }
   if (action === 'leave') {
@@ -158,8 +186,8 @@ export function d1(D) {
     dueSubs: async (hour, d) => (await D.prepare('SELECT ep,p256dh,auth,mid,day,left FROM subs WHERE COALESCE(rem,20)=? AND (day IS NULL OR day<>? OR left>0)').bind(hour, d).all()).results,
     setCfg: (id, cfg) => run('UPDATE circles SET cfg=? WHERE id=?', cfg, id),
     // one row a member a day; the ward and the tafsir stay done once done that day
-    putDay: (cid, mid, r) => run('INSERT INTO days(cid,mid,day,done,tf,mem) VALUES(?,?,?,?,?,?) ON CONFLICT(cid,mid,day) DO UPDATE SET done=MAX(done,excluded.done),tf=MAX(tf,excluded.tf),mem=excluded.mem', cid, mid, r.d, r.done, r.tf, r.mem),
-    days: async (cid, from) => (await D.prepare('SELECT mid,day,done,tf,mem FROM days WHERE cid=? AND day>=?').bind(cid, from).all()).results,
+    putDay: (cid, mid, r) => run('INSERT INTO days(cid,mid,day,done,tf,mem,bk) VALUES(?,?,?,?,?,?,?) ON CONFLICT(cid,mid,day) DO UPDATE SET done=MAX(done,excluded.done),tf=MAX(tf,excluded.tf),mem=excluded.mem,bk=excluded.bk', cid, mid, r.d, r.done, r.tf, r.mem, r.bk),
+    days: async (cid, from) => (await D.prepare('SELECT mid,day,done,tf,mem,bk FROM days WHERE cid=? AND day>=?').bind(cid, from).all()).results,
     newCircle: (id, name, owner, at) => run('INSERT INTO circles(id,name,owner,created) VALUES(?,?,?,?)', id, name, owner, at),
     renameCircle: (id, name) => run('UPDATE circles SET name=? WHERE id=?', name, id),
     setOwner: (id, mid) => run('UPDATE circles SET owner=? WHERE id=?', mid, id),
@@ -193,7 +221,7 @@ export function memory() {
     setMe: async (mid, d, left, rem) => { for (const x of S.values()) if (x.mid === mid) Object.assign(x, { day: d, left, rem }) },
     dueSubs: async (hour, d) => [...S.values()].filter(x => (x.rem ?? 20) === hour && (!x.day || x.day !== d || x.left > 0)),
     setCfg: async (id, cfg) => { C.get(id).cfg = cfg },
-    putDay: async (cid, mid, r) => { const kk = cid + '|' + mid + '|' + r.d, o = DY.get(kk); DY.set(kk, { cid, mid, day: r.d, done: Math.max(r.done, o ? o.done : 0), tf: Math.max(r.tf, o ? o.tf : 0), mem: r.mem }) },
+    putDay: async (cid, mid, r) => { const kk = cid + '|' + mid + '|' + r.d, o = DY.get(kk); DY.set(kk, { cid, mid, day: r.d, done: Math.max(r.done, o ? o.done : 0), tf: Math.max(r.tf, o ? o.tf : 0), mem: r.mem, bk: r.bk }) },
     days: async (cid, from) => [...DY.values()].filter(r => r.cid === cid && r.day >= from),
     newCircle: async (id, name, owner) => { C.set(id, { id, name, owner }) },
     renameCircle: async (id, name) => { C.get(id).name = name },

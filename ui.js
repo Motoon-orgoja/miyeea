@@ -92,6 +92,8 @@ const BOOKS=[
   {key:'usulsunna',c:'العقيدة',lsk:'mutoon_usulsunna_v1',url:'usulsunna.html',t:'أصول السنة',d:'العقيدة · ٥٠ أصلًا بترقيم النشرات المتداولة'},
   {key:'sharhsunna',c:'العقيدة',lsk:'mutoon_sharhsunna_v1',url:'sharhsunna.html',t:'شرح السنة للمزني',d:'العقيدة · ٢٠ فقرة بترقيم المحقق'},
   {key:'aqila',c:'القراءات والتجويد',lsk:'mutoon_aqila_v1',url:'aqila.html',t:'عقيلة أتراب القصائد',d:'رسم المصحف · ٢٩٨ بيتًا'},
+  {key:'rajab',c:'الحديث',lsk:'mutoon_rajab_v1',url:'rajab.html',t:'زوائد ابن رجب',d:'الحديث · ٨ أحاديث (٤٣–٥٠)'},
+  {key:'lamiyyataymiyya',c:'العقيدة',lsk:'mutoon_lamiyyataymiyya_v1',url:'lamiyyataymiyya.html',t:'لامية ابن تيمية',d:'العقيدة · ١٦ بيتًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],

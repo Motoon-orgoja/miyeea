@@ -39,9 +39,17 @@ function setStatus(s){
   api('stat',{ids,name:m.name,stat:STAT}).then(()=>put('mutoon_circle_push',{h,at:Date.now()})).catch(()=>{});
 }
 
-/* how a member is doing today, in a word */
-function today_(s){
+/* what a circle follows (cfg.track, sync-worker/circles.js): every text (null), one text for all, or one per member */
+const keyOf=(v,mid)=>{const t=v&&v.cfg&&v.cfg.track;return !t||t.m==='all'?null:t.m==='one'?t.k||'':(t.a||{})[mid]||''};
+const titleOf=k=>{const b=window.UI&&UI.BOOKS.find(x=>x.key===k);return b?b.t:k};
+// a select of every text, for an admin choosing one, or a member choosing theirs
+function textPick(cur,onPick,none){const sel=el('select','cc-pick');const o0=el('option','',none||'اختار متن…');o0.value='';sel.append(o0);
+  (window.UI?UI.BOOKS:[]).forEach(b=>{const o=el('option','',b.t);o.value=b.key;if(b.key===cur)o.selected=true;sel.append(o)});sel.onchange=()=>onPick(sel.value);return sel}
+/* how a member is doing today, in a word; in a circle that follows one text, how that text is going */
+function today_(s,key){
   if(!s||s.day!==today())return ['off','ما فتح اليوم'];
+  if(key!=null&&key!==undefined){if(!key)return ['off','ما اختار متن'];const b=s.bks&&s.bks[key];if(!b)return ['off','ما بلّش «'+titleOf(key)+'»'];
+    return +b[2]===0?(s.td?['done','خلّص ورده ✓']:['done','ما عليه شي اليوم']):s.td?['mid','باقي '+ar(+b[2])]:['off','لسا ما بلّش']}
   if(s.open===0&&s.td)return ['done','خلّص ورده ✓'];
   if(s.open===0)return ['done','ما عليه شي اليوم'];
   return s.td?['mid','بلّش · باقي '+ar(s.open)]:['off','لسا ما بلّش'];
@@ -217,16 +225,22 @@ function render(v,fresh,tab){
   [['today','اليوم'],['week','ترتيب الأسبوع'],...(ch?[['ch','المسابقة']]:[])].forEach(([k,t])=>{const x=el('button',k===T?'on':'',t);x.type='button';x.onclick=()=>render(v,false,k);seg.append(x)});
   if(V2)b.append(seg);
   if(T==='today'){
-    const ms=v.members.slice().sort((a,b)=>{const r=x=>({done:0,mid:1,off:2})[today_(x.stat)[0]];return r(a)-r(b)||(b.stat.s||0)-(a.stat.s||0)});
-    const done=ms.filter(x=>today_(x.stat)[0]==='done').length;
-    b.append(el('div','cc-sum',ar(done)+' من '+ar(ms.length)+' خلّصوا وردهم اليوم'));
+    const ms=v.members.slice().sort((a,b)=>{const r=x=>({done:0,mid:1,off:2})[today_(x.stat,keyOf(v,x.mid))[0]];return r(a)-r(b)||(b.stat.s||0)-(a.stat.s||0)});
+    const done=ms.filter(x=>today_(x.stat,keyOf(v,x.mid))[0]==='done').length, tr=cfg.track;
+    b.append(el('div','cc-sum',ar(done)+' من '+ar(ms.length)+' خلّصوا وردهم اليوم'+(tr&&tr.m==='one'?' بـ«'+titleOf(tr.k)+'»':tr&&tr.m==='each'?' بمتونهم بالحلقة':'')));
+    // a circle where each member follows one text: mine is chosen here
+    if(tr&&tr.m==='each'){const mine=keyOf(v,m.mid),row=el('div','cc-mine');row.append(el('small','',mine?'متنك بالحلقة:':'اختار المتن اللي بتتسابق فيه بالحلقة:'),
+      textPick(mine,async k=>{try{await api('pick',{id:v.id,key:k});openCircle(v.id)}catch(e){toast(errText(e))}}));b.append(row)}
     const box=el('div','cc-list'), sent=new Set((v.sent||[]).map(([to,k])=>to+'|'+k)); b.append(box);
     ms.forEach(x=>{
-      const s=x.stat||{}, [k,t]=today_(s), row=el('details','cc-m'+(x.mid===m.mid?' me':''));
+      const s=x.stat||{}, xk=keyOf(v,x.mid), [k,t]=today_(s,xk), row=el('details','cc-m'+(x.mid===m.mid?' me':''));
       const top=el('summary','cc-top'); top.append(el('b','',x.name+(x.mid===m.mid?' (إنت)':'')+(x.mid===v.owner?' ★':isAdmin(v,x.mid)?' ◆':'')),el('span','cc-st '+k,t)); row.append(top);
       const info=[]; if(s.s)info.push('🔥 '+ar(s.s)+' يوم ورا بعض'); if(s.d30!=null)info.push(ar(s.d30)+' يوم من آخر ٣٠'); if(s.tf)info.push('📖 قرأ ورد التفسير'); info.push('آخر تحديث '+ago(x.at));
       row.append(el('small','cc-info',info.join(' · ')));
-      (s.bk||[]).forEach(([title,d,tot])=>{const p=el('div','cc-bk');p.append(el('span','',title),el('small','',ar(d)+' من '+ar(tot)));const bar=el('div','bar'),i=el('i');i.style.width=Math.max(d?2:0,Math.min(100,d/Math.max(1,tot)*100))+'%';bar.append(i);p.append(bar);row.append(p)});
+      // the followed text only, when the circle follows one; otherwise the texts the member works on
+      const bks=xk===null?(s.bk||[]):xk&&s.bks&&s.bks[xk]?[[titleOf(xk),+s.bks[xk][0],+s.bks[xk][1]]]:[];
+      if(xk&&!(s.bks&&s.bks[xk]))row.append(el('small','cc-info','«'+titleOf(xk)+'»: لسا ما بلّش فيه'));
+      bks.forEach(([title,d,tot])=>{const p=el('div','cc-bk');p.append(el('span','',title),el('small','',ar(d)+' من '+ar(tot)));const bar=el('div','bar'),i=el('i');i.style.width=Math.max(d?2:0,Math.min(100,d/Math.max(1,tot)*100))+'%';bar.append(i);p.append(bar);row.append(p)});
       if(x.mid!==m.mid){
         const acts=el('div','cc-acts');
         (k==='done'?['mabrook','dua']:['nudge','dua']).forEach(kind=>{const c=el('button','btn',''),was=()=>{c.textContent=CHEER[kind][0]+' '+CHEER[kind][3];c.disabled=true};
@@ -238,6 +252,8 @@ function render(v,fresh,tab){
         if(V2&&v.owner===m.mid){const on=isAdmin(v,x.mid),a=el('button','btn',on?'شيل الإشراف':'◆ خلّيه مشرف');a.onclick=async()=>{const l=(cfg.admins||[]).filter(y=>y!==x.mid);if(!on)l.push(x.mid);
           try{await api('cfg',{id:v.id,cfg:{admins:l}});openCircle(v.id)}catch(e){toast(errText(e))}};tools.append(a)}
         if(adm&&x.mid!==v.owner&&(v.owner===m.mid||!isAdmin(v,x.mid))){const rm=el('button','btn','إخراج من الحلقة');rm.onclick=async()=>{if(!confirm('بدك تطلّع «'+x.name+'» من الحلقة؟'))return;try{await api('leave',{id:v.id,who:x.mid});openCircle(v.id)}catch(e){toast(errText(e))}};tools.append(rm)}
+        // an admin may set a member's text in a circle where each follows one
+        if(adm&&tr&&tr.m==='each')tools.append(textPick(xk,async key=>{try{await api('cfg',{id:v.id,cfg:{assign:{mid:x.mid,key}}});openCircle(v.id)}catch(e){toast(errText(e))}},'متنه بالحلقة…'));
         if(tools.childElementCount)row.append(tools);
       }
       box.append(row);
@@ -246,12 +262,19 @@ function render(v,fresh,tab){
     const pts=T==='ch'&&ch?ch.pts:v.week.pts;
     b.append(el('div','cc-sum',T==='ch'?'«'+ch.t+'» · '+KLBL[ch.k]:'من السبت لحد الجمعة'));
     b.append(board(v,pts,m.mid));
-    const how=el('details','cc-fold');how.append(el('summary','','كيف بتنحسب النقاط؟'),el('p','ui-hint','كل يوم بتخلّص فيه ورد اليوم بكل متونك: ١٠ نقاط. كل يوم بتقرأ فيه ورد التفسير: ٥. كل بيت أو فقرة بتحفظها جديد: ٢. النقاط بتنحسب من وقت ما تفتح «وردي اليوم»، فافتحه بعد ما تخلّص.'+(T==='ch'&&ch.k!=='all'?' هالمسابقة بتحسب '+KLBL[ch.k]+' بس.':'')));b.append(how);
+    const how=el('details','cc-fold');how.append(el('summary','','كيف بتنحسب النقاط؟'),el('p','ui-hint',(cfg.track&&cfg.track.m!=='all'?'الحلقة بتتابع '+(cfg.track.m==='one'?'«'+titleOf(cfg.track.k)+'»':'متن كل واحد بالحلقة')+' بس: كل يوم بتخلّص فيه وردك فيه ١٠ نقاط، وكل بيت أو فقرة بتحفظها جديد منه ٢.':'كل يوم بتخلّص فيه ورد اليوم بكل متونك: ١٠ نقاط. كل يوم بتقرأ فيه ورد التفسير: ٥. كل بيت أو فقرة بتحفظها جديد: ٢.')+' النقاط بتنحسب من وقت ما تفتح «وردي اليوم»، فافتحه بعد ما تخلّص.'+(T==='ch'&&ch.k!=='all'?' هالمسابقة بتحسب '+KLBL[ch.k]+' بس.':'')));b.append(how);
   }
   // the admins' settings, folded
   if(adm){
     const st=el('details','cc-fold cc-admin');st.append(el('summary','','⚙︎ إدارة الحلقة'));
     if(V2){
+    // what the circle follows
+    {const tr=cfg.track||{m:'all'},f={m:tr.m||'all'};st.append(el('h3','ui-sec','شو بتتابع الحلقة؟'));
+      const r=el('div','cc-chips');[['all','كل متون الأعضاء'],['one','متن واحد للكل'],['each','كل واحد متن']].forEach(([val,l])=>{const c=el('button','chip'+(f.m===val?' on':''),l);c.type='button';
+        c.onclick=async()=>{if(val==='one'){f.m='one';r.querySelectorAll('.chip').forEach(z=>z.classList.toggle('on',z===c));one.hidden=false;return}
+          try{await api('cfg',{id:v.id,cfg:{track:{m:val}}});toast(val==='each'?'كل عضو بيختار متنه من «اليوم»، وإنت بتقدر تغيّره':'تمام ✓');openCircle(v.id)}catch(e){toast(errText(e))}};r.append(c)});
+      const one=el('div');one.hidden=f.m!=='one';one.append(textPick(tr.m==='one'?tr.k:'',async k=>{if(!k)return;try{await api('cfg',{id:v.id,cfg:{track:{m:'one',k}}});toast('الحلقة صارت تتابع «'+titleOf(k)+'» ✓');openCircle(v.id)}catch(e){toast(errText(e))}}));
+      st.append(r,one,el('small','ui-hint','الحالة والنقاط والمسابقات بتنحسب على اللي بتختاره هون.'))}
     // the pinned word
     const nt=el('textarea');nt.rows=2;nt.maxLength=200;nt.placeholder='كلمة بتطلع لكل الأعضاء فوق، مثلًا: الهدف هالأسبوع ختم باب الطهارة';nt.value=cfg.note||'';
     const ns=el('button','btn','📌 ثبّت الكلمة');ns.onclick=async()=>{try{await api('cfg',{id:v.id,cfg:{note:nt.value}});toast('انحفظت ✓');openCircle(v.id)}catch(e){toast(errText(e))}};
@@ -286,7 +309,7 @@ async function card(box){
   if(!cs.length){box.append(el('p','note','اعمل حلقة مع أصحابك أو أهلك، وشوفوا مين خلّص ورده اليوم، وشجّعوا بعض.'))}
   const rows=el('div','ui-col'); box.append(rows);
   for(const c of cs){const r=el('button','ui-book'),info=el('small','','…');r.type='button';r.append(el('b','',c.name),info);r.onclick=()=>openCircle(c.id);rows.append(r);
-    api('get',{id:c.id}).then(v=>{showCheers(v.cheers);const d=v.members.filter(x=>today_(x.stat)[0]==='done').length;const me_=me().mid,ch=v.challenge;let x=ar(d)+' من '+ar(v.members.length)+' خلّصوا اليوم';
+    api('get',{id:c.id}).then(v=>{showCheers(v.cheers);const d=v.members.filter(x=>today_(x.stat,keyOf(v,x.mid))[0]==='done').length;const me_=me().mid,ch=v.challenge;let x=ar(d)+' من '+ar(v.members.length)+' خلّصوا اليوم';
       if(ch&&daysLeft(v,ch.b)>0){const r=ranked(v,ch.pts),i=r.findIndex(y=>y.x.mid===me_);x+=' · 🏆 ترتيبك '+ar(i+1)}info.textContent=x;
       if(v.name!==c.name)setList(list().map(x=>x.id===c.id?{id:x.id,name:v.name}:x))}).catch(e=>{info.textContent=e.st===403||e.st===404?'ما عادت موجودة':'ما في نت'})}
   // notifications already on: keep the server's copy of this device's subscription current (it can change)
