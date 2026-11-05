@@ -1,21 +1,46 @@
 // Builds the daily tafsir ward's data from tools/texts/raw/tafsir (tools/tafsir-fetch.js):
-//   data/quran/index.js        window.QURAN = {suras:[[name, ayat]], tafasir:[{k,t,by,size}]}
+//   data/quran/index.js        window.QURAN = {suras:[[name, ayat]], tafasir:[{k,t,by,g,size}]} (g: the group in the settings)
 //   data/quran/<s>.json         the Uthmani text of sura s (quran.com), one string per ayah
 //   data/tafsir/<k>/<s>.json    one tafsir of sura s, one string per ayah: plain paragraphs (\n\n), Quran quoted as ﴿…﴾;
 //                               "" where the tafsir explains this ayah together with an earlier one (quran.com groups them)
 // usage: node tools/build-tafsir.js
 const fs = require('fs'), path = require('path'), https = require('https');
 const root = path.join(__dirname, '..'), R = path.join(__dirname, 'texts/raw/tafsir');
+// id: a quran.com tafsir id, 'jalalayn' (api.quran-tafseer.com), 'app-<slug>' (tafsir.app, tools/tafsir-fetch-app.js)
+// or 'qp-<book>' (Quranpedia's dumps, tools/tafsir-qp.js)
+const S = 'مختصرة', M = 'معاصرة', L = 'مطوّلة';
 const TAFASIR = [
-  { k: 'muyassar', id: 16, t: 'التفسير الميسر', by: 'نخبة من العلماء · مجمع الملك فهد' },
-  { k: 'jalalayn', id: 'jalalayn', t: 'تفسير الجلالين', by: 'جلال الدين المحلي وجلال الدين السيوطي' },
-  { k: 'saadi', id: 91, t: 'تفسير السعدي', by: 'عبد الرحمن بن ناصر السعدي (ت ١٣٧٦هـ)' },
-  { k: 'baghawi', id: 94, t: 'تفسير البغوي', by: 'الحسين بن مسعود البغوي (ت ٥١٦هـ)' },
-  { k: 'ibnkathir', id: 14, t: 'تفسير ابن كثير', by: 'إسماعيل بن كثير (ت ٧٧٤هـ)' },
-  { k: 'wasit', id: 93, t: 'التفسير الوسيط', by: 'محمد سيد طنطاوي (ت ١٤٣١هـ)' },
-  // al-Qurtubi is left out: in both online sources its lines are run together («سورة الإخلاصوهي أربع آياتمكية…»)
-  { k: 'tabari', id: 15, t: 'تفسير الطبري', by: 'محمد بن جرير الطبري (ت ٣١٠هـ)' },
+  { k: 'muyassar', id: 16, g: S, t: 'التفسير الميسر', by: 'نخبة من العلماء · مجمع الملك فهد' },
+  { k: 'mukhtasar', id: 'app-mukhtasar', g: S, t: 'المختصر في التفسير', by: 'مركز تفسير للدراسات القرآنية' },
+  { k: 'mukhtasarik', id: 'qp-521', g: S, t: 'مختصر تفسير ابن كثير', by: 'اختصار محمد علي الصابوني' },
+  { k: 'taysiraliy', id: 'qp-1575', g: S, t: 'تيسير العلي القدير لاختصار تفسير ابن كثير', by: 'محمد نسيب الرفاعي (ت ١٤١٢هـ)' },
+  { k: 'muntakhab', id: 'qp-10', g: S, t: 'المنتخب في تفسير القرآن', by: 'لجنة من علماء الأزهر · المجلس الأعلى للشؤون الإسلامية' },
+  { k: 'jalalayn', id: 'jalalayn', g: S, t: 'تفسير الجلالين', by: 'جلال الدين المحلي وجلال الدين السيوطي' },
+  { k: 'wajeez', id: 'app-alwajeez', g: S, t: 'الوجيز', by: 'علي بن أحمد الواحدي (ت ٤٦٨هـ)' },
+  { k: 'zimneen', id: 'app-zimneen', g: S, t: 'تفسير ابن أبي زمنين', by: 'محمد بن عبد الله بن أبي زمنين (ت ٣٩٩هـ) · مختصر تفسير يحيى بن سلام' },
+  { k: 'tasheel', id: 'app-altasheel', g: S, t: 'التسهيل لعلوم التنزيل', by: 'ابن جزي الكلبي (ت ٧٤١هـ)' },
+  { k: 'nasafi', id: 'app-alnasafi', g: S, t: 'تفسير النسفي (مدارك التنزيل)', by: 'أبو البركات النسفي (ت ٧١٠هـ)' },
+  { k: 'baydawi', id: 'app-albaydawee', g: S, t: 'تفسير البيضاوي (أنوار التنزيل)', by: 'ناصر الدين البيضاوي (ت ٦٨٥هـ)' },
+  { k: 'saadi', id: 91, g: M, t: 'تفسير السعدي', by: 'عبد الرحمن بن ناصر السعدي (ت ١٣٧٦هـ)' },
+  { k: 'aysar', id: 'app-aysar-altafasir', g: M, t: 'أيسر التفاسير', by: 'أبو بكر جابر الجزائري (ت ١٤٣٩هـ)' },
+  { k: 'tadabbur', id: 'app-tadabbur-wa-amal', g: M, t: 'تدبر وعمل', by: 'مركز تدبر' },
+  { k: 'uthaymeen', id: 'app-ibn-uthaymeen', g: M, t: 'تفسير ابن عثيمين', by: 'محمد بن صالح العثيمين (ت ١٤٢١هـ) · ما فسّره من السور' },
+  { k: 'safwa', id: 'qp-160', g: M, t: 'صفوة التفاسير', by: 'محمد علي الصابوني (ت ١٤٤٢هـ)' },
+  { k: 'zuhaili', id: 'qp-70', g: M, t: 'التفسير الوسيط للزحيلي', by: 'وهبة الزحيلي (ت ١٤٣٦هـ)' },
+  { k: 'shaarawi', id: 'qp-18', g: M, t: 'تفسير الشعراوي (خواطر)', by: 'محمد متولي الشعراوي (ت ١٤١٩هـ) · ما سُجّل من خواطره' },
+  { k: 'wasit', id: 93, g: M, t: 'التفسير الوسيط', by: 'محمد سيد طنطاوي (ت ١٤٣١هـ)' },
+  { k: 'adwaa', id: 'app-adwaa-albayan', g: M, t: 'أضواء البيان', by: 'محمد الأمين الشنقيطي (ت ١٣٩٣هـ)' },
+  { k: 'ibnashur', id: 'app-ibn-aashoor', g: M, t: 'التحرير والتنوير', by: 'محمد الطاهر ابن عاشور (ت ١٣٩٣هـ)' },
+  { k: 'qasimi', id: 'app-mahasin-altaweel', g: M, t: 'محاسن التأويل', by: 'جمال الدين القاسمي (ت ١٣٣٢هـ)' },
+  { k: 'baghawi', id: 94, g: L, t: 'تفسير البغوي', by: 'الحسين بن مسعود البغوي (ت ٥١٦هـ)' },
+  { k: 'ibnkathir', id: 14, g: L, t: 'تفسير ابن كثير', by: 'إسماعيل بن كثير (ت ٧٧٤هـ)' },
+  { k: 'zad', id: 'app-zad-almaseer', g: L, t: 'زاد المسير', by: 'ابن الجوزي (ت ٥٩٧هـ)' },
+  { k: 'qurtubi', id: 'app-qurtubi', g: L, t: 'تفسير القرطبي', by: 'محمد بن أحمد القرطبي (ت ٦٧١هـ)' },
+  { k: 'fathqadeer', id: 'app-fath-alqadeer', g: L, t: 'فتح القدير', by: 'محمد بن علي الشوكاني (ت ١٢٥٠هـ)' },
+  { k: 'tabari', id: 15, g: L, t: 'تفسير الطبري', by: 'محمد بن جرير الطبري (ت ٣١٠هـ)' },
 ];
+// tafsir.app text: plain lines; drop the edition's page marks (p-٦٩٣) and the editors' notes [[…]]
+const cleanApp = t => !t ? '' : t.replace(/\[\[[\s\S]*?\]\]/g, '').replace(/\(p-[٠-٩0-9]+\)/g, '').split(/\n+/).map(p => p.replace(/[ \t\r]+/g, ' ').trim()).filter(Boolean).join('\n\n');
 const get = url => new Promise((ok, no) => https.get(url, { headers: { 'User-Agent': 'Mozilla/5.0 (motoon app build)' } }, r => {
   let s = ''; r.setEncoding('utf8'); r.on('data', d => s += d); r.on('end', () => ok(s)) }).on('error', no));
 const ent = s => s.replace(/&nbsp;/g, ' ').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#(\d+);/g, (a, n) => String.fromCharCode(+n));
@@ -41,12 +66,17 @@ function clean(h) {
     const od = path.join(root, 'data/tafsir', T.k); fs.mkdirSync(od, { recursive: true }); let size = 0;
     for (const c of CH) {
       let out;
-      if (T.id === 'jalalayn') out = JSON.parse(fs.readFileSync(path.join(src, c.id + '.json'), 'utf8')).map(t => clean(t).replace(/«([^»]*)»/g, '﴿$1﴾'));
+      if (String(T.id).startsWith('app-')) out = JSON.parse(fs.readFileSync(path.join(src, c.id + '.json'), 'utf8')).map(cleanApp);
+      // Quranpedia: light html (<br />, the Quran in book-ayah spans already marked ﴿…﴾)
+      else if (String(T.id).startsWith('qp-')) out = JSON.parse(fs.readFileSync(path.join(src, c.id + '.json'), 'utf8')).map(t => cleanApp(ent((t || '').replace(/<br\s*\/?>|\r/gi, '\n').replace(/<[^>]+>/g, ''))));
+      else if (T.id === 'jalalayn') out = JSON.parse(fs.readFileSync(path.join(src, c.id + '.json'), 'utf8')).map(t => clean(t).replace(/«([^»]*)»/g, '﴿$1﴾'));
       else { out = Array(c.verses_count).fill('');
         for (const t of JSON.parse(fs.readFileSync(path.join(src, c.id + '.json'), 'utf8')).tafsirs) out[+t.verse_key.split(':')[1] - 1] = clean(t.text) }
+      // a book that repeats a passage's text under each of its ayat: keep it once, on the first (the page shows it for the rest)
+      out = out.map((t, i) => t && out.slice(0, i).lastIndexOf(t) >= 0 && out.slice(0, i).filter(Boolean).pop() === t ? '' : t);
       const j = JSON.stringify(out); size += Buffer.byteLength(j); fs.writeFileSync(path.join(od, c.id + '.json'), j);
     }
-    ready.push({ k: T.k, t: T.t, by: T.by, size: Math.round(size / 1048576 * 10) / 10 });
+    ready.push({ k: T.k, t: T.t, by: T.by, g: T.g, size: Math.round(size / 1048576 * 10) / 10 });
     console.log(T.k, (size / 1048576).toFixed(1) + 'MB');
   }
   fs.writeFileSync(path.join(qd, 'index.js'), '// Generated by tools/build-tafsir.js\nwindow.QURAN=' + JSON.stringify({ suras: CH.map(c => [c.name_arabic.replace(/^ابراهيم$/, 'إبراهيم'), c.verses_count]), tafasir: ready }) + ';\n');

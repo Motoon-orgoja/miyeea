@@ -71,9 +71,11 @@ function renderSettings(){
   per.onchange=()=>{S.per=+per.value;save();render()};
   const open=$('openFirst'); open.checked=S.open!==false; open.onchange=()=>{S.open=open.checked;save();render()};
   const bl=$('books'); bl.replaceChildren();
-  // chosen books first, in their order; ▲ moves one up
+  // chosen books first, in their order (▲ moves one up), then the others by group: short, contemporary, long
   const order=[...S.books,...Q.tafasir.map(t=>t.k).filter(k=>!S.books.includes(k))];
-  order.forEach(k=>{const t=TF[k],on=S.books.includes(k);
+  order.forEach((k,i)=>{const t=TF[k],on=S.books.includes(k);
+    const lbl=on?(i===0?'اللي اخترتها':''):(t.g&&(i===0||S.books.includes(order[i-1])||TF[order[i-1]].g!==t.g)?'تفاسير '+t.g:'');
+    if(lbl)bl.append(el('div','eyebrow',lbl));
     const r=el('label','bk'+(on?' on':'')); const c=el('input');c.type='checkbox';c.checked=on;
     c.onchange=()=>{S.books=c.checked?[...S.books,k]:S.books.filter(x=>x!==k);save();renderSettings();render()};
     const tx=el('span','bkt'); tx.append(el('b','',t.t),el('small','',t.by+(t.size>8?' · مطوّل':''))); r.append(c,tx);
