@@ -89,6 +89,9 @@ const BOOKS=[
   {key:'shurut',c:'العقيدة',lsk:'mutoon_shurut_v1',url:'shurut.html',t:'شروط الصلاة وأركانها وواجباتها',d:'الفقه والعقيدة في الصلاة · ٩ شروط و١٤ ركنًا و٨ واجبات في ٨٥ فقرة'},
   {key:'usulsitta',c:'العقيدة',lsk:'mutoon_usulsitta_v1',url:'usulsitta.html',t:'الأصول الستة',d:'ستة أصول عظيمة · مقدمة و٦ أصول في ٢٣ فقرة (غير مشكول)'},
   {key:'kashf',c:'العقيدة',lsk:'mutoon_kashf_v1',url:'kashf.html',t:'كشف الشبهات',d:'التوحيد والرد على شبه المشركين · مقدمة وجواب مجمل و١٢ شبهة وخاتمة في ٢١٨ فقرة'},
+  {key:'usulsunna',c:'العقيدة',lsk:'mutoon_usulsunna_v1',url:'usulsunna.html',t:'أصول السنة',d:'العقيدة · ٥٠ أصلًا بترقيم النشرات المتداولة'},
+  {key:'sharhsunna',c:'العقيدة',lsk:'mutoon_sharhsunna_v1',url:'sharhsunna.html',t:'شرح السنة للمزني',d:'العقيدة · ٢٠ فقرة بترقيم المحقق'},
+  {key:'aqila',c:'القراءات والتجويد',lsk:'mutoon_aqila_v1',url:'aqila.html',t:'عقيلة أتراب القصائد',d:'رسم المصحف · ٢٩٨ بيتًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
