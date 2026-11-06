@@ -77,7 +77,7 @@ const BOOKS=[
   {key:'lumaa',c:'العقيدة',lsk:'mutoon_lumaa_v1',url:'lumaa.html',t:'لمعة الاعتقاد',d:'العقيدة · ٩٥ فقرة بترقيم ابن عثيمين'},
   {key:'usultafsir',c:'علوم القرآن',lsk:'mutoon_usultafsir_v1',url:'usultafsir.html',t:'مقدمة في أصول التفسير',d:'علوم القرآن · ١١ فصلًا'},
   {key:'adab',c:'الآداب والرقائق',lsk:'mutoon_adab_v1',url:'adab.html',t:'منظومة الآداب',d:'الآداب الشرعية · ٩٤٧ بيتًا'},
-  {key:'durrabahiyya',c:'النحو',lsk:'mutoon_durrabahiyya_v1',url:'durrabahiyya.html',t:'الدرة البهية',d:'النحو · ٢٥٤ بيتًا'},
+  {key:'durrabahiyya',c:'النحو',lsk:'mutoon_durrabahiyya_v1',url:'durrabahiyya.html',t:'الدرة البهية (نظم الآجرومية)',d:'نظم الآجرومية للعمريطي · ٢٥٤ بيتًا'},
   {key:'qurra',c:'السيرة النبوية',lsk:'mutoon_qurra_v1',url:'qurra.html',t:'قرة الأبصار',d:'السيرة النبوية · ٣٩٨ بيتًا'},
   {key:'jawharmaknun',c:'البلاغة',lsk:'mutoon_jawharmaknun_v1',url:'jawharmaknun.html',t:'الجوهر المكنون',d:'البلاغة · ٢٩١ بيتًا'},
   {key:'bina',c:'الصرف',lsk:'mutoon_bina_v1',url:'bina.html',t:'متن البناء',d:'الصرف · ٣٥ بابًا وتقسيم الفعل'},
@@ -120,6 +120,7 @@ const BOOKS=[
   {key:'banatsuad',c:'الشعر العربي',lsk:'mutoon_banatsuad_v1',url:'banatsuad.html',t:'بانت سعاد',d:'الشعر العربي · ٥٨ بيتًا'},
   {key:'ayyuhalwalad',c:'التزكية والرقائق',lsk:'mutoon_ayyuhalwalad_v1',url:'ayyuhalwalad.html',t:'أيها الولد',d:'رسالته في النصيحة لتلميذه · ١٧٠ فقرة'},
   {key:'mustarshidin',c:'التزكية والرقائق',lsk:'mutoon_mustarshidin_v1',url:'mustarshidin.html',t:'رسالة المسترشدين',d:'وصايا في السلوك والأدب · ٢٢٥ فقرة'},
+  {key:'ibnabb',c:'النحو',lsk:'mutoon_ibnabb_v1',url:'ibnabb.html',t:'نظم الآجرومية لابن أبّ',d:'نظم الآجرومية لابن أبّ · ١٥٤ بيتًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
