@@ -118,6 +118,8 @@ const BOOKS=[
   {key:'shafiidiwan',c:'الشعر العربي',lsk:'mutoon_shafiidiwan_v1',url:'shafiidiwan.html',t:'مختارات من شعر الشافعي',d:'الشعر العربي · خمس مقطوعات · ٣٢ بيتًا'},
   {key:'bidaya',c:'التزكية والرقائق',lsk:'mutoon_bidaya_v1',url:'bidaya.html',t:'بداية الهداية',d:'الطاعات واجتناب المعاصي وآداب الصحبة · ٦١٨ فقرة'},
   {key:'banatsuad',c:'الشعر العربي',lsk:'mutoon_banatsuad_v1',url:'banatsuad.html',t:'بانت سعاد',d:'الشعر العربي · ٥٨ بيتًا'},
+  {key:'ayyuhalwalad',c:'التزكية والرقائق',lsk:'mutoon_ayyuhalwalad_v1',url:'ayyuhalwalad.html',t:'أيها الولد',d:'رسالته في النصيحة لتلميذه · ١٧٠ فقرة'},
+  {key:'mustarshidin',c:'التزكية والرقائق',lsk:'mutoon_mustarshidin_v1',url:'mustarshidin.html',t:'رسالة المسترشدين',d:'وصايا في السلوك والأدب · ٢٢٥ فقرة'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
