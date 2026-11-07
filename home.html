@@ -121,6 +121,29 @@ details.cc-m:not([open]){gap:0}
 .cc-pick{font:inherit;font-size:14px;padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:100%}
 .cc-mine{display:flex;flex-direction:column;gap:6px;background:var(--accent-soft);border-radius:12px;padding:8px 12px}.cc-mine small{font-weight:600;color:var(--accent)}
 .cc-foot .btn{font-size:13px}
+/* the round: a calm podium and how close the next place is */
+.rc{display:flex;flex-direction:column;gap:10px;background:var(--bg);border-radius:16px;padding:14px}
+.rc-h{color:var(--muted);font-size:12.5px;font-weight:700;text-align:center}
+.pod{display:flex;align-items:flex-end;justify-content:center;gap:8px}
+.pod-c{flex:1;max-width:120px;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--surface);border-radius:14px 14px 8px 8px;padding:10px 6px;box-shadow:var(--shadow)}
+.pod-1{padding-top:18px;padding-bottom:16px;border:1.5px solid var(--gold)}.pod-2{padding-top:12px}.pod-3{padding-top:8px}
+.pod-c.me{outline:2px solid var(--accent);outline-offset:1px}
+.pod-m{font-size:24px;line-height:1}.pod-c b{font-size:14px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}.pod-c small{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+.rc-empty{margin:0;text-align:center;color:var(--muted);font-size:14px}
+.rc-me{margin:0;text-align:center;font-weight:700;color:var(--accent);font-size:14.5px}
+.cc-hist{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+details.cc-ch{border-radius:14px;padding:12px 14px;background:linear-gradient(135deg,#0B7A55,#0a5a40);color:#fff}
+details.cc-ch>summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;gap:2px}details.cc-ch>summary::-webkit-details-marker{display:none}
+details.cc-ch small{opacity:.85;font-size:12px;font-weight:600}details.cc-ch b{font-size:17px}details.cc-ch span{font-size:13.5px}
+details.cc-ch .lb{background:var(--surface);color:var(--ink);border-radius:10px;margin-top:10px;padding:0 6px}
+.cc-today[open]{display:flex;flex-direction:column;gap:8px}
+.cc-adm{border-top:1px dashed var(--line);padding-top:6px;align-items:center}.cc-adm small{color:var(--muted);font-size:12px}.cc-adm .btn{font-size:12.5px;padding:5px 10px;min-height:0}
+.cc-setbtn{align-self:flex-start;font-size:13.5px}
+.set-s{display:flex;flex-direction:column;gap:8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.set-m{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.set-m b{flex:1;min-width:90px;font-size:14.5px}.set-m .btn{font-size:12.5px;padding:5px 10px;min-height:0}
+.set-w{display:flex;flex-direction:column;gap:6px}.set-r{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14px}
+.set-r input{width:72px;font:inherit;font-size:15px;padding:6px 8px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.set-s textarea,.set-s input:not([type=number]){font:inherit;font-size:15px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);width:100%;box-sizing:border-box}
 /* the notifications banner at the top (circles.js banner) */
 .pushbar{display:flex;flex-direction:column;gap:8px}
 .pushbar b{font-size:16px}
