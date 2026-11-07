@@ -288,6 +288,8 @@ async function settings(v0){
   const chips=(opts,cur,fn)=>{const r=el('div','cc-chips');opts.forEach(([val,l])=>{const c=el('button','chip'+(val===cur?' on':''),l);c.type='button';c.onclick=()=>fn(val,c,r);r.append(c)});return r};
   function paint(){
     b.replaceChildren(); const m=me(), cfg=v.cfg||{}, tr=cfg.track||{m:'all'}, owner=v.owner===m.mid;
+    // a server from before these settings saves only some of them: say so, rather than seem not to respond
+    if(!v.round)b.append(el('p','cc-note','⏳ المتون والنقاط والجولة بيشتغلوا بعد تحديث السيرفر القادم. الكلمة والقفل والاسم والمشرفين شغّالين هلأ.'));
     // 1. what each member competes in
     const s1=sec('المتون اللي بتتسابقوا فيها',chips([['all','كل متون الأعضاء'],['one','متن واحد للكل'],['each','لكل واحد متن']],tr.m||'all',val=>{if(val==='one'){tr.m='one';paint();return}save({track:{m:val}})}));
     if((tr.m||'all')==='one')s1.append(textPick(tr.k,k=>k&&save({track:{m:'one',k}},'الحلقة صارت تتابع «'+titleOf(k)+'» ✓')));
