@@ -22,7 +22,8 @@
 // two teams compared by their members' average points («get» gives teams [{n, c, p}]); hide, the members who asked to stay
 // out of the ranking (action «hide» {on}; they still count toward the goal and their team).
 // What a circle follows (cfg.track): {m:'all'} every text of each member (the default); {m:'one',k} one text for everyone;
-// {m:'each',a:{mid:key}} each member one text (the member picks it, an admin may set it). The status then carries bks
+// {m:'each',a:{mid:key},opts?,lock?} each member one text (the member picks it on entering — from the short list opts when
+// the admins gave one; with lock the choice is made once and only an admin changes it; an admin may set it). The status then carries bks
 // {key:[memorised, total, tasks left today]}, and the points count only the followed text.
 // The circle's settings (cfg): note, a short pinned word from the admins; locked, no new members; admins, member ids;
 // challenge {t: title, k: 'all'|'days'|'mem', a, b: first and last day}. Each status update also marks the member's day
@@ -196,7 +197,13 @@ export async function circles(action, b, db, notify) {
     if ('track' in n) {
       const t = n.track || {};
       if (t.m === 'one' && isKey(t.k)) cfg.track = { m: 'one', k: t.k };
-      else if (t.m === 'each') cfg.track = { m: 'each', a: (cfg.track && cfg.track.a) || {} };
+      else if (t.m === 'each') {
+        const o = cfg.track && cfg.track.m === 'each' ? cfg.track : {}, nt = { m: 'each', a: o.a || {} };
+        // a short list of texts to choose from, and whether a member may change the choice later
+        const opts = Array.isArray(t.opts) ? [...new Set(t.opts.filter(isKey))].slice(0, 30) : o.opts || [];
+        if (opts.length) nt.opts = opts; if ('lock' in t ? t.lock : o.lock) nt.lock = true;
+        cfg.track = nt;
+      }
       else delete cfg.track;
     }
     if (n.assign && cfg.track && cfg.track.m === 'each') { const x = n.assign; if (!hex.test(x.mid || '') || !(await db.member(id, x.mid))) throw new E(400, 'assign');
@@ -247,6 +254,8 @@ export async function circles(action, b, db, notify) {
   if (action === 'pick') {
     const c = await db.circle(id), cfg = cfgOf(c);
     if (!cfg.track || cfg.track.m !== 'each') throw new E(409, 'track');
+    const tr = cfg.track;
+    if (!admin(c)) { if (tr.lock && tr.a[b.mid]) throw new E(400, 'locked'); if (isKey(b.key) && tr.opts && !tr.opts.includes(b.key)) throw new E(400, 'opts') }
     if (isKey(b.key)) cfg.track.a[b.mid] = b.key; else delete cfg.track.a[b.mid];
     await db.setCfg(id, JSON.stringify(cfg)); return { ok: true };
   }

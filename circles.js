@@ -43,8 +43,8 @@ function setStatus(s){
 const keyOf=(v,mid)=>{const t=v&&v.cfg&&v.cfg.track;return !t||t.m==='all'?null:t.m==='one'?t.k||'':(t.a||{})[mid]||''};
 const titleOf=k=>{const b=window.UI&&UI.BOOKS.find(x=>x.key===k);return b?b.t:k};
 // a select of every text, for an admin choosing one, or a member choosing theirs
-function textPick(cur,onPick,none){const sel=el('select','cc-pick');const o0=el('option','',none||'اختار متن…');o0.value='';sel.append(o0);
-  (window.UI?UI.BOOKS:[]).forEach(b=>{const o=el('option','',b.t);o.value=b.key;if(b.key===cur)o.selected=true;sel.append(o)});sel.onchange=()=>onPick(sel.value);return sel}
+function textPick(cur,onPick,none,only){const sel=el('select','cc-pick');const o0=el('option','',none||'اختار متن…');o0.value='';sel.append(o0);
+  (window.UI?UI.BOOKS:[]).filter(b=>!only||!only.length||only.includes(b.key)||b.key===cur).forEach(b=>{const o=el('option','',b.t);o.value=b.key;if(b.key===cur)o.selected=true;sel.append(o)});sel.onchange=()=>onPick(sel.value);return sel}
 /* how a member is doing today, in a word; in a circle that follows one text, how that text is going */
 function today_(s,key){
   if(!s||s.day!==today())return ['off','ما فتح اليوم'];
@@ -188,6 +188,19 @@ function invite(v){
   if(navigator.share)navigator.share({text}).catch(()=>{}); else navigator.clipboard.writeText(text).then(()=>toast('انتسخ رابط الدعوة ✓')).catch(()=>{});
 }
 
+/* entering a circle where each member competes in one text: the first thing asked is which text. The admins' short list
+   when they gave one, otherwise the texts I already work on first, and any other text from the full list. */
+const bookOf=k=>(window.UI?UI.BOOKS:[]).find(x=>x.key===k);
+function firstPick(v){
+  const b=UI.sheet('📖 اختار متنك بالمسابقة'), tr=v.cfg.track, opts=tr.opts||[];
+  b.append(el('p','ui-hint','بحلقة «'+v.name+'» كل واحد بيتسابق بمتن واحد، ونقاطك بتنحسب منه. '+(tr.lock?'الاختيار مرة وحدة، وبعدها التغيير من المشرف.':'وبتقدر تغيّره بعدين.')));
+  const pick=async k=>{try{await api('pick',{id:v.id,key:k});toast('متنك بالمسابقة: «'+titleOf(k)+'» ✓');openCircle(v.id)}catch(e){toast(errText(e))}};
+  const mine=Object.keys(STAT&&STAT.bks||{}), keys=opts.length?opts:mine;
+  if(keys.length){b.append(el('h3','ui-sec',opts.length?'المتون اللي حدّدها المشرف':'المتون اللي شغّال فيها'));
+    const col=el('div','ui-col');keys.forEach(k=>{const bk=bookOf(k);if(!bk)return;const r=el('button','ui-book');r.type='button';r.append(el('b','',bk.t),el('small','',(mine.includes(k)?'بلّشت فيه · ':'')+(bk.d||'')));r.onclick=()=>pick(k);col.append(r)});b.append(col)}
+  if(!opts.length){b.append(el('h3','ui-sec',keys.length?'أو متن ثاني':'اختار من كل المتون'),textPick('',k=>k&&pick(k)))}
+  const later=el('button','btn','بعدين');later.onclick=()=>render(v,false,true);b.append(later);
+}
 /* a circle: today (who finished), the leaderboard, and, for its admins, its settings. Details wait behind a tap. */
 const MEDAL=['🥇','🥈','🥉'];
 const KLBL={all:'الالتزام والحفظ',days:'الالتزام بالورد',mem:'الحفظ الجديد'};
@@ -218,13 +231,23 @@ function ring(p){const NS='http://www.w3.org/2000/svg',g=document.createElementN
 const myPct=(s,key)=>{if(!s||s.day!==today())return 0;if(key){const b=s.bks&&s.bks[key];return b&&+b[2]===0?1:0}
   if(s.open<=0)return s.open===0?1:0;const tt=+s.tt||0;return tt>s.open?(tt-s.open)/tt:0};
 const bar=(got,n)=>{const b=el('div','bar'),i=el('i');i.style.width=Math.max(got?2:0,Math.min(100,got/Math.max(1,n)*100))+'%';b.append(i);return b};
-function render(v,fresh){
-  const m=me(), b=UI.sheet('👥 '+v.name), adm=isAdmin(v,m.mid), cfg=v.cfg||{}, V2=!!v.week;
+function render(v,fresh,skip){
+  const m=me(), adm=isAdmin(v,m.mid), cfg=v.cfg||{}, V2=!!v.week;
+  if(!fresh&&!skip&&cfg.track&&cfg.track.m==='each'&&!keyOf(v,m.mid))return firstPick(v);
+  const b=UI.sheet('👥 '+v.name);
   setList(list().map(c=>c.id===v.id?{id:c.id,name:v.name}:c));
   // the invitation: at the top only for a fresh circle, otherwise a small line at the bottom
   const inv=el('div','cc-inv'), code=el('span','cc-code',v.id.slice(0,4)+'-'+v.id.slice(4)); code.setAttribute('data-noi18n','');
   const ib=el('button','btn'+(fresh?' primary':''),'📨 ادعُ أصحابك'); ib.onclick=()=>invite(v); inv.append(el('small','','كود الحلقة'),code,ib);
   if(fresh){b.append(el('p','ui-hint','الحلقة جاهزة. ابعت الرابط لأصحابك، أو خلّيهم يكتبوا الكود من «حلقاتي».'),inv)}
+  if(fresh&&adm&&v.round){const q=el('div','cc-note'),cur=(cfg.track||{m:'all'}).m,set=async(tr,msg)=>{try{await api('cfg',{id:v.id,cfg:{track:tr}});toast(msg);const nv=await api('get',{id:v.id});render(nv,true)}catch(e){toast(errText(e))}};
+    const one=textPick((cfg.track||{}).k||'',k=>k&&set({m:'one',k},'المسابقة بـ«'+titleOf(k)+'» ✓'));one.hidden=cur!=='one';
+    const r=el('div','cc-chips');[['all','كل واحد بمتونه كلها'],['one','متن واحد للكل'],['each','كل واحد بيختار متنه']].forEach(([val,l])=>{const c=el('button','chip'+(cur===val?' on':''),l);c.type='button';
+      c.onclick=()=>{if(val==='one'){one.hidden=false;r.querySelectorAll('.chip').forEach(z=>z.classList.toggle('on',z===c));return}set({m:val},val==='each'?'كل عضو بينسأل عن متنه أول ما يدخل ✓':'تمام ✓')};r.append(c)});
+    q.append(el('small','','بشو بتتسابقوا؟'),r,one);b.append(q)}
+  {const k=keyOf(v,m.mid),bk=k&&bookOf(k);
+    if(bk&&!(STAT&&STAT.bks&&STAT.bks[k])){const n=el('div','cc-note'),a=el('a','btn primary','ابدأ «'+bk.t+'»');a.href=bk.url;
+      n.append(el('small','','📖 متن المسابقة'),el('p','','مسابقتك بهالحلقة بـ«'+bk.t+'». ابدأ فيه عشان تدخل الترتيب.'),a);b.append(n)}}
   if(cfg.note){const n=el('div','cc-note');n.append(el('small','','📌 من المشرف'),el('p','',cfg.note));b.append(n)}
   // this round
   if(V2){
@@ -275,8 +298,10 @@ function render(v,fresh){
   {const ms=v.members.slice().sort((a,b)=>{const r=x=>({done:0,mid:1,off:2})[today_(x.stat,keyOf(v,x.mid))[0]];return r(a)-r(b)||(b.stat.s||0)-(a.stat.s||0)});
     const done=ms.filter(x=>today_(x.stat,keyOf(v,x.mid))[0]==='done').length, tr=cfg.track;
     const d=el('details','cc-fold cc-today');d.append(el('summary','','اليوم: '+ar(done)+' من '+ar(ms.length)+' خلّصوا وردهم'));
-    if(tr&&tr.m==='each'){const mine=keyOf(v,m.mid),row=el('div','cc-mine');row.append(el('small','',mine?'متنك بالحلقة:':'اختار المتن اللي بتتسابق فيه:'),
-      textPick(mine,async k=>{try{await api('pick',{id:v.id,key:k});openCircle(v.id)}catch(e){toast(errText(e))}}));d.append(row);if(!mine)d.open=true}
+    if(tr&&tr.m==='each'){const mine=keyOf(v,m.mid),row=el('div','cc-mine');row.append(el('small','',mine?'متنك بالحلقة:':'اختار المتن اللي بتتسابق فيه:'));
+      if(mine&&tr.lock&&!adm)row.append(el('b','',titleOf(mine)),el('small','','التغيير من المشرف'));
+      else row.append(textPick(mine,async k=>{try{await api('pick',{id:v.id,key:k});openCircle(v.id)}catch(e){toast(errText(e))}},null,tr.opts));
+      d.append(row);if(!mine)d.open=true}
     const box=el('div','cc-list'), sent=new Set((v.sent||[]).map(([to,k])=>to+'|'+k)); d.append(box);
     const heard=new Set((v.recent||[]).filter(x=>x.kind==='tsm'&&x.day===v.today).map(x=>x.mid));
     ms.forEach(x=>{
@@ -322,10 +347,17 @@ async function settings(v0){
     // a server from before these settings saves only some of them: say so, rather than seem not to respond
     if(!v.round)b.append(el('p','cc-note','⏳ المتون والنقاط والجولة بيشتغلوا بعد تحديث السيرفر القادم. الكلمة والقفل والاسم والمشرفين شغّالين هلأ.'));
     // 1. what each member competes in
-    const s1=sec('المتون اللي بتتسابقوا فيها',chips([['all','كل متون الأعضاء'],['one','متن واحد للكل'],['each','لكل واحد متن']],tr.m||'all',val=>{if(val==='one'){tr.m='one';paint();return}save({track:{m:val}})}));
+    const s1=sec('المتون اللي بتتسابقوا فيها',chips([['all','كل متون الأعضاء'],['one','متن واحد للكل'],['each','كل واحد بمتنه']],tr.m||'all',val=>{if(val==='one'){tr.m='one';paint();return}save({track:{m:val}})}));
     if((tr.m||'all')==='one')s1.append(textPick(tr.k,k=>k&&save({track:{m:'one',k}},'الحلقة صارت تتابع «'+titleOf(k)+'» ✓')));
-    if(tr.m==='each'){s1.append(el('small','ui-hint','اختار لكل عضو المتن اللي بيتسابق فيه (أو خلّيه يختار هو من «اليوم»):'));
-      v.members.forEach(x=>{const r=el('div','set-m');r.append(el('b','',x.name),textPick((tr.a||{})[x.mid]||'',key=>save({assign:{mid:x.mid,key}},'تمام ✓'),'بيختار هو…'));s1.append(r)})}
+    if(tr.m==='each'){const opts=tr.opts||[],sv=(o,msg)=>save({track:{m:'each',opts:o.opts||opts,lock:'lock' in o?o.lock:!!tr.lock}},msg);
+      s1.append(el('small','ui-hint','كل عضو بينسأل «بأي متن بدك تتسابق؟» أول ما يدخل الحلقة.'));
+      s1.append(el('b','set-h','من أي متون بيختار؟'));
+      const ol=el('div','cc-chips');opts.forEach(k=>{const c=el('button','chip on',titleOf(k)+' ✕');c.type='button';c.onclick=()=>sv({opts:opts.filter(x=>x!==k)},'انشال من القائمة');ol.append(c)});
+      if(!opts.length)ol.append(el('small','ui-hint','من كل المتون (ما في قائمة محددة).'));
+      s1.append(ol,textPick('',k=>k&&!opts.includes(k)&&sv({opts:[...opts,k]},'انضاف «'+titleOf(k)+'» للقائمة ✓'),'＋ ضيف متن للقائمة…'));
+      s1.append(el('b','set-h','تغيير المتن'),chips([[false,'العضو بيغيّره متى ما بده'],[true,'بيختار مرة، والتغيير منّي']],!!tr.lock,val=>sv({lock:val})));
+      s1.append(el('b','set-h','متن كل عضو'),el('small','ui-hint','بتقدر تحدّد إنت لأي عضو متنه، أو تتركه يختار:'));
+      v.members.forEach(x=>{const r=el('div','set-m');r.append(el('b','',x.name),textPick((tr.a||{})[x.mid]||'',key=>save({assign:{mid:x.mid,key}},'تمام ✓'),'لسا ما اختار…'));s1.append(r)})}
     s1.append(el('small','ui-hint','الحالة والنقاط بتنحسب على اللي بتختاره هون، وبتقدر تغيّره بأي وقت.'));
     // 2. the points
     const W=wOf(cfg), pre=(PRESETS.find(([, ,p])=>Object.keys(p).every(k=>p[k]===W[k]))||[])[0]||'custom';
