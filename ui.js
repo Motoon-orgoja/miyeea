@@ -127,6 +127,7 @@ const BOOKS=[
   {key:'malikrayb',c:'الشعر العربي',lsk:'mutoon_malikrayb_v1',url:'malikrayb.html',t:'يائية مالك بن الريب',d:'الشعر العربي · ٥٨ بيتًا'},
   {key:'munfarija',c:'التزكية والرقائق',lsk:'mutoon_munfarija_v1',url:'munfarija.html',t:'المنفرجة',d:'التزكية والرقائق · ٤٠ بيتًا'},
   {key:'waharraqalbah',c:'الشعر العربي',lsk:'mutoon_waharraqalbah_v1',url:'waharraqalbah.html',t:'وا حر قلباه',d:'الشعر العربي · ٣٨ بيتًا'},
+  {key:'madaih',c:'الشعر العربي',lsk:'mutoon_madaih_v1',url:'madaih.html',t:'مختارات المدائح النبوية',d:'أشهر أبيات المديح النبوي · ٢٧ مقطوعة · ٢١٥ بيتًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
