@@ -60,7 +60,9 @@ function proseBook(b){
 }
 
 const R=BOOKS.map(b=>b.poems?poemBook(b):proseBook(b));
-const started=R.filter(r=>r.started), rest=R.filter(r=>!r.started);
+// a text the reader took off the list counts as not begun; one put aside for later stays out of this page
+const stOf=k=>window.UI&&UI.status?UI.status(k):'on';
+const started=R.filter(r=>r.started&&!['dropped','later'].includes(stOf(r.b.key))), rest=R.filter(r=>!r.started||stOf(r.b.key)==='dropped');
 // the daily ward shows only the texts the reader is working on now; paused ones wait below
 const paused=k=>window.UI&&UI.isPaused(k), active=started.filter(r=>!paused(r.b.key)), held=started.filter(r=>paused(r.b.key));
 
@@ -109,7 +111,8 @@ if(active.length){
 /* paused texts: folded; one tap brings each back to the ward */
 if(held.length){const box=el('details','held');box.append(el('summary','','متون موقوفة · '+ar(held.length)));
   held.forEach(r=>{const row=el('div','ui-book paused');const a=el('a','ui-book-link');a.href=PAGE[r.b.key];a.append(el('b','',r.b.title),el('small','',ar(r.done)+' من '+ar(r.total)));
-    const t=el('button','ui-switch','فعّله');t.type='button';t.onclick=()=>{UI.setPaused(r.b.key,false);location.reload()};row.append(a,t);box.append(row)});
+    const t=el('button','ui-switch','فعّله');t.type='button';t.onclick=()=>{UI.setPaused(r.b.key,false);location.reload()};
+    const m=el('button','ui-switch','⋯');m.type='button';m.style.minWidth='44px';m.title='غيّر وضع المتن';m.onclick=()=>UI.openStatus(r.b.key,()=>location.reload());row.append(a,t,m);box.append(row)});
   list.after(box)}
 
 /* statistics: three numbers; the rest (per-book progress, twelve weeks) folded */

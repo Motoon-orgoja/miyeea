@@ -130,6 +130,11 @@ html,body,button,a,.w,.v,input,select,label{touch-action:manipulation}
 .ui-book.paused .ui-book-link{opacity:.55}
 .ui-switch{flex:none;min-width:74px;min-height:38px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:700 calc(12.5px*var(--us)) var(--ui);cursor:pointer}
 .ui-switch.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.ui-peek{flex:none;font-size:calc(12px*var(--us));color:var(--muted);font-weight:700;text-decoration:none;padding:8px 6px}
+.ui-st{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:start;width:100%;cursor:pointer}.ui-st b{font-family:var(--ui);font-size:calc(15px*var(--us))}.ui-st small{color:var(--muted);font-size:calc(12.5px*var(--us));line-height:1.6}
+.ui-st.cur{border-color:var(--accent)}
+.ui-read{display:flex;flex-direction:column;gap:6px}.ui-rv{margin:0;display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 18px;font-family:var(--verse);font-size:calc(19px*var(--vs));line-height:1.9;border-bottom:1px solid var(--line);padding:4px 0}
+.ui-rv span:last-child{margin-inline-start:auto}.ui-rp{margin:0;font-family:var(--verse);font-size:calc(19px*var(--vs));line-height:2}.ui-rk{color:var(--muted)}
 .ui-new{flex:none;font-size:calc(12px*var(--us));color:var(--accent);font-weight:700}
 .held{display:flex;flex-direction:column;gap:8px;border-top:1px dashed var(--line);padding-top:12px}
 /* word-by-word self-recitation */

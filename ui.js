@@ -5,7 +5,7 @@
    (toast, sheet) that the engines may use through window.UI. */
 (function(){
 const PK='mutoon_prefs';
-const DEF={lang:'ar',theme:'auto',vs:1,us:1,wake:true,remind:'20:00',fade:2,ret:0.9,paused:[]};
+const DEF={lang:'ar',theme:'auto',vs:1,us:1,wake:true,remind:'20:00',fade:2,ret:0.9,paused:[],later:[],dropped:[]};
 let P; try{P={...DEF,...JSON.parse(localStorage.getItem(PK)||'{}')}}catch(e){P={...DEF}}
 const root=document.documentElement;
 function apply(){
@@ -334,14 +334,49 @@ function syncBox(){
 /* ---------- the texts the reader is working on now ----------
    A text counts once it has progress; the reader can pause any of them, and paused texts leave the daily ward
    (their progress stays, and they come back with one tap). */
-function started(key){const b=BOOKS.find(x=>x.key===key);if(!b)return false;
+/* A text the reader began is in one of four states: on (in the daily ward), paused (waits on the home page, no ward),
+   later (put aside to come back to: out of the home page, listed under «برجعلها بعدين»), dropped (taken off the list as
+   if never begun; the progress itself is kept, so beginning it again finds it). */
+const STATES={on:['فعّال','بيطلع بوردي كل يوم'],paused:['موقوف مؤقتًا','بيضل بقائمتي بدون ورد، وبرجّعه بكبسة'],later:['برجعله بعدين','بيطلع من وردي وصفحتي الرئيسية، وبلاقيه بـ«برجعلها بعدين»'],dropped:['شيله من محفوظاتي','كأني ما بلّشت فيه. تقدمك بيضل محفوظ إذا رجعتله يومًا']};
+const hasState=key=>{const b=BOOKS.find(x=>x.key===key);if(!b)return false;
+  if(b.lsk.endsWith(':')){for(let i=0;i<localStorage.length;i++)if(localStorage.key(i).startsWith(b.lsk))return true;return false}
+  return localStorage.getItem(b.lsk)!=null};
+const status=key=>(P.dropped||[]).includes(key)?'dropped':(P.later||[]).includes(key)?'later':(P.paused||[]).includes(key)?'paused':'on';
+function setStatus(key,st){['paused','later','dropped'].forEach(k=>{P[k]=(P[k]||[]).filter(x=>x!==key);if(k===st)P[k].push(key)});save()}
+// begun and still on the reader's list (a dropped text counts as not begun)
+function started(key){if(status(key)==='dropped')return false;const b=BOOKS.find(x=>x.key===key);if(!b)return false;
   if(b.lsk.endsWith(':')){for(let i=0;i<localStorage.length;i++)if(localStorage.key(i).startsWith(b.lsk))return true;return false}
   return localStorage.getItem(b.lsk)!=null}
-const isPaused=key=>(P.paused||[]).includes(key);
-function setPaused(key,on){P.paused=(P.paused||[]).filter(k=>k!==key);if(on)P.paused.push(key);save()}
+const isPaused=key=>status(key)!=='on';
+function setPaused(key,on){setStatus(key,on?'paused':'on')}
+// the sheet where the reader says what a begun text is to them now
+function openStatus(key,then){
+  const x=BOOKS.find(z=>z.key===key),b=sheet('«'+x.t+'»'),cur=status(key);
+  b.append(el('p','ui-hint','شو وضع هالمتن عندك؟'));
+  Object.entries(STATES).forEach(([k,[t,d]])=>{const r=el('button','ui-book ui-st'+(k===cur?' cur':''));r.type='button';r.append(el('b','',(k===cur?'● ':'')+t),el('small','',d));
+    r.onclick=()=>{setStatus(key,k);toast({on:'رجع لوردك اليومي ✓',paused:'وقّفته مؤقتًا',later:'انحط على جنب، بتلاقيه بـ«برجعلها بعدين»',dropped:'انشال من محفوظاتك'}[k]);(then||openBooks)()};b.append(r)});
+  const back=el('button','btn','رجوع');back.onclick=()=>(then||openBooks)();b.append(back);
+}
+/* reading a text before deciding to memorise it: the whole text in a sheet, nothing saved, nothing added to the list */
+function readText(){
+  const B=window.BOOK;if(!B)return;const b=sheet('👁 '+(B.title||''));
+  b.append(el('p','ui-hint','للاطّلاع بس: ما بينضاف لمحفوظاتك ولا لوردك. إذا عجبك، سكّر وابدأ الحفظ.'));
+  const box=el('div','ui-read');
+  if(B.poems)B.poems.forEach(p=>{if(B.poems.length>1)box.append(el('h3','ui-sec',p.title));
+    p.verses.forEach((v,i)=>{const t=p.secs&&p.secs[i+1];if(t)box.append(el('div','ui-lbl',t));const r=el('p','ui-rv');r.append(el('span','',v[0]),el('span','',v[1]||''));box.append(r)})});
+  else (B.chapters||[]).forEach(c=>{box.append(el('h3','ui-sec',c.title));(c.units||[]).forEach(u=>{const r=el('p','ui-rp');(u.segs||[]).forEach(([k,t])=>{const s=el('span',k==='matn'?'':'ui-rk',t+' ');r.append(s)});box.append(r)})});
+  b.append(box);
+}
+// the welcome screen of a text not begun yet offers the reading first; a link with #read opens it at once
+function readOffer(){
+  const go=document.getElementById('welcomeGo');if(!go||!window.BOOK||CUR==='home')return;
+  if(hasState(CUR)&&status(CUR)!=='dropped')return;
+  const rb=el('button','btn','👁 اطّلع على المتن أول');rb.type='button';rb.onclick=readText;go.after(rb);
+  if(location.hash==='#read'){history.replaceState(null,'',location.pathname+location.search);readText()}
+}
 function openBooks(){
   const b=sheet('المتون');
-  b.append(el('p','ui-hint','المتون اللي بتحفظها هلأ بتطلع بـ«وردي اليوم». أوقف اللي مش شغّال عليه، وتقدمك فيه بيضل محفوظ.'));
+  b.append(el('p','ui-hint','المتون اللي بتحفظها بتطلع بـ«وردي اليوم». اكبس على وضع المتن (فعّال ▾) لتوقفه أو تحطّه على جنب أو تشيله. وأي متن جديد بتقدر تطّلع عليه قبل ما تبدأ فيه.'));
   // a filter box once the list is long; the texts being memorised come first, then every text grouped by field
   // (in the order of FIELDS, then any other field in the order it first appears)
   const q=el('input','ui-search'); q.type='search'; q.placeholder='🔍 دوّر على متن أو فن…';
@@ -357,10 +392,10 @@ function openBooks(){
   const norm=s=>s.replace(/[ً-ْـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي');
   function draw(){
     list.replaceChildren(); const w=norm(q.value.trim()), hit=x=>!w||norm(x.t+' '+x.d+' '+(x.c||'')).includes(w);
-    const mine=w||by==='madh'?[]:BOOKS.filter(x=>started(x.key));
+    const mine=w||by==='madh'?[]:BOOKS.filter(x=>started(x.key)&&status(x.key)!=='later'), aside=w||by==='madh'?[]:BOOKS.filter(x=>started(x.key)&&status(x.key)==='later');
     const madh=by==='madh'?MADHAHIB.flatMap(([m,ks])=>ks.map(k=>BOOKS.find(x=>x.key===k)).filter(x=>x&&hit(x)).map(x=>[x,'🕌 المذهب ال'+m])):[];
-    const taken=[...mine,...madh.map(r=>r[0])], rest=fields.flatMap(c=>BOOKS.filter(x=>(x.c||'')===c&&hit(x)&&!taken.includes(x)).map(x=>[x,(madh.length?'مشترك · ':'')+c]));
-    const rows=[...mine.map(x=>[x,'📖 اللي بحفظها']),...madh,...rest];
+    const taken=[...mine,...aside,...madh.map(r=>r[0])], rest=fields.flatMap(c=>BOOKS.filter(x=>(x.c||'')===c&&hit(x)&&!taken.includes(x)).map(x=>[x,(madh.length?'مشترك · ':'')+c]));
+    const rows=[...mine.map(x=>[x,'📖 اللي بحفظها']),...aside.map(x=>[x,'⏳ برجعلها بعدين']),...madh,...rest];
     if(!rows.length)list.append(el('p','ui-hint','ما لقيت متن بهالاسم.'));
     rows.forEach(([x,c],k)=>{if(c&&(k===0||rows[k-1][1]!==c))list.append(el('div','ui-lbl',c)); list.append(bookRow(x))});
   }
@@ -369,17 +404,16 @@ function openBooks(){
 function bookRow(x){
     const row=el('div','ui-book'+(x.key===CUR?' cur':'')+(isPaused(x.key)?' paused':''));
     const a=el('a','ui-book-link');a.href=x.url;a.append(el('b','',x.t),el('small','',x.d));row.append(a);
-    if(started(x.key)){const t=el('button','ui-switch'+(isPaused(x.key)?'':' on'));t.type='button';t.setAttribute('role','switch');
-      const paint=()=>{const p=isPaused(x.key);t.classList.toggle('on',!p);t.setAttribute('aria-checked',String(!p));t.textContent=p?'موقوف':'فعّال';row.classList.toggle('paused',p)};
-      t.onclick=()=>{setPaused(x.key,!isPaused(x.key));paint();toast(isPaused(x.key)?'وقّفته، ما رح يطلع بوردك':'رجع لوردك اليومي ✓')};paint();row.append(t)}
-    else row.append(el('span','ui-new','ابدأ'));
+    if(started(x.key)){const st=status(x.key),t=el('button','ui-switch'+(st==='on'?' on':''),{on:'فعّال',paused:'موقوف',later:'معلّق'}[st]+' ▾');t.type='button';t.title='غيّر وضع المتن';
+      t.onclick=()=>openStatus(x.key);row.append(t)}
+    else{const r=el('a','ui-peek','👁 اطّلع');r.href=x.url+'#read';row.append(r,el('span','ui-new','ابدأ'))}
     return row;
 }
 // on a paused text's own page, say so and offer to bring it back
 function pausedBanner(){
   if(!CUR||CUR==='home'||!isPaused(CUR))return; const bar=document.querySelector('.ui-bar'); if(!bar)return;
-  const n=el('div','ui-nudge'); n.append(el('span','','هالمتن موقوف، وما بيطلع بـ«وردي اليوم».'));
-  const go=el('button','btn primary','رجّعه لوردي'); go.onclick=()=>{setPaused(CUR,false);n.remove();toast('رجع لوردك اليومي ✓')};
+  const st=status(CUR),n=el('div','ui-nudge'); n.append(el('span','',st==='dropped'?'شلت هالمتن من محفوظاتك. تقدمك القديم فيه لسا محفوظ.':st==='later'?'هالمتن حاطّه على جنب لترجعله بعدين، وما بيطلع بـ«وردي اليوم».':'هالمتن موقوف، وما بيطلع بـ«وردي اليوم».'));
+  const go=el('button','btn primary',st==='dropped'?'رجّعه لمحفوظاتي':'رجّعه لوردي'); go.onclick=()=>{setPaused(CUR,false);n.remove();toast('رجع لوردك اليومي ✓')};
   const row=el('div','ui-row'); row.append(go); n.append(row); bar.after(n);
 }
 
@@ -663,7 +697,7 @@ function nudges(){
   n.append(row); bar.after(n);
 }
 const ready=f=>document.readyState==='loading'?document.addEventListener('DOMContentLoaded',f):f();
-ready(()=>{mountBar();mountFab();wake();apply();pausedBanner();nudges()});
+ready(()=>{mountBar();mountFab();wake();apply();pausedBanner();nudges();setTimeout(readOffer,0)});
 
 /* ---------- graded fading: hide a growing share of the words (level 1–4 = a quarter … all) ----------
    The words hidden at a level stay hidden at every higher level, and words the reader slipped on before (.wk) hide first,
@@ -808,5 +842,5 @@ if(window.visualViewport&&/iPad|iPhone|iPod/.test(navigator.userAgent)){
   fix(); window.vvFix=fix;
 }
 
-window.UI={similar,quiz,play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,openSearch,report,certificate,recSave,recPatch,recShare,openRecordings,BOOKS,FIELDS};
+window.UI={status,setStatus,openStatus,readText,similar,quiz,play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,openSearch,report,certificate,recSave,recPatch,recShare,openRecordings,BOOKS,FIELDS};
 })();
