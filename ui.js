@@ -121,6 +121,12 @@ const BOOKS=[
   {key:'ayyuhalwalad',c:'التزكية والرقائق',lsk:'mutoon_ayyuhalwalad_v1',url:'ayyuhalwalad.html',t:'أيها الولد',d:'رسالته في النصيحة لتلميذه · ١٧٠ فقرة'},
   {key:'mustarshidin',c:'التزكية والرقائق',lsk:'mutoon_mustarshidin_v1',url:'mustarshidin.html',t:'رسالة المسترشدين',d:'وصايا في السلوك والأدب · ٢٢٥ فقرة'},
   {key:'ibnabb',c:'النحو',lsk:'mutoon_ibnabb_v1',url:'ibnabb.html',t:'نظم الآجرومية لابن أبّ',d:'نظم الآجرومية لابن أبّ · ١٥٤ بيتًا'},
+  {key:'samawal',c:'الشعر العربي',lsk:'mutoon_samawal_v1',url:'samawal.html',t:'لامية السموأل',d:'الشعر العربي · ٢٣ بيتًا'},
+  {key:'ammuriyya',c:'الشعر العربي',lsk:'mutoon_ammuriyya_v1',url:'ammuriyya.html',t:'فتح عمورية',d:'الشعر العربي · ٧١ بيتًا'},
+  {key:'abufiras',c:'الشعر العربي',lsk:'mutoon_abufiras_v1',url:'abufiras.html',t:'أراك عصي الدمع',d:'الشعر العربي · ٥٤ بيتًا'},
+  {key:'malikrayb',c:'الشعر العربي',lsk:'mutoon_malikrayb_v1',url:'malikrayb.html',t:'يائية مالك بن الريب',d:'الشعر العربي · ٥٨ بيتًا'},
+  {key:'munfarija',c:'التزكية والرقائق',lsk:'mutoon_munfarija_v1',url:'munfarija.html',t:'المنفرجة',d:'التزكية والرقائق · ٤٠ بيتًا'},
+  {key:'waharraqalbah',c:'الشعر العربي',lsk:'mutoon_waharraqalbah_v1',url:'waharraqalbah.html',t:'وا حر قلباه',d:'الشعر العربي · ٣٨ بيتًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
