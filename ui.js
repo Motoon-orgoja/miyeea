@@ -132,6 +132,11 @@ const BOOKS=[
   {key:'sakhawiyya',c:'القراءات والتجويد',lsk:'mutoon_sakhawiyya_v1',url:'sakhawiyya.html',t:'نونية السخاوي',d:'التجويد · ٦٤ بيتًا'},
   {key:'kalwadhaniyya',c:'العقيدة',lsk:'mutoon_kalwadhaniyya_v1',url:'kalwadhaniyya.html',t:'دالية الكلوذاني',d:'العقيدة · ٤٥ بيتًا'},
   {key:'mimiyya',c:'التزكية والرقائق',lsk:'mutoon_mimiyya_v1',url:'mimiyya.html',t:'ميمية ابن القيم',d:'الرقائق · ٢٣٠ بيتًا'},
+  {key:'farazdaq',c:'الشعر العربي',lsk:'mutoon_farazdaq_v1',url:'farazdaq.html',t:'ميمية الفرزدق',d:'الشعر العربي · ٢٩ بيتًا'},
+  {key:'maarri',c:'الشعر العربي',lsk:'mutoon_maarri_v1',url:'maarri.html',t:'دالية المعري',d:'الشعر العربي · ٦٤ بيتًا'},
+  {key:'ibnzurayq',c:'الشعر العربي',lsk:'mutoon_ibnzurayq_v1',url:'ibnzurayq.html',t:'عينية ابن زريق',d:'الشعر العربي · ٤٠ بيتًا'},
+  {key:'abudhuayb',c:'الشعر العربي',lsk:'mutoon_abudhuayb_v1',url:'abudhuayb.html',t:'عينية أبي ذؤيب',d:'الشعر العربي · ٦٥ بيتًا'},
+  {key:'khansa',c:'الشعر العربي',lsk:'mutoon_khansa_v1',url:'khansa.html',t:'رائية الخنساء',d:'الشعر العربي · ٣٦ بيتًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
