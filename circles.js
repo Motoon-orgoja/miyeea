@@ -194,10 +194,12 @@ const KLBL={all:'الالتزام والحفظ',days:'الالتزام بالو�
 const isAdmin=(v,mid)=>v.owner===mid||(v.cfg&&v.cfg.admins||[]).includes(mid);
 const daysLeft=(v,b)=>{const n=Math.round((new Date(b+'T12:00:00Z')-new Date(v.today+'T12:00:00Z'))/864e5)+1;return n};
 // the members ranked by points of a board
-const ranked=(v,pts)=>v.members.map(x=>({x,p:(pts[x.mid]||{p:0}).p,d:pts[x.mid]||{}})).sort((a,b)=>b.p-a.p||a.x.name.localeCompare(b.x.name));
-function board(v,pts,me_){
-  const box=el('div','lb');
-  ranked(v,pts).forEach((r,i)=>{const row=el('div','lb-r'+(r.x.mid===me_?' me':''));
+const hidden=v=>new Set(v.cfg&&v.cfg.hide||[]);
+const ranked=(v,pts)=>v.members.filter(x=>!hidden(v).has(x.mid)).map(x=>({x,p:(pts[x.mid]||{p:0}).p,d:pts[x.mid]||{}})).sort((a,b)=>b.p-a.p||a.x.name.localeCompare(b.x.name));
+// only: the places to show (the podium and my neighbours), a thin gap where places are skipped
+function board(v,pts,me_,only){
+  const box=el('div','lb'); let last=-1;
+  ranked(v,pts).forEach((r,i)=>{if(only&&!only(i))return; if(last>=0&&i>last+1)box.append(el('div','lb-gap','⋯')); last=i; const row=el('div','lb-r'+(r.x.mid===me_?' me':''));
     row.append(el('span','lb-n',r.p>0&&i<3?MEDAL[i]:ar(i+1)),el('b','',r.x.name),el('span','lb-p',ar(r.p)));
     const why=[r.d.days?ar(r.d.days)+' يوم ورد':'',r.d.tf?ar(r.d.tf)+' يوم تفسير':'',r.d.mem?ar(r.d.mem)+' محفوظ جديد':''].filter(Boolean).join(' · ');
     if(why)row.title=why; box.append(row)});
@@ -209,6 +211,13 @@ const PRESETS=[['bal','متوازن',{day:10,tf:5,mem:2,tsm:15}],['days','الا
 const wOf=cfg=>Object.assign({day:10,tf:5,mem:2,tsm:15},cfg&&cfg.pts||{});
 const roundOf_=v=>v.round||{a:v.week.a,b:v.week.b,mode:'week',pts:v.week.pts};
 const GRADES=[['a','ممتاز'],['b','جيد'],['c','بحاجة إعادة']];
+function ring(p){const NS='http://www.w3.org/2000/svg',g=document.createElementNS(NS,'svg');g.setAttribute('viewBox','0 0 44 44');g.setAttribute('class','ring');
+  const c=(cls,dash)=>{const x=document.createElementNS(NS,'circle');x.setAttribute('cx',22);x.setAttribute('cy',22);x.setAttribute('r',18);x.setAttribute('class',cls);if(dash!=null){x.setAttribute('stroke-dasharray',(113.1*dash).toFixed(1)+' 113.1');x.setAttribute('transform','rotate(-90 22 22)')}return x};
+  g.append(c('ring-bg'));if(p>0)g.append(c('ring-fg',Math.min(1,p)));const w=el('div','ring-w');w.append(g,el('b','',p>=1?'✓':ar(Math.round(p*100))+'٪'));return w}
+// how much of my ward is done today (in a circle that follows one text: of that text's tasks, done or not)
+const myPct=(s,key)=>{if(!s||s.day!==today())return 0;if(key){const b=s.bks&&s.bks[key];return b&&+b[2]===0?1:0}
+  if(s.open<=0)return s.open===0?1:0;const tt=+s.tt||0;return tt>s.open?(tt-s.open)/tt:0};
+const bar=(got,n)=>{const b=el('div','bar'),i=el('i');i.style.width=Math.max(got?2:0,Math.min(100,got/Math.max(1,n)*100))+'%';b.append(i);return b};
 function render(v,fresh){
   const m=me(), b=UI.sheet('👥 '+v.name), adm=isAdmin(v,m.mid), cfg=v.cfg||{}, V2=!!v.week;
   setList(list().map(c=>c.id===v.id?{id:c.id,name:v.name}:c));
@@ -219,24 +228,42 @@ function render(v,fresh){
   if(cfg.note){const n=el('div','cc-note');n.append(el('small','','📌 من المشرف'),el('p','',cfg.note));b.append(n)}
   // this round
   if(V2){
-    const R=roundOf_(v), rk=ranked(v,R.pts), left=daysLeft(v,R.b), rc=el('div','rc');
+    const R=roundOf_(v), rk=ranked(v,R.pts), left=daysLeft(v,R.b), rc=el('div','rc'), vis=cfg.vis||'near', hid=hidden(v).has(m.mid);
     rc.append(el('small','rc-h',(R.mode==='month'?'جولة الشهر':'جولة الأسبوع')+' · '+(left<=1?'آخر يوم':'باقي '+ar(left)+' أيام')));
-    const top=rk.filter(r=>r.p>0).slice(0,3);
-    if(top.length){const pod=el('div','pod');[1,0,2].forEach(i=>{const r=top[i];if(!r)return;const c=el('div','pod-c pod-'+(i+1)+(r.x.mid===m.mid?' me':''));
+    // at a glance: my ring for today, and who finished (a dot each; names wait in «اليوم»)
+    {const mine=v.members.find(x=>x.mid===m.mid), st=x=>today_(x.stat,keyOf(v,x.mid))[0], dn=v.members.filter(x=>st(x)==='done');
+      const g=el('div','rc-top'), av=el('div','avs'), tx=el('div','rc-tx');
+      g.append(ring(myPct(mine&&mine.stat,keyOf(v,m.mid))));
+      v.members.slice().sort((a,b)=>(st(a)==='done'?0:1)-(st(b)==='done'?0:1)).slice(0,14).forEach(x=>av.append(el('i','av'+(st(x)==='done'?' on':'')+(x.mid===m.mid?' me':''),[...x.name.trim()][0]||'·')));
+      if(v.members.length>14)av.append(el('i','av more','+'+ar(v.members.length-14)));
+      tx.append(el('b','',ar(dn.length)+' من '+ar(v.members.length)+' خلّصوا اليوم'),av);g.append(tx);rc.append(g)}
+    // the circle's shared aim, and the two teams
+    if(v.goal){const gl=el('div','rc-goal'),ok=v.goal.got>=v.goal.n;gl.append(el('small','',(ok?'🎯 وصلنا هدف الحلقة: ':'🎯 هدف الحلقة: ')+ar(v.goal.got)+' من '+ar(v.goal.n)+' محفوظ جديد'),bar(v.goal.got,v.goal.n));rc.append(gl)}
+    if(v.teams&&vis!=='off'){const mx=Math.max(1,v.teams[0].p,v.teams[1].p),mt=(cfg.teams.m||{})[m.mid],tg=el('div','rc-teams');
+      v.teams.forEach((t,i)=>{const r=el('div','tm'+(mt===i?' me':''));r.append(el('span','',t.n+(mt===i?' (فريقك)':'')),bar(t.p,mx),el('b','',ar(t.p)));tg.append(r)});rc.append(tg)}
+    const top=vis==='off'?[]:rk.filter(r=>r.p>0).slice(0,3);
+    if(vis==='off'){}
+    else if(top.length){const pod=el('div','pod');[1,0,2].forEach(i=>{const r=top[i];if(!r)return;const c=el('div','pod-c pod-'+(i+1)+(r.x.mid===m.mid?' me':''));
         c.append(el('span','pod-m',MEDAL[i]),el('b','',r.x.name),el('small','',ar(r.p)+' نقطة'));pod.append(c)});rc.append(pod)}
     else rc.append(el('p','rc-empty','الجولة بلّشت. أول نقطة بتحطّك بالصدارة 🌱'));
     // where I stand, said kindly: how close the next place is
-    const i=rk.findIndex(r=>r.x.mid===m.mid), mine=rk[i];
-    if(mine)rc.append(el('p','rc-me',!mine.p?'خلّص وردك اليوم وبتدخل الترتيب':i===0?(rk[1]&&rk[1].p===mine.p?'متعادل بالصدارة مع '+rk[1].x.name+'، نقطة وحدة بتحسمها':'إنت بالصدارة 🏆 كمّل هيك'):'مركزك '+ar(i+1)+' · باقي '+ar(rk[i-1].p-mine.p+1)+' نقطة وبتسبق '+rk[i-1].x.name));
-    const all=el('details','cc-fold');all.append(el('summary','','الترتيب كامل'),board(v,R.pts,m.mid));
+    const i=rk.findIndex(r=>r.x.mid===m.mid), mine=rk[i], myP=(R.pts[m.mid]||{p:0});
+    if(vis==='off'||hid)rc.append(el('p','rc-me',(hid&&vis!=='off'?'إنت برّا الترتيب · ':'')+'نقاطك بهالجولة '+ar(myP.p)));
+    else if(mine)rc.append(el('p','rc-me',!mine.p?'خلّص وردك اليوم وبتدخل الترتيب':i===0?(rk[1]&&rk[1].p===mine.p?'متعادل بالصدارة مع '+rk[1].x.name+'، نقطة وحدة بتحسمها':'إنت بالصدارة 🏆 كمّل هيك'):'مركزك '+ar(i+1)+' · باقي '+ar(rk[i-1].p-mine.p+1)+' نقطة وبتسبق '+rk[i-1].x.name));
+    // the ranking, as much of it as the admins chose: the podium and my neighbours by default
+    const all=el('details','cc-fold'), full=vis==='full'||(adm&&vis!=='off');
+    all.append(el('summary','',vis==='off'?'نقاطي':full?'الترتيب كامل':'الترتيب ونقاطي'));
+    if(vis!=='off'&&(full||vis==='near'))all.append(board(v,R.pts,m.mid,full?null:k=>k<3||Math.abs(k-i)<=1));
+    {const d=myP,why=[d.days?ar(d.days)+' يوم ورد':'',d.tf?ar(d.tf)+' يوم تفسير':'',d.mem?ar(d.mem)+' محفوظ جديد':'',d.tsm?ar(d.tsm)+' تسميع':''].filter(Boolean).join(' · ');
+      all.append(el('p','rc-mine','نقاطك: '+ar(d.p||0)+(why?' ('+why+')':'')))}
     const W=wOf(cfg),tr=cfg.track;
-    all.append(el('p','ui-hint','النقاط: كل يوم بتخلّص فيه وردك '+ar(W.day)+(W.tf&&(!tr||tr.m==='all')?'، وكل يوم بتقرأ فيه ورد التفسير '+ar(W.tf):'')+(W.mem?'، وكل بيت أو فقرة بتحفظها جديد '+ar(W.mem):'')+(W.tsm?'، وكل تسميع بيسجّله المشرف لحد '+ar(W.tsm):'')+'.'+(tr&&tr.m!=='all'?' وبتنحسب من '+(tr.m==='one'?'«'+titleOf(tr.k)+'»':'متن كل واحد بالحلقة')+' بس.':'')+' بتتحدّث لما تفتح «وردي اليوم».'));
+    all.append(el('p','ui-hint','النقاط: كل يوم بتخلّص فيه وردك '+ar(W.day)+(W.tf&&(!tr||tr.m==='all')?'، وكل يوم بتقرأ فيه ورد التفسير '+ar(W.tf):'')+(W.mem?'، وكل بيت أو فقرة بتحفظها جديد '+ar(W.mem):'')+(W.tsm?'، وكل تسميع بيسجّله المشرف لحد '+ar(W.tsm):'')+'.'+(cfg.cap?' أقصى إشي بينحسب باليوم '+ar(cfg.cap)+' محفوظ جديد.':'')+(tr&&tr.m!=='all'?' وبتنحسب من '+(tr.m==='one'?'«'+titleOf(tr.k)+'»':'متن كل واحد بالحلقة')+' بس.':'')+' بتتحدّث لما تفتح «وردي اليوم».'));
     rc.append(all); b.append(rc);
     // the record: last round's champion and the most improved
     const h=(cfg.hist||[])[0];
-    if(h&&(h.w||h.im)){const row=el('div','cc-hist');if(h.w)row.append(el('span','','🏆 بطل الجولة الماضية: '+h.w[1]));if(h.im)row.append(el('span','','📈 الأكثر تحسّنًا: '+h.im[1]));
+    if(h&&(h.w||h.im||h.co)){const row=el('div','cc-hist');if(h.w)row.append(el('span','','🏆 بطل الجولة الماضية: '+h.w[1]));if(h.im)row.append(el('span','','📈 الأكثر تحسّنًا: '+h.im[1]));if(h.co)row.append(el('span','','🌿 الأكثر التزامًا: '+h.co[1]));if(h.tw)row.append(el('span','','🤝 الفريق الفايز: '+h.tw));
       if((cfg.hist||[]).length>1){const d=el('details','cc-fold');d.append(el('summary','','سجلّ الأبطال'));const l=el('div','sched');
-        cfg.hist.forEach(x=>{const r=el('div');r.append(el('span','',x.a.slice(5).replace('-','/')),el('b','',(x.w?'🏆 '+x.w[1]:'—')+(x.im?' · 📈 '+x.im[1]:'')));l.append(r)});d.append(l);row.append(d)}
+        cfg.hist.forEach(x=>{const r=el('div');r.append(el('span','',x.a.slice(5).replace('-','/')),el('b','',(x.w?'🏆 '+x.w[1]:'—')+(x.im?' · 📈 '+x.im[1]:'')+(x.co?' · 🌿 '+x.co[1]:'')));l.append(r)});d.append(l);row.append(d)}
       b.append(row)}
   }
   // a special challenge, when the admins set one
@@ -276,7 +303,11 @@ function render(v,fresh){
   const back=el('button','btn','← حلقاتي'); back.onclick=open;
   const lv=el('button','btn','اطلع من الحلقة'); lv.onclick=async()=>{if(!confirm('بدك تطلع من «'+v.name+'»؟'))return;try{await api('leave',{id:v.id})}catch(e){if(e.st!==403&&e.st!==404){toast(errText(e));return}}setList(list().filter(c=>c.id!==v.id));toast('طلعت من الحلقة');open()};
   foot.append(back,lv); if(!fresh)b.append(inv); b.append(foot);
-  const pv=el('details','cc-fold');pv.append(el('summary','','شو بيشوف أصحابي عني؟'),el('p','ui-hint',SHARE_NOTE+' وكل تشجيع بيوصل مرة وحدة باليوم، عشان ما يصير إزعاج.'));b.append(pv);
+  const pv=el('details','cc-fold');pv.append(el('summary','','شو بيشوف أصحابي عني؟'),el('p','ui-hint',SHARE_NOTE+' وكل تشجيع بيوصل مرة وحدة باليوم، عشان ما يصير إزعاج.'));
+  if(v.round){const hid=hidden(v).has(m.mid),hb=el('button','btn',hid?'رجّعني للترتيب':'أخفيني من الترتيب');
+    hb.onclick=async()=>{hb.disabled=true;try{await api('hide',{id:v.id,on:!hid});toast(hid?'رجعت للترتيب ✓':'صرت برّا الترتيب، ونقاطك لسا بتنحسب لهدف الحلقة ✓');openCircle(v.id)}catch(e){toast(errText(e));hb.disabled=false}};
+    pv.append(hb,el('small','ui-hint','إذا بدك تحفظ بدون مقارنة: اسمك ما بيطلع بالترتيب، وحفظك بيضل محسوب لهدف الحلقة ولفريقك.'))}
+  b.append(pv);
 }
 
 /* the admins' settings: each section saves on its own and the sheet reopens with the circle as it now is */
@@ -304,6 +335,21 @@ async function settings(v0){
     const ok=el('button','btn primary','احفظ النقاط');ok.onclick=()=>{const p={};for(const k in ins)p[k]=Math.round(+ins[k].value)||0;save({pts:p})};cw.append(ok);s2.append(cw,el('small','ui-hint','التسميع «جيد» بياخد ثلثين النقاط، و«بحاجة إعادة» الخمس.'));
     // 3. the round
     sec('الجولة',chips([['week','كل أسبوع (من السبت)'],['month','كل شهر']],cfg.round==='month'?'month':'week',val=>save({round:val})),el('small','ui-hint','بآخر كل جولة بينحفظ بطلها والأكثر تحسّنًا، وبتبلّش جولة جديدة من الصفر.'));
+    // 3b. calm: how much of the ranking shows, a shared aim, a daily cap, two teams
+    sec('شو بيبيّن من الترتيب',chips([['near','الأوائل وجيراني'],['pod','الأوائل بس'],['full','الكل'],['off','بلا ترتيب']],cfg.vis||'near',val=>save({vis:val})),
+      el('small','ui-hint','«الأوائل وجيراني»: كل عضو بيشوف أول ثلاثة واللي قبله وبعده بس، فما حدا بيشوف حاله بآخر القائمة. إنت كمشرف بتشوف الكل دايمًا.'));
+    {const gi=el('input');gi.type='number';gi.min=0;gi.max=9999;gi.placeholder='مثلًا ١٠٠';gi.value=cfg.goal||'';
+      const gs=el('button','btn','🎯 احفظ الهدف');gs.onclick=()=>save({goal:Math.round(+gi.value)||0},+gi.value?'هدف الحلقة انحفظ 🎯':'انشال الهدف');
+      const r=el('label','set-r');r.append(el('span','','كم محفوظ جديد للحلقة كلها بالجولة'),gi);
+      sec('هدف مشترك للحلقة',r,gs,el('small','ui-hint','كل الأعضاء بيجمعوا له سوا، وبيبيّن كشريط واحد بدون أسماء. اتركه فاضي إذا ما بدك هدف.'))}
+    sec('حد الحفظ اليومي',chips([[0,'بلا حد'],[5,'٥'],[10,'١٠'],[20,'٢٠']],[5,10,20].includes(cfg.cap)?cfg.cap:0,val=>save({cap:val})),
+      el('small','ui-hint','أكثر عدد أبيات أو فقرات جديدة بتنحسب للعضو باليوم، عشان ما حدا يستعجل بالحفظ على حساب الإتقان.'));
+    {const T=cfg.teams,s=sec('فريقين');
+      if(!T){const go=el('button','btn','🤝 قسّم الحلقة فريقين');go.onclick=()=>save({teams:{}},'انقسمت الحلقة فريقين متوازنين 🤝');s.append(go,el('small','ui-hint','بنقسّمهم بالتساوي حسب نقاطهم، والمقارنة بمعدّل نقاط العضو، فعدد الفريق ما بيفرق. وبتقدر تنقل أي عضو.'))}
+      else{const a=el('input'),c=el('input');a.maxLength=c.maxLength=20;a.value=T.n[0];c.value=T.n[1];const ns=el('button','btn','احفظ الأسماء');ns.onclick=()=>save({teams:{n:[a.value,c.value]}});
+        const r=el('div','cc-acts');r.append(a,c);s.append(r,ns);
+        v.members.forEach(x=>{const t=T.m[x.mid]||0,row=el('div','set-m');row.append(el('b','',x.name),chips([[0,T.n[0]],[1,T.n[1]]],t,val=>val!==t&&save({team:{mid:x.mid,t:val}})));s.append(row)});
+        const off=el('button','btn','الغِ الفريقين');off.onclick=()=>{if(confirm('بدك تلغي الفريقين؟'))save({teams:null})};s.append(off)}}
     // 4. a special challenge
     const ch=cfg.challenge, s4=sec('مسابقة خاصة');
     if(ch){const end=el('button','btn','أنهِ المسابقة «'+ch.t+'»');end.onclick=()=>{if(confirm('بدك تنهي المسابقة؟'))save({challenge:null})};s4.append(end)}
@@ -335,7 +381,9 @@ async function card(box){
   const rows=el('div','ui-col'); box.append(rows);
   for(const c of cs){const r=el('button','ui-book'),info=el('small','','…');r.type='button';r.append(el('b','',c.name),info);r.onclick=()=>openCircle(c.id);rows.append(r);
     api('get',{id:c.id}).then(v=>{showCheers(v.cheers);const d=v.members.filter(x=>today_(x.stat,keyOf(v,x.mid))[0]==='done').length;const me_=me().mid,ch=v.challenge;let x=ar(d)+' من '+ar(v.members.length)+' خلّصوا اليوم';
-      if(ch&&daysLeft(v,ch.b)>0){const r=ranked(v,ch.pts),i=r.findIndex(y=>y.x.mid===me_);x+=' · 🏆 ترتيبك '+ar(i+1)}info.textContent=x;
+      if(ch&&daysLeft(v,ch.b)>0){const r=ranked(v,ch.pts),i=r.findIndex(y=>y.x.mid===me_);if(i>=0)x+=' · 🏆 ترتيبك '+ar(i+1)}
+      else if(v.round&&(v.cfg.vis||'near')!=='off'){const r=ranked(v,v.round.pts),i=r.findIndex(y=>y.x.mid===me_);if(i===0&&r[0].p>0)x+=' · إنت بالصدارة 🏆';else if(i>0&&r[i].p>0)x+=' · باقي '+ar(r[i-1].p-r[i].p+1)+' نقطة للمركز '+ar(i)}
+      else if(v.goal)x+=' · 🎯 '+ar(v.goal.got)+' من '+ar(v.goal.n);info.textContent=x;
       if(v.name!==c.name)setList(list().map(x=>x.id===c.id?{id:x.id,name:v.name}:x))}).catch(e=>{info.textContent=e.st===403||e.st===404?'ما عادت موجودة':'ما في نت'})}
   // notifications already on: keep the server's copy of this device's subscription current (it can change)
   if(cs.length){if(pushState()==='on')subscribe().catch(()=>{});else{const po=pushOffer();if(po)box.append(po)}}

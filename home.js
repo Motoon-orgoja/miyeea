@@ -75,16 +75,16 @@ if(BUDGET){let used=0; pending.forEach(({x})=>{used+=x.min||0; x.over=used>BUDGE
 
 /* today: one quiet row per text (and the tafsir ward); a row opens to its tasks */
 $('dayLbl').textContent=dayName(T);
-const list=$('todayList'); let open=0;
+const list=$('todayList'); let open=0, allT=0;
 const KIND={new:'جديد',recent:'قريب',old:'قديم',test:'تسميع'};
 const row=(title,state,done)=>{const s=el('summary');s.append(el('i','tdot'+(done?' ok':''),done?'✓':''),el('b','',title),el('small','',state));return s};
 // the tafsir ward, when the reader has a plan
 const TFS=get('mutoon_tafsir_v1');
 if(TFS&&TFS.set!==false){const done=TFS.day===T&&TFS.done, a=el('a','trow');a.href='tafsir.html';
-  a.append(row('ورد التفسير',done?'قرأته':TFS.day===T&&TFS.lbl?TFS.lbl:'بانتظارك',done));list.append(a);if(!done)open++}
+  a.append(row('ورد التفسير',done?'قرأته':TFS.day===T&&TFS.lbl?TFS.lbl:'بانتظارك',done));list.append(a);allT++;if(!done)open++}
 // a text with nothing asked of it today stays out of the list (it is still counted in the statistics)
 active.filter(r=>r.tasks.length).forEach(r=>{
-  const pend=r.tasks.filter(x=>!x.done), m=pend.reduce((n,x)=>n+(x.min||0),0); open+=pend.length;
+  const pend=r.tasks.filter(x=>!x.done), m=pend.reduce((n,x)=>n+(x.min||0),0); open+=pend.length; allT+=r.tasks.length;
   const d=el('details','trow'+(pend.length?'':' done'));
   d.append(row(r.b.title,pend.length?(pend.length===1?pend[0].t.replace(/^ورد اليوم: /,''):'باقي '+ar(pend.length))+(m?' · '+mins(m)+' د':''):r.tasks.length?'خلصت':'ما في شي اليوم',!pend.length));
   const ul=el('ul','tasks');
@@ -139,7 +139,7 @@ if(!started.length)$('progList').append(el('div','empty','بيظهر هون تق
 // the grid runs oldest to newest, a column per week; RTL puts the newest week on the left
 /* circles: my status for friends to see, and the card listing my circles */
 if(window.CIRCLES&&CIRCLES.available){
-  CIRCLES.setStatus({bks:Object.fromEntries(started.slice(0,40).map(r=>[r.b.key,[r.done,r.total,r.tasks.filter(x=>!x.done).length]])),s:streak,d30:last30,td:days.has(T),tf:!!(TFS&&TFS.day===T&&TFS.done),open:active.length?open:-1,v:verses,u:units,
+  CIRCLES.setStatus({bks:Object.fromEntries(started.slice(0,40).map(r=>[r.b.key,[r.done,r.total,r.tasks.filter(x=>!x.done).length]])),s:streak,d30:last30,td:days.has(T),tf:!!(TFS&&TFS.day===T&&TFS.done),open:active.length?open:-1,tt:allT,v:verses,u:units,
     bk:active.slice(0,4).map(r=>[r.b.title,r.done,r.total])});
   CIRCLES.banner($('pushBar'));
   const cc=$('circleCard'); cc.hidden=false; CIRCLES.card(cc); CIRCLES.fromHash(); addEventListener('hashchange',CIRCLES.fromHash);

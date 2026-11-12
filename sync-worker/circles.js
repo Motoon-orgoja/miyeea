@@ -8,13 +8,19 @@
 //   cheer {id,mid,tok,to,kind} → {ok, sent: false if already sent today}             leave {id,mid,tok,who?} → {ok}     rename {id,mid,tok,cname} → {ok}
 //   sub {mid,tok,sub:{endpoint,keys:{p256dh,auth}}, drop?} → {ok}   (this device's push subscription, or drop it)
 //   me {mid,tok,day,left,rem} → {ok}   (for the daily reminder: today's tasks left, -1 for none, and the hour to remind, -1 off)
-//   cfg {id,mid,tok,cfg:{note?,locked?,challenge?,admins?,track?,assign?}} → {ok}   (the owner or an admin; only the owner names admins)
+//   cfg {id,mid,tok,cfg:{note?,locked?,challenge?,admins?,track?,assign?,pts?,round?,vis?,goal?,cap?,teams?,team?}} → {ok}   (the owner or an admin; only the owner names admins)
+//   hide {id,mid,tok,on} → {ok}   (a member stays out of the ranking, or comes back)
 //   pick {id,mid,tok,key} → {ok}   (in a circle where each member follows one text: the member's own text)
 //   bonus {id,mid,tok,to,kind:'tsm'|'man',grade?:'a'|'b'|'c',pts?,why?} → {ok}   (an admin: a recitation heard and graded,
 //     worth the circle's tasmee points × grade, or points given by hand with a reason)
 // Rounds (cfg.round 'week' Saturday–Friday, or 'month'): «get» gives this round's points (round), the last round's (prev),
 // and the record of past rounds (cfg.hist: the winner and the most improved of each), kept as each round ends.
 // Points (cfg.pts, the admins choose): {day, tf, mem, tsm}, by default 10, 5, 2, 15.
+// Kept calm (cfg, the admins choose): vis, how much of the ranking members see ('pod' the podium only, 'near' the podium and
+// one's neighbours — the default, 'full', 'off' no ranking at all); goal, a number of new verses the whole circle aims at in a
+// round («get» gives goal {n, got}); cap, the most new verses counted for a member in a day; teams {n: two names, m: {mid: 0|1}},
+// two teams compared by their members' average points («get» gives teams [{n, c, p}]); hide, the members who asked to stay
+// out of the ranking (action «hide» {on}; they still count toward the goal and their team).
 // What a circle follows (cfg.track): {m:'all'} every text of each member (the default); {m:'one',k} one text for everyone;
 // {m:'each',a:{mid:key}} each member one text (the member picks it, an admin may set it). The status then carries bks
 // {key:[memorised, total, tasks left today]}, and the points count only the followed text.
@@ -61,7 +67,10 @@ function points(rows, a, b, k, cfg, bon) {
     const tk = keyOf(cfg, mid); if (tk !== null) rs.forEach(r => { let x = []; try { x = (JSON.parse(r.bk || '{}'))[tk] || [] } catch (e) { } r = Object.assign(r, { mem: x[0] || 0, done: x[1] || 0, tf: 0 }) });
     const before = rs.filter(r => r.day < a).pop(), inn = rs.filter(r => r.day >= a && r.day <= b);
     const days = inn.filter(r => r.done).length, tf = inn.filter(r => r.tf).length;
-    const base = before ? before.mem : inn.length ? inn[0].mem : 0, mem = inn.length ? Math.max(0, inn[inn.length - 1].mem - base) : 0;
+    const base = before ? before.mem : inn.length ? inn[0].mem : 0, cap = cfg && cfg.cap;
+    let mem = inn.length ? Math.max(0, inn[inn.length - 1].mem - base) : 0;
+    // a daily cap: each day counts at most so many new verses
+    if (cap && inn.length) { mem = 0; let prev = base; for (const r of inn) { mem += Math.min(cap, Math.max(0, r.mem - prev)); prev = Math.max(prev, r.mem) } }
     const e = extra[mid] || { p: 0, tsm: 0 };
     out[mid] = { p: Math.max(0, (k === 'mem' ? 0 : days * W.day + tf * W.tf) + (k === 'days' ? 0 : mem * W.mem) + e.p), days, tf, mem, tsm: e.tsm, bonus: e.p };
   }
@@ -90,6 +99,16 @@ export async function circles(action, b, db, notify) {
     v.round = { a: R[0], b: R[1], mode, pts: pts(R[0], R[1]) };
     v.prev = { a: P[0], b: P[1], pts: pts(P[0], P[1]) };
     if (ch) v.challenge = { ...ch, pts: pts(ch.a, ch.b, ch.k) };
+    if (cfg.goal) v.goal = { n: cfg.goal, got: Object.values(v.round.pts).reduce((n, x) => n + (x.mem || 0), 0) };
+    // two teams: a member with no team yet joins the smaller one; a team's points are its members' average
+    const teamPts = P_ => [0, 1].map(t => { const mm = ms.filter(x => cfg.teams.m[x.mid] === t); return { n: cfg.teams.n[t], c: mm.length, p: mm.length ? Math.round(mm.reduce((n, x) => n + ((P_[x.mid] || {}).p || 0), 0) / mm.length) : 0 } });
+    if (cfg.teams) {
+      const tm = cfg.teams.m, ids = new Set(ms.map(x => x.mid)); let ch = false;
+      for (const k of Object.keys(tm)) if (!ids.has(k)) { delete tm[k]; ch = true }
+      for (const x of ms) if (!(x.mid in tm)) { const c0 = Object.values(tm).filter(t => t === 0).length; tm[x.mid] = c0 <= Object.keys(tm).length - c0 ? 0 : 1; ch = true }
+      if (ch) await db.setCfg(id, JSON.stringify(cfg));
+      v.teams = teamPts(v.round.pts);
+    }
     v.recent = bon.filter(x => x.day >= R[0]).sort((x, y) => y.at - x.at).slice(0, 20).map(x => ({ mid: x.mid, day: x.day, pts: x.pts, kind: x.kind, why: x.why, grade: x.grade }));
     // the record of rounds: when a round has ended, its winner and its most improved are kept once
     const hist = cfg.hist || [];
@@ -98,7 +117,13 @@ export async function circles(action, b, db, notify) {
       const pp = v.prev.pts, ppp = pts(PP[0], PP[1]);
       const w = Object.entries(pp).filter(([, x]) => x.p > 0).sort((x, y) => y[1].p - x[1].p)[0];
       const im = Object.entries(pp).map(([mid, x]) => [mid, x.p - ((ppp[mid] || {}).p || 0)]).filter(([, d]) => d > 0).sort((x, y) => y[1] - x[1])[0];
-      hist.unshift({ a: P[0], b: P[1], w: w ? [w[0], name(w[0]), w[1].p] : null, im: im && (!w || im[0] !== w[0]) ? [im[0], name(im[0]), im[1]] : null });
+      // the most constant: the most days of ward done, when it is someone other than the winner
+      const co = Object.entries(pp).filter(([mid, x]) => x.days > 0 && (!w || mid !== w[0])).sort((x, y) => y[1].days - x[1].days)[0];
+      const h = { a: P[0], b: P[1], w: w ? [w[0], name(w[0]), w[1].p] : null, im: im && (!w || im[0] !== w[0]) ? [im[0], name(im[0]), im[1]] : null };
+      if (co && (!h.im || h.im[0] !== co[0])) h.co = [co[0], name(co[0]), co[1].days];
+      if (cfg.teams) { const tp = teamPts(pp); if (tp[0].p !== tp[1].p) h.tw = tp[0].p > tp[1].p ? tp[0].n : tp[1].n }
+      if (cfg.goal) { const got = Object.values(pp).reduce((n, x) => n + (x.mem || 0), 0); h.g = [got, cfg.goal] }
+      hist.unshift(h);
       cfg.hist = hist.slice(0, 26); await db.setCfg(id, JSON.stringify(cfg)); v.cfg = cfg;
     }
     return v;
@@ -178,6 +203,24 @@ export async function circles(action, b, db, notify) {
       if (isKey(x.key)) cfg.track.a[x.mid] = x.key; else delete cfg.track.a[x.mid] }
     if (n.pts) { const p = {}; for (const k in PTS) { const x = Math.round(+n.pts[k]); p[k] = x >= 0 && x <= 50 ? x : PTS[k] } cfg.pts = p }
     if ('round' in n) { if (n.round === 'month') cfg.round = 'month'; else delete cfg.round }
+    if ('vis' in n) { if (['pod', 'full', 'off'].includes(n.vis)) cfg.vis = n.vis; else delete cfg.vis }
+    if ('goal' in n) { const g = Math.round(+n.goal); if (g >= 1 && g <= 9999) cfg.goal = g; else delete cfg.goal }
+    if ('cap' in n) { const g = Math.round(+n.cap); if (g >= 1 && g <= 200) cfg.cap = g; else delete cfg.cap }
+    if ('teams' in n) {
+      if (!n.teams) delete cfg.teams;
+      else {
+        const nm = Array.isArray(n.teams.n) ? n.teams.n : [], names = [clean(nm[0], 20) || 'الفريق الأول', clean(nm[1], 20) || 'الفريق الثاني'];
+        if (cfg.teams) cfg.teams.n = names;
+        else {
+          // balanced: by the points of the last round and this one, dealt 0 1 1 0 0 1 1 0 …
+          const v = await view(id), sc = mid => ((v.prev.pts[mid] || {}).p || 0) + ((v.round.pts[mid] || {}).p || 0), tm = {};
+          if (v.cfg.hist) cfg.hist = v.cfg.hist;
+          v.members.slice().sort((x, y) => sc(y.mid) - sc(x.mid)).forEach((x, i) => { tm[x.mid] = [0, 1, 1, 0][i % 4] });
+          cfg.teams = { n: names, m: tm };
+        }
+      }
+    }
+    if (n.team && cfg.teams) { const x = n.team; if (!hex.test(x.mid || '') || !(await db.member(id, x.mid))) throw new E(400, 'team'); cfg.teams.m[x.mid] = x.t ? 1 : 0 }
     if ('admins' in n) {
       if (c.owner !== b.mid) throw new E(403, 'owner');
       const ms = new Set((await db.members(id)).map(x => x.mid));
@@ -195,6 +238,11 @@ export async function circles(action, b, db, notify) {
     await db.addBonus(id, b.to, day(), pts, kind, grade, clean(b.why, 40), m.name, now);
     if (notify && kind === 'tsm') await notify(b.to, { t: c.name, b: m.name + ' سجّل تسميعك ✓ (+' + pts + ')', u: 'home.html' });
     return { ok: true, pts };
+  }
+  if (action === 'hide') {
+    const c = await db.circle(id), cfg = cfgOf(c), l = (cfg.hide || []).filter(x => x !== b.mid);
+    if (b.on) l.push(b.mid); if (l.length) cfg.hide = l.slice(0, MAXM); else delete cfg.hide;
+    await db.setCfg(id, JSON.stringify(cfg)); return { ok: true };
   }
   if (action === 'pick') {
     const c = await db.circle(id), cfg = cfgOf(c);
