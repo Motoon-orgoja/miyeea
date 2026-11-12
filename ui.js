@@ -128,6 +128,10 @@ const BOOKS=[
   {key:'munfarija',c:'التزكية والرقائق',lsk:'mutoon_munfarija_v1',url:'munfarija.html',t:'المنفرجة',d:'التزكية والرقائق · ٤٠ بيتًا'},
   {key:'waharraqalbah',c:'الشعر العربي',lsk:'mutoon_waharraqalbah_v1',url:'waharraqalbah.html',t:'وا حر قلباه',d:'الشعر العربي · ٣٨ بيتًا'},
   {key:'madaih',c:'الشعر العربي',lsk:'mutoon_madaih_v1',url:'madaih.html',t:'مختارات المدائح النبوية',d:'أشهر أبيات المديح النبوي · ٢٧ مقطوعة · ٢١٥ بيتًا'},
+  {key:'khaqaniyya',c:'القراءات والتجويد',lsk:'mutoon_khaqaniyya_v1',url:'khaqaniyya.html',t:'رائية الخاقاني',d:'التجويد · ٥١ بيتًا'},
+  {key:'sakhawiyya',c:'القراءات والتجويد',lsk:'mutoon_sakhawiyya_v1',url:'sakhawiyya.html',t:'نونية السخاوي',d:'التجويد · ٦٤ بيتًا'},
+  {key:'kalwadhaniyya',c:'العقيدة',lsk:'mutoon_kalwadhaniyya_v1',url:'kalwadhaniyya.html',t:'دالية الكلوذاني',d:'العقيدة · ٤٥ بيتًا'},
+  {key:'mimiyya',c:'التزكية والرقائق',lsk:'mutoon_mimiyya_v1',url:'mimiyya.html',t:'ميمية ابن القيم',d:'الرقائق · ٢٣٠ بيتًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
