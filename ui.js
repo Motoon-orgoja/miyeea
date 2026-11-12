@@ -137,6 +137,11 @@ const BOOKS=[
   {key:'ibnzurayq',c:'الشعر العربي',lsk:'mutoon_ibnzurayq_v1',url:'ibnzurayq.html',t:'عينية ابن زريق',d:'الشعر العربي · ٤٠ بيتًا'},
   {key:'abudhuayb',c:'الشعر العربي',lsk:'mutoon_abudhuayb_v1',url:'abudhuayb.html',t:'عينية أبي ذؤيب',d:'الشعر العربي · ٦٥ بيتًا'},
   {key:'khansa',c:'الشعر العربي',lsk:'mutoon_khansa_v1',url:'khansa.html',t:'رائية الخنساء',d:'الشعر العربي · ٣٦ بيتًا'},
+  {key:'thana',c:'التزكية والرقائق',lsk:'mutoon_thana_v1',url:'thana.html',t:'الثناء على الله',d:'أشهر أبيات الثناء على الله · ٣١ مقطوعة · ١٨٧ بيتًا'},
+  {key:'maqsura',c:'الشعر العربي',lsk:'mutoon_maqsura_v1',url:'maqsura.html',t:'مقصورة ابن دريد',d:'الشعر العربي · ٢٥٦ بيتًا'},
+  {key:'muthallath',c:'النحو',lsk:'mutoon_muthallath_v1',url:'muthallath.html',t:'نظم مثلث قطرب',d:'اللغة (المثلثات) · ٦٤ بيتًا'},
+  {key:'sayrsaadi',c:'التزكية والرقائق',lsk:'mutoon_sayrsaadi_v1',url:'sayrsaadi.html',t:'السير إلى الله والدار الآخرة',d:'منازل السائرين · ١٧ بيتًا'},
+  {key:'taiyyaqadar',c:'العقيدة',lsk:'mutoon_taiyyaqadar_v1',url:'taiyyaqadar.html',t:'تائية ابن تيمية في القدر',d:'القدر · ١٢٥ بيتًا مع أبيات السؤال الثمانية'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
