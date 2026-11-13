@@ -146,6 +146,9 @@ const BOOKS=[
   {key:'lughatuna',c:'الشعر العربي',lsk:'mutoon_lughatuna_v1',url:'lughatuna.html',t:'اللغة العربية تنعى حظها',d:'الشعر العربي · ٢٣ بيتًا'},
   {key:'muallim',c:'الشعر العربي',lsk:'mutoon_muallim_v1',url:'muallim.html',t:'قم للمعلم',d:'الشعر العربي · ٣٣ بيتًا مختارة'},
   {key:'likullimri',c:'الشعر العربي',lsk:'mutoon_likullimri_v1',url:'likullimri.html',t:'دالية المتنبي',d:'الشعر العربي · ٤٢ بيتًا'},
+  {key:'kalim',c:'الحديث',lsk:'mutoon_kalim_v1',url:'kalim.html',t:'الكلم الطيب',d:'الأذكار · ٢٥٤ حديثًا في ٦٢ فصلًا'},
+  {key:'shabrawi',c:'النحو',lsk:'mutoon_shabrawi_v1',url:'shabrawi.html',t:'منظومة الشبراوي',d:'النحو · ٥١ بيتًا'},
+  {key:'awam',c:'العقيدة',lsk:'mutoon_awam_v1',url:'awam.html',t:'عقيدة العوام',d:'العقيدة · ٥٧ بيتًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
