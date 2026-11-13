@@ -150,6 +150,8 @@ const BOOKS=[
   {key:'shabrawi',c:'النحو',lsk:'mutoon_shabrawi_v1',url:'shabrawi.html',t:'منظومة الشبراوي',d:'النحو · ٥١ بيتًا'},
   {key:'awam',c:'العقيدة',lsk:'mutoon_awam_v1',url:'awam.html',t:'عقيدة العوام',d:'العقيدة · ٥٧ بيتًا'},
   {key:'tajrid',c:'الحديث',lsk:'mutoon_tajrid_v1',url:'tajrid.html',t:'مختصر البخاري',d:'مختصر صحيح البخاري · ٢٢٥٤ حديثًا'},
+  {key:'mundhiri',c:'الحديث',lsk:'mutoon_mundhiri_v1',url:'mundhiri.html',t:'مختصر مسلم',d:'مختصر صحيح مسلم · ٢١٧٩ حديثًا'},
+  {key:'lulu',c:'الحديث',lsk:'mutoon_lulu_v1',url:'lulu.html',t:'اللؤلؤ والمرجان',d:'المتفق عليه · ١٩٠٦ أحاديث'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
