@@ -142,6 +142,10 @@ const BOOKS=[
   {key:'muthallath',c:'النحو',lsk:'mutoon_muthallath_v1',url:'muthallath.html',t:'نظم مثلث قطرب',d:'اللغة (المثلثات) · ٦٤ بيتًا'},
   {key:'sayrsaadi',c:'التزكية والرقائق',lsk:'mutoon_sayrsaadi_v1',url:'sayrsaadi.html',t:'السير إلى الله والدار الآخرة',d:'منازل السائرين · ١٧ بيتًا'},
   {key:'taiyyaqadar',c:'العقيدة',lsk:'mutoon_taiyyaqadar_v1',url:'taiyyaqadar.html',t:'تائية ابن تيمية في القدر',d:'القدر · ١٢٥ بيتًا مع أبيات السؤال الثمانية'},
+  {key:'hamasa',c:'الشعر العربي',lsk:'mutoon_hamasa_v1',url:'hamasa.html',t:'العزة والحماسة',d:'أشهر أبيات العزة والشجاعة · ٣٤ مقطوعة · ١٩٠ بيتًا'},
+  {key:'lughatuna',c:'الشعر العربي',lsk:'mutoon_lughatuna_v1',url:'lughatuna.html',t:'اللغة العربية تنعى حظها',d:'الشعر العربي · ٢٣ بيتًا'},
+  {key:'muallim',c:'الشعر العربي',lsk:'mutoon_muallim_v1',url:'muallim.html',t:'قم للمعلم',d:'الشعر العربي · ٣٣ بيتًا مختارة'},
+  {key:'likullimri',c:'الشعر العربي',lsk:'mutoon_likullimri_v1',url:'likullimri.html',t:'دالية المتنبي',d:'الشعر العربي · ٤٢ بيتًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
