@@ -24,6 +24,10 @@ for(const f of fs.readdirSync(R('data')).filter(f=>f.endsWith('.js')&&f!=='media
 try{if(require('./build-index.js').build()!==fs.readFileSync(R('data/index.js'),'utf8').replace(/\r\n/g,'\n'))bad('data/index.js is stale: run node tools/build-index.js')}catch(e){bad('data/index.js: '+e.message)}
 const sw=fs.readFileSync(R('sw.js'),'utf8'), FILES=eval(sw.match(/const FILES = (\[[\s\S]*?\]);/)[1]);
 FILES.filter(f=>f!=='./'&&!fs.existsSync(R(f))).forEach(f=>bad('sw.js caches a missing file: '+f));
+// a file that exists here but was never committed is missing on the site (and breaks the offline cache for everyone)
+try{const tracked=new Set(execSync('git ls-files',{cwd:root,maxBuffer:1<<26}).toString().split('\n').map(s=>s.trim()));
+  FILES.filter(f=>f!=='./'&&fs.existsSync(R(f))&&!tracked.has(f)).forEach(f=>bad('sw.js caches a file git does not track (git add it): '+f));
+  ['media/intro.mp4','media/intro.jpg'].filter(f=>!tracked.has(f)).forEach(f=>bad('not committed: '+f));}catch(e){warn.push('tracked-files check skipped: '+e.message.split('\n')[0])}
 for(const h of fs.readdirSync(root).filter(f=>f.endsWith('.html'))){
   const src=fs.readFileSync(R(h),'utf8');
   for(const m of src.matchAll(/(?:src|href)="([^"#:?]+)"/g)){const p=m[1]; if(p==='./'||/^https?:/.test(p))continue; if(!fs.existsSync(R(p)))bad(h+' links a missing file: '+p)}
