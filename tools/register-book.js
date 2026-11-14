@@ -24,8 +24,7 @@ for (const f of fs.readdirSync(root).filter(f => f.endsWith('.html'))) {
   const s = fs.readFileSync(P(f), 'utf8'); if (!s.includes('<nav class="books"') || s.includes(`data-book="${key}"`)) continue;
   fs.writeFileSync(P(f), after ? s.replace(anchor, `$1${link}`) : s.replace(anchor, `${link}$1`));
 }
-// dashboard: load the data and know the page
-edit('home.html', s => s.replace('<script src="home.js"></script>', `<script src="data/${key}.js"></script><script>BOOKS.push(BOOK)</script>\n<script src="home.js"></script>`));
+// dashboard: know the page (its data reaches the home page through data/index.js, which tools/build-matn.js rebuilds)
 edit('home.js', s => s.replace("const PAGE={", `const PAGE={${key}:'${page}',`));
 // texts sheet
 edit('ui.js', s => { const i = s.indexOf('const BOOKS=['), j = s.indexOf('\n];', i);

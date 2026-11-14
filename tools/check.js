@@ -12,7 +12,7 @@ const js=fs.readdirSync(root).filter(f=>f.endsWith('.js')).concat(fs.readdirSync
 for(const f of js){const src=fs.readFileSync(R(f),'utf8');
   if(f==='whisper-worker.js')continue; // an ES module (import from a CDN)
   try{new Function(src)}catch(e){bad(f+': '+e.message)}}
-for(const f of fs.readdirSync(R('data')).filter(f=>f.endsWith('.js')&&f!=='media.js'&&!f.endsWith('-expl.js'))){
+for(const f of fs.readdirSync(R('data')).filter(f=>f.endsWith('.js')&&f!=='media.js'&&f!=='index.js'&&!f.endsWith('-expl.js'))){
   const w={}; try{new Function('window',fs.readFileSync(R('data/'+f),'utf8'))(w)}catch(e){bad('data/'+f+': '+e.message);continue}
   const B=w.BOOK; if(!B){bad('data/'+f+': no BOOK');continue}
   if(!B.key||!B.lsk||!B.title)bad('data/'+f+': BOOK without key/lsk/title');
@@ -20,6 +20,8 @@ for(const f of fs.readdirSync(R('data')).filter(f=>f.endsWith('.js')&&f!=='media
   if(B.chapters)B.chapters.forEach(c=>{if(!c.units||!c.units.length)warn.push('data/'+f+': empty chapter '+c.id);(c.units||[]).forEach(u=>{if(ids.has(u.id))bad('data/'+f+': duplicate unit id '+u.id);ids.add(u.id);if(!u.segs||!u.segs.length)bad('data/'+f+': unit without text '+u.id)})});
   else if(!B.poems&&!B.verses)bad('data/'+f+': BOOK has neither chapters nor poems');
 }
+// the home page's index must match the data files
+try{if(require('./build-index.js').build()!==fs.readFileSync(R('data/index.js'),'utf8').replace(/\r\n/g,'\n'))bad('data/index.js is stale: run node tools/build-index.js')}catch(e){bad('data/index.js: '+e.message)}
 const sw=fs.readFileSync(R('sw.js'),'utf8'), FILES=eval(sw.match(/const FILES = (\[[\s\S]*?\]);/)[1]);
 FILES.filter(f=>f!=='./'&&!fs.existsSync(R(f))).forEach(f=>bad('sw.js caches a missing file: '+f));
 for(const h of fs.readdirSync(root).filter(f=>f.endsWith('.html'))){

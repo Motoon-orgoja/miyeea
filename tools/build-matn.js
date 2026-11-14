@@ -73,3 +73,5 @@ if (!noReg && !ui.includes(`key:'${key}'`)) {
   const d = (M.d || M.c) + (M.d && /[٠-٩]/.test(M.d) ? '' : ' · ' + count);
   console.log(execFileSync('node', [path.join(__dirname, 'register-book.js'), key, kind, M.title, d, '', M.c || ''], { encoding: 'utf8' }));
 }
+// the home page's index of every text (data/index.js) follows every build
+{ const s = require('./build-index.js').build(); fs.writeFileSync(path.join(root, 'data', 'index.js'), s); }
