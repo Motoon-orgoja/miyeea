@@ -154,6 +154,12 @@ const BOOKS=[
   {key:'lulu',c:'الحديث',lsk:'mutoon_lulu_v1',url:'lulu.html',t:'اللؤلؤ والمرجان',d:'المتفق عليه · ١٩٠٦ أحاديث'},
   {key:'muharrar',c:'الحديث',lsk:'mutoon_muharrar_v1',url:'muharrar.html',t:'المحرر في الحديث',d:'أحاديث الأحكام · ١٣٠١ حديثًا'},
   {key:'jamsahihayn',c:'الحديث',lsk:'mutoon_jamsahihayn_v1',url:'jamsahihayn.html',t:'الجمع بين الصحيحين',d:'متون الصحيحين · ٥٢٩٤ حديثًا'},
+  {key:'nabigha',c:'الشعر العربي',lsk:'mutoon_nabigha_v1',url:'nabigha.html',t:'معلقة النابغة',d:'الشعر العربي · ٥١ بيتًا'},
+  {key:'abid',c:'الشعر العربي',lsk:'mutoon_abid_v1',url:'abid.html',t:'معلقة عبيد',d:'الشعر العربي · ٤٨ بيتًا'},
+  {key:'laqit',c:'الشعر العربي',lsk:'mutoon_laqit_v1',url:'laqit.html',t:'عينية لقيط',d:'الشعر العربي · ٥٦ بيتًا'},
+  {key:'afwah',c:'الشعر العربي',lsk:'mutoon_afwah_v1',url:'afwah.html',t:'دالية الأفوه',d:'الشعر العربي · ١٧ بيتًا'},
+  {key:'quss',c:'الشعر العربي',lsk:'mutoon_quss_v1',url:'quss.html',t:'أبيات قس',d:'الشعر العربي · ٥ أبيات'},
+  {key:'urwa',c:'الشعر العربي',lsk:'mutoon_urwa_v1',url:'urwa.html',t:'مختارات عروة',d:'الشعر العربي · ٢٥ بيتًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
