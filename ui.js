@@ -283,6 +283,8 @@ function openSettings(){
   b.append(field('تسجيلاتي',recB,'كل تسميع بـ«سجّل واسمع» بينحفظ على جهازك، فبتقدر ترجع تسمعه وتقارن حالك مع الوقت، أو تبعثه لشيخك.'));
   const wk=el('label','ui-check'); const cb=el('input'); cb.type='checkbox'; cb.checked=P.wake; cb.onchange=()=>{P.wake=cb.checked;save();P.wake?wake():sleep()};
   wk.append(cb,document.createTextNode(' خلّي الشاشة شغّالة وأنا بحفظ'));
+  const iv=el('button','btn','▶ شاهد الفيديو التعريفي');iv.type='button';iv.onclick=()=>{closeSheet();showIntro(false)};
+  b.append(el('h3','ui-sec','مساعدة'),field('الفيديو التعريفي',iv,'دقيقتين بيشرحوا طريقة الحفظ وكل خصائص الموقع، بدون صوت.'));
   b.append(el('h3','ui-sec','الجهاز والبيانات'));
   b.append(field('الشاشة',wk,'wakeLock' in navigator?'بتمنع الجوال يطفّي الشاشة وإنت بتقرأ أو بتسمّع.':'متصفحك ما بيدعم هالخاصية.'));
   // reminder
@@ -707,7 +709,52 @@ function nudges(){
   n.append(row); bar.after(n);
 }
 const ready=f=>document.readyState==='loading'?document.addEventListener('DOMContentLoaded',f):f();
-ready(()=>{mountBar();mountFab();wake();apply();pausedBanner();nudges();setTimeout(readOffer,0)});
+/* ---------- the welcome video ----------
+   Everyone new to the site watches it once, to the end, before using it (no sound: text and drawings only; source in the
+   miyeea-video project, src/intro). Afterwards it plays only from the settings, where it can be skipped. Someone who already
+   has progress here, or arrives on the iPhone icon carrying their progress from Safari (#link=…), is not new. */
+const INTRO='ui_intro_seen';
+const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}}, lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+function introGate(){
+  if(lsGet(INTRO))return;
+  const known=BOOKS.some(b=>hasState(b.key))||['mutoon_circles','mutoon_tafsir_v1','mutoon_me','mutoon_sync'].some(k=>lsGet(k)!=null)||/#link=/.test(location.hash);
+  if(known){lsSet(INTRO,'1');return}
+  showIntro(true);
+}
+function showIntro(must){
+  if(document.querySelector('.ui-intro'))return;
+  const w=el('div','ui-intro'+(must?' must':''));w.setAttribute('role','dialog');w.setAttribute('aria-modal','true');w.setAttribute('aria-label','الفيديو التعريفي');
+  const v=document.createElement('video');v.src='media/intro.mp4';v.poster='media/intro.jpg';v.muted=true;v.defaultMuted=true;v.playsInline=true;v.preload='auto';
+  ['muted','playsinline','webkit-playsinline','disablepictureinpicture'].forEach(a=>v.setAttribute(a,''));v.setAttribute('controlslist','nodownload noplaybackrate noremoteplayback');
+  if(!must)v.controls=true;
+  const bar=el('div','ui-intro-bar'),fill=el('i');bar.append(fill);
+  const left=el('span','ui-intro-left',must?'الفيديو التعريفي':''), foot=el('div','ui-intro-foot');
+  const go=el('button','btn primary',must?'يلّا نبلّش':'سكّر');go.type='button';go.hidden=must;
+  const play=el('button','ui-intro-play','▶ شغّل الفيديو');play.type='button';play.hidden=true;
+  const note=el('div','ui-intro-note');note.hidden=true;
+  foot.append(left,go);w.append(v,play,note,bar,foot);document.body.append(w);
+  const root=document.documentElement,ov=root.style.overflow;root.style.overflow='hidden';
+  const close=()=>{v.pause();w.remove();root.style.overflow=ov;document.removeEventListener('visibilitychange',vis);document.removeEventListener('keydown',key)};
+  go.onclick=close;
+  const key=e=>{if(e.key==='Escape'&&!must)close()};document.addEventListener('keydown',key);
+  const fmt=s=>{s=Math.max(0,Math.ceil(s));return ar(Math.floor(s/60))+':'+ar(String(s%60).padStart(2,'0'))};
+  let userPaused=false,lastT=0,lastMove=Date.now();
+  const start=()=>v.play().then(()=>{play.hidden=true}).catch(()=>{play.hidden=false});
+  play.onclick=()=>{userPaused=false;start()};
+  // a tap pauses or resumes (it never skips)
+  v.addEventListener('click',()=>{if(!must)return;if(v.paused){userPaused=false;start()}else{userPaused=true;v.pause();play.hidden=false}});
+  v.addEventListener('timeupdate',()=>{const d=v.duration||0;if(v.currentTime!==lastT){lastT=v.currentTime;lastMove=Date.now();note.hidden=true}
+    fill.style.width=(d?v.currentTime/d*100:0)+'%';if(must&&d)left.textContent='باقي '+fmt(d-v.currentTime)});
+  v.addEventListener('ended',()=>{lsSet(INTRO,'1');fill.style.width='100%';left.textContent=must?'ما شاء الله، هيك بتبلّش':'';go.hidden=false;go.textContent=must?'يلّا نبلّش':'سكّر';try{go.focus()}catch(e){}});
+  // when the video cannot play (no network, a blocked file), let the reader in; it is offered again on the next visit
+  const fail=m=>{if(!must)return;note.hidden=false;note.textContent=m;go.hidden=false;go.textContent='كمّل بدون الفيديو'};
+  v.addEventListener('error',()=>fail('ما قدرنا نشغّل الفيديو التعريفي هلأ. بيطلعلك مرة ثانية بعدين.'));
+  const watch=setInterval(()=>{if(!document.body.contains(w)){clearInterval(watch);return}
+    if(must&&!userPaused&&!v.ended&&document.visibilityState==='visible'&&Date.now()-lastMove>20000)fail('الفيديو بطيء بالتحميل. إذا بدك، كمّل وبيطلعلك بعدين.')},3000);
+  const vis=()=>{if(document.visibilityState==='visible'&&!userPaused&&!v.ended)start()};document.addEventListener('visibilitychange',vis);
+  start();
+}
+ready(()=>{mountBar();mountFab();wake();apply();pausedBanner();nudges();setTimeout(readOffer,0);introGate()});
 
 /* ---------- graded fading: hide a growing share of the words (level 1–4 = a quarter … all) ----------
    The words hidden at a level stay hidden at every higher level, and words the reader slipped on before (.wk) hide first,
@@ -852,5 +899,5 @@ if(window.visualViewport&&/iPad|iPhone|iPod/.test(navigator.userAgent)){
   fix(); window.vvFix=fix;
 }
 
-window.UI={status,setStatus,openStatus,readText,similar,quiz,play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,openSearch,report,certificate,recSave,recPatch,recShare,openRecordings,BOOKS,FIELDS};
+window.UI={showIntro,status,setStatus,openStatus,readText,similar,quiz,play,playQueue,openListen,mediaFor:k=>mediaFor(k||CUR),toast,fade,fadeBar,fadeLevel:()=>P.fade,reveal,isPaused,setPaused,started,sheet,closeSheet,prefs:()=>P,setPref:(k,v)=>{P[k]=v;save()},openSettings,openBooks,openSearch,report,certificate,recSave,recPatch,recShare,openRecordings,BOOKS,FIELDS};
 })();

@@ -130,6 +130,13 @@ html,body,button,a,.w,.v,input,select,label{touch-action:manipulation}
 .ui-book.paused .ui-book-link{opacity:.55}
 .ui-switch{flex:none;min-width:74px;min-height:38px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:700 calc(12.5px*var(--us)) var(--ui);cursor:pointer}
 .ui-switch.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.ui-intro{position:fixed;inset:0;z-index:70;background:#F3F6F4;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:max(10px,env(safe-area-inset-top,0px)) 10px max(10px,env(safe-area-inset-bottom,0px));box-sizing:border-box;gap:10px}
+.ui-intro video{flex:1;min-height:0;width:100%;max-width:calc((100dvh - 110px)*9/16);object-fit:contain;border-radius:18px;background:#F3F6F4}
+.ui-intro-bar{width:min(100%,420px);height:6px;border-radius:3px;background:#DCE5E0;overflow:hidden;flex:none}.ui-intro-bar i{display:block;height:100%;width:0;background:#0B7A55;border-radius:3px;transition:width .3s linear}
+.ui-intro-foot{width:min(100%,420px);display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:46px;flex:none;font:600 calc(13.5px*var(--us)) var(--ui);color:#5E6E67}
+.ui-intro-foot .btn{flex:none}
+.ui-intro-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:0;border-radius:999px;background:#0B7A55;color:#fff;font:700 18px var(--ui);padding:14px 26px;box-shadow:0 8px 24px rgba(0,0,0,.2);cursor:pointer}
+.ui-intro-note{position:absolute;left:16px;right:16px;bottom:calc(80px + env(safe-area-inset-bottom,0px));background:#F6EEDC;color:#18241F;border-radius:14px;padding:10px 14px;font:600 14px var(--ui);text-align:center}
 .ui-peek{flex:none;font-size:calc(12px*var(--us));color:var(--muted);font-weight:700;text-decoration:none;padding:8px 6px}
 .ui-st{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:start;width:100%;cursor:pointer}.ui-st b{font-family:var(--ui);font-size:calc(15px*var(--us))}.ui-st small{color:var(--muted);font-size:calc(12.5px*var(--us));line-height:1.6}
 .ui-st.cur{border-color:var(--accent)}
