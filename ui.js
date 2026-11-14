@@ -160,6 +160,12 @@ const BOOKS=[
   {key:'afwah',c:'الشعر العربي',lsk:'mutoon_afwah_v1',url:'afwah.html',t:'دالية الأفوه',d:'الشعر العربي · ١٧ بيتًا'},
   {key:'quss',c:'الشعر العربي',lsk:'mutoon_quss_v1',url:'quss.html',t:'أبيات قس',d:'الشعر العربي · ٥ أبيات'},
   {key:'urwa',c:'الشعر العربي',lsk:'mutoon_urwa_v1',url:'urwa.html',t:'مختارات عروة',d:'الشعر العربي · ٢٥ بيتًا'},
+  {key:'shabbi',c:'الشعر العربي',lsk:'mutoon_shabbi_v1',url:'shabbi.html',t:'إرادة الحياة',d:'الشعر العربي · ٦٣ بيتًا'},
+  {key:'umariyya',c:'الشعر العربي',lsk:'mutoon_umariyya_v1',url:'umariyya.html',t:'العمرية',d:'الشعر العربي · ٨٧ بيتًا مختارة'},
+  {key:'barada',c:'الشعر العربي',lsk:'mutoon_barada_v1',url:'barada.html',t:'نكبة دمشق',d:'الشعر العربي · ٥٥ بيتًا'},
+  {key:'tihami',c:'الشعر العربي',lsk:'mutoon_tihami_v1',url:'tihami.html',t:'رثاء التهامي',d:'الشعر العربي · ٦٢ بيتًا مختارة'},
+  {key:'ibnrumi',c:'الشعر العربي',lsk:'mutoon_ibnrumi_v1',url:'ibnrumi.html',t:'رثاء ابن الرومي',d:'الشعر العربي · ٤٠ بيتًا'},
+  {key:'humma',c:'الشعر العربي',lsk:'mutoon_humma_v1',url:'humma.html',t:'حمى المتنبي',d:'الشعر العربي · ٣٧ بيتًا مختارة'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
