@@ -153,6 +153,7 @@ const BOOKS=[
   {key:'mundhiri',c:'الحديث',lsk:'mutoon_mundhiri_v1',url:'mundhiri.html',t:'مختصر مسلم',d:'مختصر صحيح مسلم · ٢١٧٩ حديثًا'},
   {key:'lulu',c:'الحديث',lsk:'mutoon_lulu_v1',url:'lulu.html',t:'اللؤلؤ والمرجان',d:'المتفق عليه · ١٩٠٦ أحاديث'},
   {key:'muharrar',c:'الحديث',lsk:'mutoon_muharrar_v1',url:'muharrar.html',t:'المحرر في الحديث',d:'أحاديث الأحكام · ١٣٠١ حديثًا'},
+  {key:'jamsahihayn',c:'الحديث',lsk:'mutoon_jamsahihayn_v1',url:'jamsahihayn.html',t:'الجمع بين الصحيحين',d:'متون الصحيحين · ٥٢٩٤ حديثًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
