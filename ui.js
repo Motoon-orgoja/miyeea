@@ -298,7 +298,7 @@ function openSettings(){
   const wk=el('label','ui-check'); const cb=el('input'); cb.type='checkbox'; cb.checked=P.wake; cb.onchange=()=>{P.wake=cb.checked;save();P.wake?wake():sleep()};
   wk.append(cb,document.createTextNode(' خلّي الشاشة شغّالة وأنا بحفظ'));
   const iv=el('button','btn','▶ شاهد الفيديو التعريفي');iv.type='button';iv.onclick=()=>{closeSheet();showIntro(false)};
-  b.append(el('h3','ui-sec','مساعدة'),field('الفيديو التعريفي',iv,'دقيقتين بيشرحوا طريقة الحفظ وكل خصائص الموقع، بدون صوت.'));
+  b.append(el('h3','ui-sec','مساعدة'),field('الفيديو التعريفي',iv,'دقيقتين ونص بيشرحوا طريقة الحفظ وكل خصائص الموقع.'));
   b.append(el('h3','ui-sec','الجهاز والبيانات'));
   b.append(field('الشاشة',wk,'wakeLock' in navigator?'بتمنع الجوال يطفّي الشاشة وإنت بتقرأ أو بتسمّع.':'متصفحك ما بيدعم هالخاصية.'));
   // reminder
@@ -724,7 +724,7 @@ function nudges(){
 }
 const ready=f=>document.readyState==='loading'?document.addEventListener('DOMContentLoaded',f):f();
 /* ---------- the welcome video ----------
-   Everyone new to the site watches it once, to the end, before using it (no sound: text and drawings only; source in the
+   Everyone new to the site watches it once, to the end, before using it (a voice-over in Jordanian Arabic over text and drawings; source in the
    miyeea-video project, src/intro). Afterwards it plays only from the settings, where it can be skipped. Someone who already
    has progress here, or arrives on the iPhone icon carrying their progress from Safari (#link=…), is not new. */
 const INTRO='ui_intro_seen';
@@ -738,8 +738,8 @@ function introGate(){
 function showIntro(must){
   if(document.querySelector('.ui-intro'))return;
   const w=el('div','ui-intro'+(must?' must':''));w.setAttribute('role','dialog');w.setAttribute('aria-modal','true');w.setAttribute('aria-label','الفيديو التعريفي');
-  const v=document.createElement('video');v.src='media/intro.mp4';v.poster='media/intro.jpg';v.muted=true;v.defaultMuted=true;v.playsInline=true;v.preload='auto';
-  ['muted','playsinline','webkit-playsinline','disablepictureinpicture'].forEach(a=>v.setAttribute(a,''));v.setAttribute('controlslist','nodownload noplaybackrate noremoteplayback');
+  const v=document.createElement('video');v.src='media/intro.mp4';v.poster='media/intro.jpg';v.playsInline=true;v.preload='auto';
+  ['playsinline','webkit-playsinline','disablepictureinpicture'].forEach(a=>v.setAttribute(a,''));v.setAttribute('controlslist','nodownload noplaybackrate noremoteplayback');
   if(!must)v.controls=true;
   const bar=el('div','ui-intro-bar'),fill=el('i');bar.append(fill);
   const left=el('span','ui-intro-left',must?'الفيديو التعريفي':''), foot=el('div','ui-intro-foot');
@@ -753,7 +753,8 @@ function showIntro(must){
   const key=e=>{if(e.key==='Escape'&&!must)close()};document.addEventListener('keydown',key);
   const fmt=s=>{s=Math.max(0,Math.ceil(s));return ar(Math.floor(s/60))+':'+ar(String(s%60).padStart(2,'0'))};
   let userPaused=false,lastT=0,lastMove=Date.now();
-  const start=()=>v.play().then(()=>{play.hidden=true}).catch(()=>{play.hidden=false});
+  // it has a voice-over, so the browser starts it only after a tap: until then the play button waits
+  const start=()=>v.play().then(()=>{play.hidden=true;userPaused=false}).catch(()=>{play.hidden=false;userPaused=true});
   play.onclick=()=>{userPaused=false;start()};
   // a tap pauses or resumes (it never skips)
   v.addEventListener('click',()=>{if(!must)return;if(v.paused){userPaused=false;start()}else{userPaused=true;v.pause();play.hidden=false}});
