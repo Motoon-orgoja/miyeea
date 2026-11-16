@@ -166,6 +166,8 @@ const BOOKS=[
   {key:'tihami',c:'الشعر العربي',lsk:'mutoon_tihami_v1',url:'tihami.html',t:'رثاء التهامي',d:'الشعر العربي · ٦٢ بيتًا مختارة'},
   {key:'ibnrumi',c:'الشعر العربي',lsk:'mutoon_ibnrumi_v1',url:'ibnrumi.html',t:'رثاء ابن الرومي',d:'الشعر العربي · ٤٠ بيتًا'},
   {key:'humma',c:'الشعر العربي',lsk:'mutoon_humma_v1',url:'humma.html',t:'حمى المتنبي',d:'الشعر العربي · ٣٧ بيتًا مختارة'},
+  {key:'nazimatuzzahr',c:'القراءات والتجويد',lsk:'mutoon_nazimatuzzahr_v1',url:'nazimatuzzahr.html',t:'ناظمة الزهر',d:'عدّ الآي · ٢٩٧ بيتًا'},
+  {key:'alfiyyasira',c:'السيرة النبوية',lsk:'mutoon_alfiyyasira_v1',url:'alfiyyasira.html',t:'ألفية السيرة',d:'السيرة النبوية · ١٠٣٢ بيتًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
