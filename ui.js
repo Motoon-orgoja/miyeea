@@ -168,6 +168,7 @@ const BOOKS=[
   {key:'humma',c:'الشعر العربي',lsk:'mutoon_humma_v1',url:'humma.html',t:'حمى المتنبي',d:'الشعر العربي · ٣٧ بيتًا مختارة'},
   {key:'nazimatuzzahr',c:'القراءات والتجويد',lsk:'mutoon_nazimatuzzahr_v1',url:'nazimatuzzahr.html',t:'ناظمة الزهر',d:'عدّ الآي · ٢٩٧ بيتًا'},
   {key:'alfiyyasira',c:'السيرة النبوية',lsk:'mutoon_alfiyyasira_v1',url:'alfiyyasira.html',t:'ألفية السيرة',d:'السيرة النبوية · ١٠٣٢ بيتًا'},
+  {key:'tuhfatullab',c:'الفقه',lsk:'mutoon_tuhfatullab_v1',url:'tuhfatullab.html',t:'تحفة الطلاب',d:'الفقه الحنفي · ١٩٥٢ بيتًا'},
 ];
 // the four schools and their texts (fiqh, usul, fara'id), for the «حسب المذهب» view of the texts sheet
 const MADHAHIB=[['حنفي',['qudouri','nuridah','tuhfamuluk','kanz','usul','siraji']],['مالكي',['akhdari','ibnashir','ashmawiyya','risala','maraqi']],
