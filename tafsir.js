@@ -50,15 +50,20 @@ function loadWeights(){const ks=S.books.slice();
 // the ayat of the ward that starts at g on day d (a plan by date: what is left over the days left; by amount: S.per
 // ayat of average length)
 function wardN(g,d){
-  if(!WT)return S.mode==='days'&&S.end?perFor(g,d):S.per;
-  const target=S.mode==='days'&&S.end?(PRE[TOTAL]-PRE[g])/Math.max(1,diff(d,S.end)+1):PRE[TOTAL]/TOTAL*S.per;
-  let i=g,acc=0;
-  while(i<TOTAL){const w=WT[i];if(i>g&&acc+w/2>target)break;acc+=w;i++}
+  const byDate=S.mode==='days'&&S.end;
+  if(!WT)return byDate?perFor(g,d):S.per;
+  let i=g,target=0;
+  if(byDate){target=(PRE[TOTAL]-PRE[g])/Math.max(1,diff(d,S.end)+1);
+    let acc=0; while(i<TOTAL){const w=WT[i];if(i>g&&acc+w/2>target)break;acc+=w;i++}}
+  // so many ayat a day is what the reader asked for: that many ayat (a long first tafsir, like Ibn Kathir on al-Fatiha,
+  // once cut a 20-ayat ward down to one ayah); only a passage explained as one, or the short end of a sura, is added
+  else i=Math.min(TOTAL,g+S.per);
   for(let k=0;i<TOTAL&&CONT[i]&&k<15;k++)i++;
-  const end=CUM[at(i-1).s]; if(i<end&&PRE[end]-PRE[i]<target*.25)i=end;
+  const end=CUM[at(i-1).s];
+  if(i<end&&(byDate?PRE[end]-PRE[i]<target*.25:end-i<=Math.max(1,Math.floor(S.per*.25))))i=end;
   return Math.max(1,i-g)}
 // today's ward size, kept for the day (unless the plan, the books or the start change)
-function todayN(){const key=[T,gi(S.from),S.books.join(),S.mode,S.end,S.per,!!WT].join('|');
+function todayN(){const key=['n2',T,gi(S.from),S.books.join(),S.mode,S.end,S.per,!!WT].join('|');
   if(S.nKey!==key){S.n=wardN(gi(S.from),T);S.nKey=key}return S.n}
 // the ayat of a ward: per ayat from a start, running into the next sura; a plan by date stops at an-Nas
 function ward(from,n){const g=gi(from);if(S.mode==='days')n=Math.min(n,TOTAL-g);const out=[];for(let i=0;i<n;i++)out.push(at((g+i)%TOTAL));return out}
